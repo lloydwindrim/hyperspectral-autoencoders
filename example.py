@@ -8,6 +8,6 @@ img = mat['paviaU']
 
 hypData = data.Data(img)
 
-x = tf.placeholder("float", [None, hypData.numBands])
+
 
 print 'hello'

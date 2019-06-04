@@ -27,6 +27,8 @@ class mlp_1D_network():
         self.weightInitOpt = weightInitOpt
         self.weightStd = weightStd
 
+        x = tf.placeholder("float", [None, inputSize])
+
         self.weights = { }
         self.biases = { }
 
@@ -51,9 +53,23 @@ class mlp_1D_network():
             self.biases['decoder_b%i' % (len( self.encoderSize ) + layerNum + 1)] = \
                 tf.Variable(init_weight(weightInitOpt,[self.decoderSize[layerNum + 1]]))
 
+        # build network using encoder, decoder and x placeholder as input
+        self.encoder()
+        self.decoder()
 
 
-    def encoder( self , x ):
+    def encoder( self  ):
+        self.x
+        pass
+
+    def decoder( self  ):
+        pass
+
+    # training and inference data will call encoder and decoder and feed into the placeholder x
+    def fit( self , trainingData ):
+        pass
+
+    def predict( self , inferenceData):
         pass
 
 
