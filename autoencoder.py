@@ -1,5 +1,7 @@
 import tensorflow as tf
-import math
+import network_ops as net_ops
+
+
 
 
 class mlp_1D_network():
@@ -7,7 +9,7 @@ class mlp_1D_network():
     def __init__( self , inputSize , encoderSize=[50,30,10] , activationFunc='sigmoid' ,
                   tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1  ):
 
-        """ Class for setting up a 1-D multi-layer perceptron autoencoder network
+        """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
         - input:
             inputSize: (int) Number of dimensions of input data (i.e. number of spectral bands)
             encoderSize: (int list) Number of nodes at each layer of the encoder. List length is number of encoder layers.
@@ -21,93 +23,183 @@ class mlp_1D_network():
 
         self.numBands = inputSize
         self.encoderSize = [inputSize] + encoderSize
-        self.decoderSize = self.encoderSize[::-1][1:]
+        self.decoderSize = [encoderSize[-1]] + self.encoderSize[::-1][1:]
         self.activationFunc = activationFunc
         self.tiedWeights = tiedWeights
         self.weightInitOpt = weightInitOpt
         self.weightStd = weightStd
 
-        x = tf.placeholder("float", [None, inputSize])
+        self.x = tf.placeholder("float", [None, inputSize])
+        self.y_target = tf.placeholder("float", [None, inputSize])
 
         self.weights = { }
         self.biases = { }
+        self.h = {}
+        self.a = {}
+        self.train_ops = {}
+        self.modelsAddrs = {}
 
         # encoder weights
-        for layerNum in range( len( self.encoderSize ) ):
+        for layerNum in range( len( self.encoderSize ) - 1 ):
             self.weights['encoder_w%i'%(layerNum+1)] = \
-                tf.Variable(init_weight(weightInitOpt,[self.encoderSize[layerNum], self.encoderSize[layerNum+1]]))
+                net_ops.create_variable([self.encoderSize[layerNum], self.encoderSize[layerNum+1]],weightInitOpt)
 
         # decoder weights
-        for layerNum in range( len( self.decoderSize ) ):
-            self.weights['decoder_w%i' % (len( self.encoderSize ) + layerNum + 1)] = \
-                tf.Variable(init_weight(weightInitOpt,[self.decoderSize[layerNum], self.decoderSize[layerNum + 1]]))
+        for layerNum in range( len( self.decoderSize ) - 1 ):
+            self.weights['decoder_w%i' % (len( self.encoderSize ) + layerNum )] = \
+                net_ops.create_variable([self.decoderSize[layerNum], self.decoderSize[layerNum + 1]], weightInitOpt)
 
 
         # encoder biases
-        for layerNum in range( len( self.encoderSize ) ):
+        for layerNum in range( len( self.encoderSize ) - 1 ):
             self.biases['encoder_b%i'%(layerNum+1)] = \
-                tf.Variable(init_weight(weightInitOpt,[self.encoderSize[layerNum+1]]))
+                net_ops.create_variable([self.encoderSize[layerNum+1]] , weightInitOpt)
 
         # decoder biases
-        for layerNum in range( len( self.decoderSize ) ):
-            self.biases['decoder_b%i' % (len( self.encoderSize ) + layerNum + 1)] = \
-                tf.Variable(init_weight(weightInitOpt,[self.decoderSize[layerNum + 1]]))
+        for layerNum in range( len( self.decoderSize ) - 1 ):
+            self.biases['decoder_b%i' % (len( self.encoderSize ) + layerNum )] = \
+                net_ops.create_variable([self.decoderSize[layerNum + 1]], weightInitOpt)
 
         # build network using encoder, decoder and x placeholder as input
-        self.encoder()
-        self.decoder()
+
+        # build encoder
+        self.a['a0'] = self.x
+        for layerNum in range( 1 , len( self.encoderSize ) ):
+            self.h['h%d' % (layerNum)] = \
+                net_ops.layer_fullyConn(self.a['a%d'%(layerNum-1)], self.weights['encoder_w%d'%(layerNum)], self.biases['encoder_b%d'%(layerNum)])
+            self.a['a%d' % (layerNum)] = net_ops.layer_activation(self.h['h%d' % (layerNum)], activationFunc)
+
+        # latent representation
+        self.z = self.a['a%d' % (layerNum)]
+
+        # build decoder
+        for layerNum in range( 1 , len( self.decoderSize ) ):
+            absLayerNum = len(self.encoderSize) + layerNum - 1
+            self.h['h%d' % (absLayerNum)] = \
+                net_ops.layer_fullyConn(self.a['a%d'%(absLayerNum-1)], self.weights['decoder_w%d'%(absLayerNum)], self.biases['decoder_b%d'%(absLayerNum)])
+            if layerNum < len( self.decoderSize )-1:
+                self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], activationFunc)
+            else:
+                self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], 'linear')
+
+        # output of final layer
+        self.y_recon = self.a['a%d' % (absLayerNum)]
 
 
-    def encoder( self  ):
-        self.x
-        pass
+    def add_train_op(self,name,lossFunc='SSE',learning_rate=1e-3, decay_steps=None, decay_rate=None, piecewise_bounds=None, piecewise_values=None,
+             method='Adam' ):
+        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the train op a name, and the train op
+            and loss opp are stored in a dictionary under that name
+        - input:
+            name: (str) Name of the training op (to refer to it later in-case of multiple training ops).
+            lossFunc: (str) Reconstruction loss function
+            learning rate: (float)
+            decay_steps: (int) epoch frequency at which to decay the learning rate.
+            decay_rate: (float) fraction at which to decay the learning rate.
+            piecewise_bounds: (int list) epoch step intervals for decaying the learning rate. Alternative to decay steps.
+            piecewise_values: (float list) rate at which to decay the learning rate at the piecewise_bounds.
+            method: (str) optimisation method.
 
-    def decoder( self  ):
-        pass
+        """
+        # construct loss op
+        self.train_ops['%s_loss'%name] = net_ops.loss_function_reconstruction_1D(self.y_recon, self.y_target, func=lossFunc)
 
-    # training and inference data will call encoder and decoder and feed into the placeholder x
-    def fit( self , trainingData ):
-        pass
-
-    def predict( self , inferenceData):
-        pass
+        # construct training op
+        self.train_ops['%s_train'%name] = \
+            net_ops.train_step(self.train_ops['%s_loss'%name], learning_rate, decay_steps, decay_rate, piecewise_bounds, piecewise_values,method)
 
 
 
-def init_weight(opts, shape, stddev=0.1, wd = None, dtype=tf.float32):
+    def train(self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0, save_epochs=[1000]):
+        """ Calls network_ops function to train a network.
+        - input:
+            dataTrain: (obj) iterator object for training data.
+            dataVal: (obj) iterator object for validation data.
+            train_op_name: (string) name of training op created.
+            n_epochs: (int) number of loops through dataset to train for.
+            save_addr: (str) address of a directory to save checkpoints for desired epochs.
+            visualiseRateTrain: (int) epoch rate at which to print training loss in console
+            visualiseRateVal: (int) epoch rate at which to print validation loss in console
+            save_epochs: (int list) epochs to save checkpoints at.
+        """
 
-    """ Weight initialisation function.
-    See K.He, X.Zhang, S.Ren, and J.Sun.Delving deep into rectifiers: Surpassing human - level performance
-    on imagenet classification.CoRR, (arXiv:1502.01852 v1), 2015.
-    """
-    if opts == 'gaussian':
-        weights = tf.random_normal(shape, stddev=stddev, dtype=dtype)
-    elif opts == 'truncated_normal':
-        weights = tf.truncated_normal(shape, stddev=stddev)
-    elif opts == 'xavier':
-        h = shape[0]
-        w = shape[1]
-        try:
-            num_in = shape[2]
-        except:
-            num_in = 1
-        sc = math.sqrt(3.0 / (h * w * num_in))
-        weights = tf.multiply(tf.random_normal(shape, dtype=dtype) * 2 - 1, sc)
-    elif opts == 'xavier_improved':
-        h = shape[0]
-        w = shape[1]
-        try:
-            num_out = shape[3]
-        except:
-            num_out = 1
-        sc = math.sqrt(2.0 / (h * w * num_out))
-        weights = tf.multiply(tf.random_normal(shape, dtype=dtype), sc)
-    else:
-        raise ValueError('Unknown weight initialization method %s' % opts)
+        net_ops.train( self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain, visualiseRateVal, save_epochs )
 
-    # set up weight decay on weights
-    if wd is not None:
-        weight_decay = tf.multiply(tf.nn.l2_loss(weights), wd, name='weight_loss')
-        tf.add_to_collection('losses', weight_decay)
 
-    return weights
+    def add_model(self,addr,name):
+
+        self.modelsAddrs[name] = addr
+
+    def encoder( self, modelName, dataSamples  ):
+        """ Extract the latent variable of some dataSamples using a trained model
+        - input:
+            modelName: (str) Name of the model to use (previously added with add_model() )
+            dataSample: (array) Shape [numSamples x numBands]
+        - output:
+            dataZ: (array) Shape [numSamples x arbitrary]
+
+        """
+
+        with tf.Session() as sess:
+
+            # load the model
+            net_ops.load_model(self.modelsAddrs[modelName], sess)
+
+            # get latent values
+            dataZ = sess.run(self.z, feed_dict={self.x: dataSamples})
+
+            return dataZ
+
+
+
+    def decoder( self, modelName, dataZ  ):
+        """ Extract the reconstruction of some dataSamples (with latent representation) using a trained model
+        - input:
+            modelName: (str) Name of the model to use (previously added with add_model() )
+            dataZ: (array) Latent representation of data samples. Shape [numSamples x arbitrary]
+        - output:
+            dataY_recon: (array) Reconstructed data. Shape [numSamples x arbitrary]
+
+        """
+
+        with tf.Session() as sess:
+
+            # load the model
+            net_ops.load_model(self.modelsAddrs[modelName], sess)
+
+            # get reconstruction
+            dataY_recon = sess.run(self.y_recon, feed_dict={self.z: dataZ})
+
+            return dataY_recon
+
+
+    def encoder_decoder( self, modelName, dataSamples  ):
+        """ Extract the reconstruction of some dataSamples using a trained model
+        - input:
+            modelName: (str) Name of the model to use (previously added with add_model() )
+            dataSample: (array) Shape [numSamples x numBands]
+        - output:
+            dataY_recon: (array) Reconstructed data. Shape [numSamples x arbitrary]
+
+        """
+
+        with tf.Session() as sess:
+
+            # load the model
+            net_ops.load_model(self.modelsAddrs[modelName], sess)
+
+            # get reconstruction
+            dataY_recon = sess.run(self.y_recon, feed_dict={self.x: dataSamples})
+
+            return dataY_recon
+
+
+
+
+
+
+
+
+
+
+
