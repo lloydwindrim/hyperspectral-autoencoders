@@ -7,14 +7,14 @@ import network_ops as net_ops
 class mlp_1D_network():
 
     def __init__( self , inputSize , encoderSize=[50,30,10] , activationFunc='sigmoid' ,
-                  tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1  ):
+                  tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1, skipConnect=False  ):
 
         """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
         - input:
             inputSize: (int) Number of dimensions of input data (i.e. number of spectral bands)
             encoderSize: (int list) Number of nodes at each layer of the encoder. List length is number of encoder layers.
             activationFunc: (string) [sigmoid, ReLU, tanh]
-            tiedWeights: (binary list) 1 - tied weights of specific encoder layer to corresponding decoder weights.
+            tiedWeights: (binary list or None) 1 - tied weights of specific encoder layer to corresponding decoder weights.
                                         0 - do not not weights of specific layer
                                         None - sets all layers to 0
             weightInitOpt: (string) Method of weight initialisation. [gaussian, truncated_normal, xavier, xavier_improved]
@@ -39,6 +39,9 @@ class mlp_1D_network():
         self.train_ops = {}
         self.modelsAddrs = {}
 
+        if tiedWeights is None:
+            tiedWeights = [0]*len(encoderSize)
+
         # encoder weights
         for layerNum in range( len( self.encoderSize ) - 1 ):
             self.weights['encoder_w%i'%(layerNum+1)] = \
@@ -46,8 +49,15 @@ class mlp_1D_network():
 
         # decoder weights
         for layerNum in range( len( self.decoderSize ) - 1 ):
-            self.weights['decoder_w%i' % (len( self.encoderSize ) + layerNum )] = \
-                net_ops.create_variable([self.decoderSize[layerNum], self.decoderSize[layerNum + 1]], weightInitOpt)
+            if tiedWeights[layerNum] == 0:
+                self.weights['decoder_w%i' % (len( self.encoderSize ) + layerNum )] = \
+                    net_ops.create_variable([self.decoderSize[layerNum], self.decoderSize[layerNum + 1]], weightInitOpt)
+            elif tiedWeights[layerNum] == 1:
+                self.weights['decoder_w%i' % (len(self.encoderSize) + layerNum)] = \
+                    tf.transpose( self.weights['encoder_w%i'%(len(self.encoderSize)-1-layerNum)] )
+            else:
+                pass
+            # catch error
 
 
         # encoder biases
@@ -78,8 +88,12 @@ class mlp_1D_network():
             self.h['h%d' % (absLayerNum)] = \
                 net_ops.layer_fullyConn(self.a['a%d'%(absLayerNum-1)], self.weights['decoder_w%d'%(absLayerNum)], self.biases['decoder_b%d'%(absLayerNum)])
             if layerNum < len( self.decoderSize )-1:
+                if skipConnect:
+                    self.h['h%d' % (absLayerNum)] += self.h['h%d' % (len(self.decoderSize) - layerNum - 1)]
                 self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], activationFunc)
             else:
+                if skipConnect:
+                    self.h['h%d' % (absLayerNum)] += self.a['a0']
                 self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], 'linear')
 
         # output of final layer
