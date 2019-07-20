@@ -3,8 +3,8 @@ import math
 import numpy as np
 from os.path import join, exists, basename, split
 
-def create_variable(shape,method='gaussian'):
-    return tf.Variable(init_weight(method, shape))
+def create_variable(shape,method='gaussian',wd=False):
+    return tf.Variable(init_weight(method, shape, wd=wd))
 
 
 def layer_fullyConn(input, W, b):
@@ -108,6 +108,17 @@ def loss_function_reconstruction_1D(y_reconstructed,y_target,func='SSE'):
     return loss
 
 
+def loss_weight_decay(wdLambda):
+    """ Weight decay loss op, regularises network by penalising parameters for being too large.
+    - input:
+        wdLambda: (float) scalar to control weighting of weight decay in loss.
+    - output:
+        loss (op)
+    """
+
+    return tf.multiply( wdLambda , tf.reduce_sum(tf.get_collection('wd')) )
+
+
 def save_model(addr,sess,saver,current_epoch,epochs_to_save):
     """
     Saves a checkpoint at a list of epochs.
@@ -197,6 +208,7 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
 
 
 
+
             # iterate over validation samples and output loss
             if visualiseRateVal > 0:
                 if epoch_i % visualiseRateVal == 0:
@@ -224,11 +236,12 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
 
 
 
-def init_weight(opts, shape, stddev=0.1, const=0.1, wd = None, dtype=tf.float32):
+def init_weight(opts, shape, stddev=0.1, const=0.1, wd = False, dtype=tf.float32):
 
     """ Weight initialisation function.
     See K.He, X.Zhang, S.Ren, and J.Sun.Delving deep into rectifiers: Surpassing human - level performance
     on imagenet classification.CoRR, (arXiv:1502.01852 v1), 2015.
+    wd - whether this variable contributes to weight decay or not
     """
     if opts == 'gaussian':
         weights = tf.random_normal(shape, stddev=stddev, dtype=dtype)
@@ -258,8 +271,8 @@ def init_weight(opts, shape, stddev=0.1, const=0.1, wd = None, dtype=tf.float32)
         raise ValueError('Unknown weight initialization method %s' % opts)
 
     # set up weight decay on weights
-    if wd is not None:
-        weight_decay = tf.multiply(tf.nn.l2_loss(weights), wd, name='weight_loss')
-        tf.add_to_collection('losses', weight_decay)
+    if wd:
+        weight_decay = tf.nn.l2_loss(weights)
+        tf.add_to_collection('wd', weight_decay)
 
     return weights

@@ -45,13 +45,13 @@ class mlp_1D_network():
         # encoder weights
         for layerNum in range( len( self.encoderSize ) - 1 ):
             self.weights['encoder_w%i'%(layerNum+1)] = \
-                net_ops.create_variable([self.encoderSize[layerNum], self.encoderSize[layerNum+1]],weightInitOpt)
+                net_ops.create_variable([self.encoderSize[layerNum], self.encoderSize[layerNum+1]],weightInitOpt, wd=True)
 
         # decoder weights
         for layerNum in range( len( self.decoderSize ) - 1 ):
             if tiedWeights[layerNum] == 0:
                 self.weights['decoder_w%i' % (len( self.encoderSize ) + layerNum )] = \
-                    net_ops.create_variable([self.decoderSize[layerNum], self.decoderSize[layerNum + 1]], weightInitOpt)
+                    net_ops.create_variable([self.decoderSize[layerNum], self.decoderSize[layerNum + 1]], weightInitOpt, wd=True)
             elif tiedWeights[layerNum] == 1:
                 self.weights['decoder_w%i' % (len(self.encoderSize) + layerNum)] = \
                     tf.transpose( self.weights['encoder_w%i'%(len(self.encoderSize)-1-layerNum)] )
@@ -63,12 +63,12 @@ class mlp_1D_network():
         # encoder biases
         for layerNum in range( len( self.encoderSize ) - 1 ):
             self.biases['encoder_b%i'%(layerNum+1)] = \
-                net_ops.create_variable([self.encoderSize[layerNum+1]] , weightInitOpt)
+                net_ops.create_variable([self.encoderSize[layerNum+1]] , weightInitOpt, wd=True)
 
         # decoder biases
         for layerNum in range( len( self.decoderSize ) - 1 ):
             self.biases['decoder_b%i' % (len( self.encoderSize ) + layerNum )] = \
-                net_ops.create_variable([self.decoderSize[layerNum + 1]], weightInitOpt)
+                net_ops.create_variable([self.decoderSize[layerNum + 1]], weightInitOpt, wd=True)
 
         # build network using encoder, decoder and x placeholder as input
 
@@ -101,7 +101,7 @@ class mlp_1D_network():
 
 
     def add_train_op(self,name,lossFunc='SSE',learning_rate=1e-3, decay_steps=None, decay_rate=None, piecewise_bounds=None, piecewise_values=None,
-             method='Adam' ):
+             method='Adam', wd_lambda=0.0 ):
         """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the train op a name, and the train op
             and loss opp are stored in a dictionary under that name
         - input:
@@ -113,14 +113,19 @@ class mlp_1D_network():
             piecewise_bounds: (int list) epoch step intervals for decaying the learning rate. Alternative to decay steps.
             piecewise_values: (float list) rate at which to decay the learning rate at the piecewise_bounds.
             method: (str) optimisation method.
+            wd_lambda: (float) scalar to control weighting of weight decay in loss.
 
         """
         # construct loss op
         self.train_ops['%s_loss'%name] = net_ops.loss_function_reconstruction_1D(self.y_recon, self.y_target, func=lossFunc)
 
+        # weight decay loss contribution
+        wdLoss = net_ops.loss_weight_decay(wd_lambda)
+
         # construct training op
         self.train_ops['%s_train'%name] = \
-            net_ops.train_step(self.train_ops['%s_loss'%name], learning_rate, decay_steps, decay_rate, piecewise_bounds, piecewise_values,method)
+            net_ops.train_step(self.train_ops['%s_loss'%name]+wdLoss, learning_rate, decay_steps, decay_rate, piecewise_bounds, piecewise_values,method)
+
 
 
 

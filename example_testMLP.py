@@ -18,7 +18,7 @@ hypData = data.Img(img)
 hypData.pre_process('minmax')
 
 # setup network
-net = autoencoder.mlp_1D_network( hypData.numBands, activationFunc='sigmoid' )
+net = autoencoder.mlp_1D_network( hypData.numBands, activationFunc='sigmoid',tiedWeights=None, skipConnect=False )
 net.add_model('models/test_model/epoch_100','sse_500')
 
 
