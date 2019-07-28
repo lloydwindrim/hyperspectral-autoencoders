@@ -10,8 +10,16 @@ def create_variable(shape,method='gaussian',wd=False):
 def layer_fullyConn(input, W, b):
     return tf.matmul(input, W) + b
 
-def layer_conv1d():
-    pass
+def layer_conv1d(input, W, b, stride=1,padding='SAME'):
+
+    # input must have shape None x numBands x 1
+    return tf.nn.conv1d(input,W,stride=stride,padding=padding) + b
+
+
+def layer_deconv1d(input, W, b, outputShape, stride=1,padding='SAME'):
+
+    # input must have shape None x numBands x 1
+    return tf.contrib.nn.conv1d_transpose(input,W,outputShape,stride=stride,padding=padding) + b
 
 
 
@@ -27,6 +35,14 @@ def layer_activation(input, func='sigmoid'):
         pass
 
     return a
+
+def conv_output_shape(inputShape, filterSize, padding, stride):
+    if padding=='VALID':
+        outputShape = np.ceil( (inputShape - (filterSize-1))/stride )
+    elif padding=='SAME':
+        outputShape = np.ceil(inputShape / stride)
+
+    return int(outputShape)
 
 
 def train_step(loss, learning_rate=1e-3, decay_steps=None, decay_rate=None, piecewise_bounds=None, piecewise_values=None,
