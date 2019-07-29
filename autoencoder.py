@@ -19,6 +19,7 @@ class mlp_1D_network():
                                         None - sets all layers to 0
             weightInitOpt: (string) Method of weight initialisation. [gaussian, truncated_normal, xavier, xavier_improved]
             weightStd: (float) Used by 'gaussian' and 'truncated_normal' weight initialisation methods
+            skipConnect: (boolean) Whether to use skip connections throughout the network.
         """
 
         self.numBands = inputSize
@@ -235,6 +236,7 @@ class cnn_1D_network():
             weightStd: (float) Used by 'gaussian' and 'truncated_normal' weight initialisation methods
             stride: (int list)
             padding: (string)
+            skipConnect: (boolean) Whether to use skip connections throughout the network.
         """
 
         self.numBands = inputSize
@@ -331,6 +333,8 @@ class cnn_1D_network():
         # build decoder
         self.h['h%d' % (layerNum+2)] = \
             net_ops.layer_fullyConn(self.a['a%d' % (layerNum+1)], self.weights['decoder_w%d' % (layerNum+2)],self.biases['decoder_b%d' % (layerNum+2)])
+        if skipConnect:
+            self.h['h%d' % (layerNum+2)] += tf.reshape( self.h['h%d' % (len( self.decoderNumFilters ) - 1)] , [-1,self.encoderDataShape[layerNum]] )
         self.a['a%d' % (layerNum+2)] = net_ops.layer_activation(self.h['h%d' % (layerNum+2)], activationFunc)
         self.a['a%d' % (layerNum + 2)] = tf.reshape( self.a['a%d' % (layerNum + 2)], [-1,self.decoderDataShape[1]/self.encoderNumFilters[-1],self.encoderNumFilters[-1]] )
         for layerNum in range( 1 , len( self.decoderNumFilters ) ):
