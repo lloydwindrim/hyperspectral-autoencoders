@@ -282,22 +282,23 @@ class cnn_1D_network():
         self.weights['encoder_w%i' % (layerNum + 2)] = net_ops.create_variable([self.encoderDataShape[layerNum+1], self.zDim],weightInitOpt, wd=True)
 
         # decoder weights
-        if tiedWeights[layerNum] == 0:
-            self.weights['decoder_w%i' % (layerNum + 3)] = net_ops.create_variable(
-                [self.zDim,self.decoderDataShape[1]], weightInitOpt, wd=True)
-            for layerNum in range( len( self.decoderNumFilters ) - 1  ):
+        self.weights['decoder_w%i' % (layerNum + 3)] = net_ops.create_variable(
+            [self.zDim,self.decoderDataShape[1]], weightInitOpt, wd=True)
+        for layerNum in range( len( self.decoderNumFilters ) - 1  ):
+            if tiedWeights[layerNum] == 0:
                 self.weights['decoder_w%i' % (len( self.encoderDataShape ) + layerNum + 1)] = \
                     net_ops.create_variable([self.decoderFilterSize[layerNum], self.decoderNumFilters[layerNum+1], self.decoderNumFilters[layerNum]], weightInitOpt, wd=True)
-        elif tiedWeights[layerNum] == 1:
-            pass
+            elif tiedWeights[layerNum] == 1:
+                self.weights['decoder_w%i' % (len(encoderNumFilters)+layerNum+3)] = self.weights['encoder_w%i' % (len(encoderNumFilters) - layerNum) ]
+
             # self.weights['decoder_w%i' % (layerNum + 3)] = net_ops.create_variable(
             #     [self.zDim,self.decoderDataShape[1]], weightInitOpt, wd=True)
             # for layerNum in range(len(self.decoderNumFilters) - 1):
             #     self.weights['decoder_w%i' % (len( self.decoderNumFilters ) + layerNum )] = \
             #         tf.transpose( self.weights['encoder_w%i'%(len(self.encoderSize)-1-layerNum)] )
-        else:
-            pass
-            # catch error
+            else:
+                pass
+                # catch error
 
 
         # encoder biases
