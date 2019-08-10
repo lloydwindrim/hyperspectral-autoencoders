@@ -16,7 +16,7 @@ hypData = data.Img(img)
 hypData.pre_process('minmax')
 
 # setup network
-net = autoencoder.mlp_1D_network( hypData.numBands, activationFunc='sigmoid',tiedWeights=None, skipConnect=False )
+net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, activationFunc='relu',tiedWeights=None, skipConnect=False )
 
 # create training and validation data objects
 dataTrain = data.Iterator(hypData.spectraPrep[:200000,:],targets=hypData.spectraPrep[:200000,:],batchSize=1000)

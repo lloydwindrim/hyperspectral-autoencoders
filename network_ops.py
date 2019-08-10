@@ -2,6 +2,7 @@ import tensorflow as tf
 import math
 import numpy as np
 from os.path import join, exists, basename, split
+import json
 
 def create_variable(shape,method='gaussian',wd=False):
     return tf.Variable(init_weight(method, shape, wd=wd))
@@ -12,13 +13,13 @@ def layer_fullyConn(input, W, b):
 
 def layer_conv1d(input, W, b, stride=1,padding='SAME'):
 
-    # input must have shape None x numBands x 1
+    # input must have shape None x inputSize x 1
     return tf.nn.conv1d(input,W,stride=stride,padding=padding) + b
 
 
 def layer_deconv1d(input, W, b, outputShape, stride=1,padding='SAME'):
 
-    # input must have shape None x numBands x 1
+    # input must have shape None x inputSize x 1
     return tf.contrib.nn.conv1d_transpose(input,W,outputShape,stride=stride,padding=padding) + b
 
 
@@ -28,7 +29,7 @@ def layer_activation(input, func='sigmoid'):
     if func == 'relu':
         a = tf.nn.relu(input)
     elif func == 'sigmoid':
-        a = tf.nn.relu(input)
+        a = tf.nn.sigmoid(input)
     elif func == 'linear':
         a = input
     else:
@@ -91,8 +92,8 @@ def train_step(loss, learning_rate=1e-3, decay_steps=None, decay_rate=None, piec
 def loss_function_reconstruction_1D(y_reconstructed,y_target,func='SSE'):
     """ Reconstruction loss function op, comparing 1D tensors for network recontruction and target
     - input:
-        y_reconstructed: (tensor) output of network (reconstructed 1D vector). Shape [numSamples x numBands]
-        y_target: (tensor) what the network is trying to reconstruct (1D vector). Shape [numSamples x numBands]
+        y_reconstructed: (tensor) output of network (reconstructed 1D vector). Shape [numSamples x inputSize]
+        y_target: (tensor) what the network is trying to reconstruct (1D vector). Shape [numSamples x inputSize]
         func: (string) the name of the loss function to be used. 'SSE'-sum of square errors,'CSA'-cosine spectral angle,
             'SA'-spectral angle, 'SID'-spectral information divergence.
     - output:
@@ -164,6 +165,27 @@ def load_model(addr,sess):
     saver.restore(sess, join(addr, 'model.ckpt'))
 
 
+def save_config(net_obj,addr):
+    # address is directory of where to store config.json file
+
+    data = {}
+    for config_parameter in net_obj.net_config:
+        data[config_parameter] = getattr(net_obj,config_parameter)
+
+    with open(join(addr,'config.json'), 'w') as outfile:
+        json.dump(data, outfile)
+
+def load_config(net_obj,addr):
+    # addr is for config.json file
+
+    with open(addr, 'r') as outfile:
+        data = json.load(outfile)
+
+    for config_parameter in data:
+        setattr(net_obj,config_parameter,data[config_parameter])
+
+
+
 def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0, save_epochs=[1000] ):
     """ Function for training a network. Updates the network weights through the training op. The function will check the save address
         for a model checkpoint to load, otherwise it will begin training from scratch.
@@ -172,7 +194,7 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
         dataVal: (obj) iterator object for validation data.
         train_op_name: (string) name of training op created.
         n_epochs: (int) number of loops through dataset to train for.
-        save_addr: (str) address of a directory to save checkpoints for desired epochs.
+        save_addr: (str) address of a directory to save checkpoints for desired epochs, or address of saved checkpoint.
         visualiseRateTrain: (int) epoch rate at which to print training loss in console.
         visualiseRateVal: (int) epoch rate at which to print validation loss in console.
         save_epochs: (int list) epochs to save checkpoints at.
@@ -198,6 +220,8 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
         else:
             # save directory is empty
             epoch_start = 0
+            # create network config file in directory
+            save_config(net_obj,save_addr)
 
         for epoch_i in range(epoch_start, n_epochs+1):
             train_error = []
