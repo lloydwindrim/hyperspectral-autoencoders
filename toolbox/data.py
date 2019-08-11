@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Img:
+class HypImg:
 
 
     def __init__( self , spectralInput , wavelengths=None, bands=None ):

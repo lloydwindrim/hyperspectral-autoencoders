@@ -13,6 +13,9 @@ def layer_fullyConn(input, W, b):
 
 def layer_conv1d(input, W, b, stride=1,padding='SAME'):
 
+    if (padding!='SAME')&(padding!='VALID'):
+        raise ValueError('Unknown padding type: %s. Use SAME or VALID' % padding)
+
     # input must have shape None x inputSize x 1
     return tf.nn.conv1d(input,W,stride=stride,padding=padding) + b
 
@@ -42,6 +45,8 @@ def conv_output_shape(inputShape, filterSize, padding, stride):
         outputShape = np.ceil( (inputShape - (filterSize-1))/stride )
     elif padding=='SAME':
         outputShape = np.ceil(inputShape / stride)
+    else:
+        raise ValueError('Unknown padding type: %s. Use SAME or VALID' % padding)
 
     return int(outputShape)
 
@@ -199,6 +204,10 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
         visualiseRateVal: (int) epoch rate at which to print validation loss in console.
         save_epochs: (int list) epochs to save checkpoints at.
     """
+
+    if np.shape(dataTrain.dataSamples)[1] != net_obj.inputSize:
+        raise Exception('the data dimensionality must match the network input size. '
+                        'Data size: %d, network input size: %d'%(np.shape(dataTrain.dataSamples)[1], net_obj.inputSize))
 
     batchSize = dataTrain.batchSize
     numSamples = dataTrain.numSamples

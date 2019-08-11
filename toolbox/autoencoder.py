@@ -7,7 +7,7 @@ import network_ops as net_ops
 class mlp_1D_network():
 
     def __init__( self , configFile=None, inputSize=None , encoderSize=[50,30,10] , activationFunc='sigmoid' ,
-                  tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1, skipConnect=False  ):
+                  tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1, skipConnect=False, activationFuncFinal='linear'  ):
 
         """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
         - input:
@@ -29,8 +29,9 @@ class mlp_1D_network():
         self.weightInitOpt = weightInitOpt
         self.weightStd = weightStd
         self.encodersize = encoderSize
+        self.activationFuncFinal = activationFuncFinal
 
-        self.net_config = ['inputSize','encodersize','activationFunc','tiedWeights','weightInitOpt','weightStd','skipConnect']
+        self.net_config = ['inputSize','encodersize','activationFunc','tiedWeights','weightInitOpt','weightStd','skipConnect','activationFuncFinal']
         # loading config file overwrites input arguments
         if configFile is not None:
             net_ops.load_config(self,configFile)
@@ -103,7 +104,7 @@ class mlp_1D_network():
             else:
                 if self.skipConnect:
                     self.h['h%d' % (absLayerNum)] += self.a['a0']
-                self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], 'linear')
+                self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], self.activationFuncFinal)
 
         # output of final layer
         self.y_recon = self.a['a%d' % (absLayerNum)]
@@ -154,9 +155,9 @@ class mlp_1D_network():
         net_ops.train( self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain, visualiseRateVal, save_epochs )
 
 
-    def add_model(self,addr,name):
+    def add_model(self,addr,modelName):
 
-        self.modelsAddrs[name] = addr
+        self.modelsAddrs[modelName] = addr
 
     def encoder( self, modelName, dataSamples  ):
         """ Extract the latent variable of some dataSamples using a trained model
@@ -227,8 +228,10 @@ class mlp_1D_network():
 
 class cnn_1D_network():
 
-    def __init__( self , configFile=None, inputSize=None , zDim=5, encoderNumFilters=[10,10,10] , encoderFilterSize=[20,10,10], activationFunc='sigmoid' ,
-                  tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1, skipConnect=False, padding='VALID', encoderStride=[1,1,1]  ):
+    def __init__( self , configFile=None, inputSize=None , zDim=5, encoderNumFilters=[10,10,10] ,
+                  encoderFilterSize=[20,10,10], activationFunc='sigmoid', tiedWeights=None,
+                  weightInitOpt='truncated_normal', weightStd=0.1, skipConnect=False, padding='VALID',
+                  encoderStride=[1,1,1], activationFuncFinal='linear' ):
 
         """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
         - input:
@@ -260,8 +263,10 @@ class cnn_1D_network():
         self.encoderStride = encoderStride
         self.encoderNumfilters = encoderNumFilters
         self.encoderFiltersize = encoderFilterSize
+        self.activationFuncFinal = activationFuncFinal
 
-        self.net_config = ['inputSize','zDim','encoderNumfilters','encoderFiltersize','activationFunc','tiedWeights','weightInitOpt','weightStd','skipConnect','padding','encoderStride']
+        self.net_config = ['inputSize','zDim','encoderNumfilters','encoderFiltersize','activationFunc','tiedWeights',
+                           'weightInitOpt','weightStd','skipConnect','padding','encoderStride','activationFuncFinal']
         # loading config file overwrites input arguments
         if configFile is not None:
             net_ops.load_config(self,configFile)
@@ -366,7 +371,7 @@ class cnn_1D_network():
             else:
                 if self.skipConnect:
                     self.h['h%d' % (absLayerNum)] += self.a['a0']
-                self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], 'linear')
+                self.a['a%d' % (absLayerNum)] = net_ops.layer_activation(self.h['h%d' % (absLayerNum)], self.activationFuncFinal)
 
         # output of final layer
         self.y_recon = tf.squeeze( self.a['a%d' % (absLayerNum)] , axis=2)
@@ -416,9 +421,9 @@ class cnn_1D_network():
         net_ops.train( self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain, visualiseRateVal, save_epochs )
 
 
-    def add_model(self,addr,name):
+    def add_model(self,addr,modelName):
 
-        self.modelsAddrs[name] = addr
+        self.modelsAddrs[modelName] = addr
 
     def encoder( self, modelName, dataSamples  ):
         """ Extract the latent variable of some dataSamples using a trained model
