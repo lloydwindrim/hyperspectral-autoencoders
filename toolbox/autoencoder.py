@@ -251,7 +251,6 @@ class cnn_1D_network():
         """
 
 
-
         self.inputSize = inputSize
         self.tiedWeights = tiedWeights
         self.skipConnect = skipConnect
@@ -270,6 +269,9 @@ class cnn_1D_network():
         # loading config file overwrites input arguments
         if configFile is not None:
             net_ops.load_config(self,configFile)
+
+        if not (len(self.encoderFiltersize) == len(self.encoderNumfilters) == len(self.encoderStride)):
+            raise Exception('the length of encoderNumfilters, encoderFilterSize and encoderStride must be equal.')
 
 
         self.encoderNumFilters = [1] + self.encoderNumfilters

@@ -14,13 +14,20 @@ def layer_fullyConn(input, W, b):
 def layer_conv1d(input, W, b, stride=1,padding='SAME'):
 
     if (padding!='SAME')&(padding!='VALID'):
-        raise ValueError('Unknown padding type: %s. Use SAME or VALID' % padding)
+        raise ValueError('unknown padding type: %s. Use SAME or VALID' % padding)
+    if stride < 1:
+        raise ValueError('stride must be greater than 0. Stride = %d found in conv layer.'% stride)
 
     # input must have shape None x inputSize x 1
     return tf.nn.conv1d(input,W,stride=stride,padding=padding) + b
 
 
 def layer_deconv1d(input, W, b, outputShape, stride=1,padding='SAME'):
+
+    if (padding!='SAME')&(padding!='VALID'):
+        raise ValueError('unknown padding type: %s. Use SAME or VALID' % padding)
+    if stride < 1:
+        raise ValueError('stride must be greater than 0. Stride = %d found in deconv layer.'% stride)
 
     # input must have shape None x inputSize x 1
     return tf.contrib.nn.conv1d_transpose(input,W,outputShape,stride=stride,padding=padding) + b
@@ -36,7 +43,7 @@ def layer_activation(input, func='sigmoid'):
     elif func == 'linear':
         a = input
     else:
-        pass
+        raise ValueError('unknown activation function: %s. Use relu, sigmoid or linear.' % func)
 
     return a
 
@@ -46,7 +53,7 @@ def conv_output_shape(inputShape, filterSize, padding, stride):
     elif padding=='SAME':
         outputShape = np.ceil(inputShape / stride)
     else:
-        raise ValueError('Unknown padding type: %s. Use SAME or VALID' % padding)
+        raise ValueError('unknown padding type: %s. Use SAME or VALID' % padding)
 
     return int(outputShape)
 
@@ -87,7 +94,7 @@ def train_step(loss, learning_rate=1e-3, decay_steps=None, decay_rate=None, piec
     elif method == 'SGD':
         optimizer = tf.train.GradientDescentOptimizer(lr)
     else:
-        'unknown method for optimisation'
+        raise ValueError('unknown optimisation method: %s. Use Adam or SGD.' % method)
 
     train_op = optimizer.minimize(loss, global_step=global_step)
 
@@ -126,6 +133,8 @@ def loss_function_reconstruction_1D(y_reconstructed,y_target,func='SSE'):
         r = tf.divide( tf.transpose(y_reconstructed) , tf.reduce_sum(tf.transpose(y_reconstructed),axis=0) )
         loss = tf.reduce_sum( tf.reduce_sum( tf.multiply(t,tf.log(tf.divide(t,r))) , axis=0)
                               + tf.reduce_sum( tf.multiply(r,tf.log(tf.divide(r,t))) , axis=0) )
+    else:
+        raise ValueError('unknown loss function: %s. Use SSE, CSA, SA or SID.' % func)
 
     return loss
 
