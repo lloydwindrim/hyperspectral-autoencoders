@@ -5,6 +5,14 @@ from os.path import join, exists, basename, split
 import json
 
 def create_variable(shape,method='gaussian',wd=False):
+    """ Setup a trainable variable of a particular shape.
+    - input:
+        shape: (list)
+        method: (str) initialisation
+        wd: (boolean) setup weight decay for this variable
+    - output:
+        (variable):
+    """
     return tf.Variable(init_weight(method, shape, wd=wd))
 
 
