@@ -30,7 +30,7 @@ def layer_deconv1d(input, W, b, outputShape, stride=1,padding='SAME'):
         raise ValueError('stride must be greater than 0. Stride = %d found in deconv layer.'% stride)
 
     # input must have shape None x inputSize x 1
-    return tf.contrib.nn.conv1d_transpose(input,W,outputShape,stride=stride,padding=padding) + b
+    return tf.nn.conv1d_transpose(input,W,outputShape,strides=stride,padding=padding) + b
 
 
 
