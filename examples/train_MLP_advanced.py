@@ -11,7 +11,8 @@ sys.path.insert(0, os.path.join('..','toolbox'))
 import autoencoder
 import data
 
-
+# An example script for training several different models for a given MLP (or dense) autoencoder architecture using the
+# Pavia Uni hyperspectral dataset. Each model is trained with a different loss function.
 
 if __name__ == '__main__':
 
@@ -57,7 +58,7 @@ if __name__ == '__main__':
                      method='Adam', wd_lambda=0.0)
 
 
-    # create directories to save the learnt models, and train a model for each training op
+    # create directories to save the learnt models
     for method in ['sse','csa','sa']:
         model_dir = os.path.join('models','test_mlp_adv_%s'%(method))
         if os.path.exists(model_dir):
@@ -65,6 +66,7 @@ if __name__ == '__main__':
             shutil.rmtree(model_dir)
         os.mkdir(model_dir)
 
+        # train a model for each training op
         dataTrain.reset_batch()
         net.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name=method, n_epochs=100, save_addr=model_dir,
                   visualiseRateTrain=10, visualiseRateVal=10, save_epochs=[50, 100])

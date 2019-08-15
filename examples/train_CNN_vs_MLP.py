@@ -11,7 +11,8 @@ sys.path.insert(0, os.path.join('..','toolbox'))
 import autoencoder
 import data
 
-
+# An example script for training an MLP (or dense) autoencoder and a convolutional autoencoder on the Pavia Uni
+# hyperspectral dataset.
 
 if __name__ == '__main__':
 

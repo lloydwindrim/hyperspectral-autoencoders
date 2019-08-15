@@ -12,6 +12,9 @@ sys.path.insert(0, os.path.join('..','toolbox'))
 import autoencoder
 import data
 
+# An example script for testing several different trained models for a given MLP (or dense) autoencoder architecture
+# using the Pavia Uni hyperspectral dataset.
+
 if __name__ == '__main__':
 
     # read data into numpy array

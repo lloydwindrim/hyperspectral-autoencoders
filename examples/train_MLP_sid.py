@@ -11,6 +11,8 @@ sys.path.insert(0, os.path.join('..','toolbox'))
 import autoencoder
 import data
 
+# An example script for training an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset, using the
+# spectral angle divergence (SID) loss function.
 
 
 if __name__ == '__main__':
