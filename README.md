@@ -89,7 +89,8 @@ And a convolutional autoencoder has mostly convolutional layers, with a fully-co
 net = autoencoder.cnn_1D_network( inputSize=hypData.numBands )
 ```
 If not using config files to set up a network, then the input size of the data must be specified. This should be the number of spectral bands. Additional aspects of the network architecture can also be specified when initialising the object. For the MLP autoencoder:
-```net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10,5], activationFunc='relu', weightInitOpt='truncated_normal', tiedWeights=[1,0,0,0], skipConnect=False, activationFuncFinal='linear')
+```
+net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10,5], activationFunc='relu', weightInitOpt='truncated_normal', tiedWeights=[1,0,0,0], skipConnect=False, activationFuncFinal='linear')
 ```
 - number of layers in the encoder (and decoder) - this is the length of the list 'encoderSize'
 - number of neurons in each layer of the encoder - these are the values in the 'encoderSize' list. The last value in the list is the number of dimensions in the latent vector.
