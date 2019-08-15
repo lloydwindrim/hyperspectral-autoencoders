@@ -30,10 +30,10 @@ class HypImg:
         self.bands = bands
 
     def pre_process( self , method ):
-        """
+        """Pre-process data for input into the network. Stores in spectraPrep.
         - input:
             method: (string)
-                - radiometric_normalisation
+                - minmax
                 -
 
         """

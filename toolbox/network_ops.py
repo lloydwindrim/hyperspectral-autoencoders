@@ -5,44 +5,78 @@ from os.path import join, exists, basename, split
 import json
 
 def create_variable(shape,method='gaussian',wd=False):
-    """ Setup a trainable variable of a particular shape.
+    """ Setup a trainable variable (collection of parameters) of a particular shape.
     - input:
-        shape: (list)
-        method: (str) initialisation
-        wd: (boolean) setup weight decay for this variable
+        shape: (list) data shape.
+        method: (str) How to initialise parameter values
+        wd: (boolean) Setup weight decay for this variable
     - output:
-        (variable):
+        (variable): Set of parameters for the given variable
     """
     return tf.Variable(init_weight(method, shape, wd=wd))
 
 
 def layer_fullyConn(input, W, b):
+    """ Define a fully connected layer operation. Also called a 'dense' layer.
+    - input:
+        input: (op) Data input into the layer. Shape [numSamples x numInputNeurons]
+        W: (variable) Weight parameters for the layer. Shape [numInputNeurons x numOutputNeurons]
+        b: (variable) Bias parameters for the layer. Shape [numOutputNeurons]
+    - output:
+        (op): computes layer output. Shape [numSamples x numOutputNeurons]
+    """
     return tf.matmul(input, W) + b
 
 def layer_conv1d(input, W, b, stride=1,padding='SAME'):
+    """ Define a 1 dimensional convolution layer operation.
+    - input:
+        input: (op) Data input into the layer. Shape [numSamples x numInputNeurons x numFiltersIn]
+        W: (variable) Weight parameters of the filters/kernels. Shape [filterSize x numFiltersIn x numFiltersOut]
+        b: (variable) Bias parameters for the layer. Shape [numFiltersOut]
+        stride: (int) Stride at which to convolve (must be >= 1)
+        padding: (str) Type of padding to use ('SAME' or 'VALID')
+    - output:
+        (op): computes layer output. Shape [numSamples x numOutputNeurons x numFiltersOut]
+    """
 
     if (padding!='SAME')&(padding!='VALID'):
         raise ValueError('unknown padding type: %s. Use SAME or VALID' % padding)
     if stride < 1:
         raise ValueError('stride must be greater than 0. Stride = %d found in conv layer.'% stride)
 
-    # input must have shape None x inputSize x 1
     return tf.nn.conv1d(input,W,stride=stride,padding=padding) + b
 
 
 def layer_deconv1d(input, W, b, outputShape, stride=1,padding='SAME'):
+    """ Define a 1 dimensional deconvolution layer operation. Also called convolutional transpose or upsampling layer.
+    - input:
+        input: (op) Data input into the layer. Shape [numSamples x numInputNeurons x numFiltersIn]
+        W: (variable) Weight parameters of the filters/kernels. Shape [filterSize x numFiltersOut x numFiltersIn]
+        b: (variable) Bias parameters for the layer. Shape [numFiltersOut]
+        outputShape: (list) Expected shape of the layer output. Shape [numSamples x numOutputNeurons x numFiltersOut]
+        stride: (int) Stride at which to convolve (must be >= 1)
+        padding: (str) Type of padding to use ('SAME' or 'VALID')
+    - output:
+        (op): computes layer output. Shape [numSamples x numOutputNeurons x numFiltersOut]
+    """
 
     if (padding!='SAME')&(padding!='VALID'):
         raise ValueError('unknown padding type: %s. Use SAME or VALID' % padding)
     if stride < 1:
         raise ValueError('stride must be greater than 0. Stride = %d found in deconv layer.'% stride)
 
-    # input must have shape None x inputSize x 1
     return tf.nn.conv1d_transpose(input,W,outputShape,strides=stride,padding=padding) + b
 
 
 
 def layer_activation(input, func='sigmoid'):
+    """ Define an activation function operation.
+    - input:
+        input: (op) Data input into the function.
+        func: (str) Type of activation function. (relu, sigmoid, linear).
+    - output:
+        (op): computes activation. Shape is same as input.
+    """
 
     if func == 'relu':
         a = tf.nn.relu(input)
@@ -56,6 +90,15 @@ def layer_activation(input, func='sigmoid'):
     return a
 
 def conv_output_shape(inputShape, filterSize, padding, stride):
+    """ Computes the expected output shape (for the convolving axis only) of a convolution layer given an input shape.
+    - input:
+        inputShape: (int) Shape of convolving axis of input data.
+        filterSize: (int) Size of filter/kernel of convolution layer.
+        stride: (int) Stride at which to convolve (must be >= 1)
+        padding: (str) Type of padding to use ('SAME' or 'VALID')
+    - output:
+        (int): Output shape of convolving axis for given layer and input shape.
+    """
     if padding=='VALID':
         outputShape = np.ceil( (inputShape - (filterSize-1))/stride )
     elif padding=='SAME':
@@ -68,16 +111,16 @@ def conv_output_shape(inputShape, filterSize, padding, stride):
 
 def train_step(loss, learning_rate=1e-3, decay_steps=None, decay_rate=None, piecewise_bounds=None, piecewise_values=None,
              method='Adam'):
-    """ Op for learning the weights of the network by optimising them to minimise the loss function. Note that the
-        default is a constant rate (no decay).
+    """ Operation for training the weights of the network by optimising them to minimise the loss function. Note that
+        the default is a constant learning rate (no decay).
     - input:
-        loss: (op) output of network loss function.
-        learning_rate: (float)
-        decay_steps: (int) epoch frequency at which to decay the learning rate.
-        decay_rate: (float) fraction at which to decay the learning rate.
-        piecewise_bounds: (int list) epoch step intervals for decaying the learning rate. Alternative to decay steps.
-        piecewise_values: (float list) rate at which to decay the learning rate at the piecewise_bounds.
-        method: (str) optimisation method.
+        loss: (op) Output of network loss function.
+        learning_rate: (float) Controls the degree to which the weights are updated during training.
+        decay_steps: (int) Epoch frequency at which to decay the learning rate.
+        decay_rate: (float) Fraction at which to decay the learning rate.
+        piecewise_bounds: (int list) Epoch step intervals for decaying the learning rate. Alternative to decay steps.
+        piecewise_values: (float list) Rate at which to decay the learning rate at the piecewise_bounds.
+        method: (str) Optimisation method. (Adam, SGD).
     - output:
         train_op (op)
     """
@@ -110,11 +153,11 @@ def train_step(loss, learning_rate=1e-3, decay_steps=None, decay_rate=None, piec
 
 
 def loss_function_reconstruction_1D(y_reconstructed,y_target,func='SSE'):
-    """ Reconstruction loss function op, comparing 1D tensors for network recontruction and target
+    """ Reconstruction loss function op, comparing 1D tensors for network reconstruction and target
     - input:
-        y_reconstructed: (tensor) output of network (reconstructed 1D vector). Shape [numSamples x inputSize]
-        y_target: (tensor) what the network is trying to reconstruct (1D vector). Shape [numSamples x inputSize]
-        func: (string) the name of the loss function to be used. 'SSE'-sum of square errors,'CSA'-cosine spectral angle,
+        y_reconstructed: (tensor) Output of network (reconstructed 1D vector). Shape [numSamples x inputSize]
+        y_target: (tensor) What the network is trying to reconstruct (1D vector). Shape [numSamples x inputSize]
+        func: (string) The name of the loss function to be used. 'SSE'-sum of square errors,'CSA'-cosine spectral angle,
             'SA'-spectral angle, 'SID'-spectral information divergence.
     - output:
         loss (op)
@@ -150,7 +193,7 @@ def loss_function_reconstruction_1D(y_reconstructed,y_target,func='SSE'):
 def loss_weight_decay(wdLambda):
     """ Weight decay loss op, regularises network by penalising parameters for being too large.
     - input:
-        wdLambda: (float) scalar to control weighting of weight decay in loss.
+        wdLambda: (float) Scalar to control weighting of weight decay in loss.
     - output:
         loss (op)
     """
@@ -159,8 +202,7 @@ def loss_weight_decay(wdLambda):
 
 
 def save_model(addr,sess,saver,current_epoch,epochs_to_save):
-    """
-    Saves a checkpoint at a list of epochs.
+    """Saves a checkpoint at a list of epochs.
     -input:
         addr: (str) address of a directory to save checkpoint for current epoch.
         sess: (obj) tensor flow session object.
@@ -175,8 +217,7 @@ def save_model(addr,sess,saver,current_epoch,epochs_to_save):
 
 
 def load_model(addr,sess):
-    """
-    Loads a model from the address of a checkpoint.
+    """Loads a model from the address of a checkpoint.
     -input:
         addr: (str) address of a directory to save checkpoint for current epoch.
         sess: (obj) tensor flow session object.
@@ -188,7 +229,12 @@ def load_model(addr,sess):
 
 
 def save_config(net_obj,addr):
-    # address is directory of where to store config.json file
+    """Saves a network config file. Saves the variables listed in net_config within the network object.
+    -input:
+        net_obj: (obj) Network object.
+        addr: (obj) Directory of where to store the config.json file
+
+    """
 
     data = {}
     for config_parameter in net_obj.net_config:
@@ -198,7 +244,13 @@ def save_config(net_obj,addr):
         json.dump(data, outfile)
 
 def load_config(net_obj,addr):
-    # addr is for config.json file
+    """Loads a network config file. Loads from variables in the config.json file and overwrites variables in network object.
+        Applies to variables in the net_config list in the network object.
+    -input:
+        net_obj: (obj) Network object.
+        addr: (obj) Directory location of config.json file
+
+    """
 
     with open(addr, 'r') as outfile:
         data = json.load(outfile)
@@ -208,15 +260,19 @@ def load_config(net_obj,addr):
 
 
 
-def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0, save_epochs=[1000] ):
-    """ Function for training a network. Updates the network weights through the training op. The function will check the save address
-        for a model checkpoint to load, otherwise it will begin training from scratch.
+def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0,
+           save_epochs=[1000] ):
+    """ Function for training a network. Updates the network weights through the training op. The function will check
+        the save address for a model checkpoint to load, otherwise it will begin training from scratch.
     - input:
+        net_obj: (obj) Network object.
         dataTrain: (obj) iterator object for training data.
         dataVal: (obj) iterator object for validation data.
         train_op_name: (string) name of training op created.
         n_epochs: (int) number of loops through dataset to train for.
-        save_addr: (str) address of a directory to save checkpoints for desired epochs, or address of saved checkpoint.
+        save_addr: (str) Address of a directory to save checkpoints for desired epochs, or address of saved
+                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the
+                        network will start training from there. Otherwise it will be trained from scratch.
         visualiseRateTrain: (int) epoch rate at which to print training loss in console.
         visualiseRateVal: (int) epoch rate at which to print validation loss in console.
         save_epochs: (int list) epochs to save checkpoints at.
@@ -255,7 +311,8 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
                 train_batch_x , train_batch_y = dataTrain.next_batch()
 
                 # update weights and biases
-                sess.run(net_obj.train_ops['%s_train'%(train_op_name)], feed_dict={net_obj.x: train_batch_x, net_obj.y_target: train_batch_y})
+                sess.run(net_obj.train_ops['%s_train'%(train_op_name)], feed_dict={net_obj.x: train_batch_x,
+                                                                                   net_obj.y_target: train_batch_y})
 
                 # training loss
                 if visualiseRateTrain > 0:
@@ -305,9 +362,16 @@ def train( net_obj , dataTrain, dataVal, train_op_name, n_epochs, save_addr, vis
 def init_weight(opts, shape, stddev=0.1, const=0.1, wd = False, dtype=tf.float32):
 
     """ Weight initialisation function.
-    See K.He, X.Zhang, S.Ren, and J.Sun.Delving deep into rectifiers: Surpassing human - level performance
-    on imagenet classification.CoRR, (arXiv:1502.01852 v1), 2015.
-    wd - whether this variable contributes to weight decay or not
+    - input:
+        opts: (str) Method for initialising variable. ('gaussian','truncated_normal','xavier','xavier_improved','constant')
+        shape: (list) Data shape.
+        stddev: (int) Standard deviation used by 'gaussian' and 'truncated_normal' variable initialisation methods
+        const: (int) Constant value to initialise variable to if using 'constant' method.
+        wd: (boolean) Whether this variable contributes to weight decay or not
+        dtype: (tf.dtype) Data type for variable.
+
+    -output:
+        weights:
     """
     if opts == 'gaussian':
         weights = tf.random_normal(shape, stddev=stddev, dtype=dtype)

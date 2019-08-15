@@ -164,7 +164,9 @@ class mlp_1D_network():
             dataVal: (obj) Iterator object for validation data.
             train_op_name: (str) Name of training op created.
             n_epochs: (int) Number of loops through dataset to train for.
-            save_addr: (str) Address of a directory to save checkpoints for desired epochs.
+            save_addr: (str) Address of a directory to save checkpoints for desired epochs, or address of saved
+                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the
+                        network will start training from there. Otherwise it will be trained from scratch.
             visualiseRateTrain: (int) Epoch rate at which to print training loss in console
             visualiseRateVal: (int) Epoch rate at which to print validation loss in console
             save_epochs: (int list) Epochs to save checkpoints at.
@@ -457,14 +459,16 @@ class cnn_1D_network():
               save_epochs=[1000]):
         """ Calls network_ops function to train a network.
         - input:
-            dataTrain: (obj) iterator object for training data.
-            dataVal: (obj) iterator object for validation data.
-            train_op_name: (string) name of training op created.
-            n_epochs: (int) number of loops through dataset to train for.
-            save_addr: (str) address of a directory to save checkpoints for desired epochs.
-            visualiseRateTrain: (int) epoch rate at which to print training loss in console
-            visualiseRateVal: (int) epoch rate at which to print validation loss in console
-            save_epochs: (int list) epochs to save checkpoints at.
+            dataTrain: (obj) Iterator object for training data.
+            dataVal: (obj) Iterator object for validation data.
+            train_op_name: (string) Name of training op created.
+            n_epochs: (int) Number of loops through dataset to train for.
+            save_addr: (str) Address of a directory to save checkpoints for desired epochs, or address of saved
+                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the
+                        network will start training from there. Otherwise it will be trained from scratch.
+            visualiseRateTrain: (int) Epoch rate at which to print training loss in console
+            visualiseRateVal: (int) Epoch rate at which to print validation loss in console
+            save_epochs: (int list) Epochs to save checkpoints at.
         """
 
         net_ops.train( self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain, visualiseRateVal, save_epochs )
