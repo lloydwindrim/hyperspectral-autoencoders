@@ -207,7 +207,7 @@ _test_CNN_vs_MLP.py
 ```
 
 
-### Related publications
+## Related publications
 
 Some links to publications on deep learning for hyperspectral data:
 
