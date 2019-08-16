@@ -12,7 +12,8 @@ import autoencoder
 import data
 
 # An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset, using the
-# spectral angle divergence (SID) loss function.
+# spectral angle divergence (SID) loss function. Saves a figure of the latent space for each (plotting the two features
+# with the highest variance).
 
 if __name__ == '__main__':
 
@@ -58,5 +59,7 @@ if __name__ == '__main__':
         ax.scatter(dataZ[gt == i+1, idx[0]], dataZ[gt == i+1, idx[1]], c='C%i'%i,s=5,label=gt_class)
     ax.legend()
     plt.title('latent representation: sid')
+    plt.xlabel('latent feature %i' % (idx[0]))
+    plt.ylabel('latent feature %i' % (idx[1]))
     plt.savefig(os.path.join('results', 'test_mlp_scatter_sid.png'))
 

@@ -2,7 +2,7 @@ import scipy.io
 import urllib
 import os
 import shutil
-from utils import reporthook,set_random_seed
+from utils import reporthook
 
 
 # import toolbox libraries

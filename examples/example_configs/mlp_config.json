@@ -1,0 +1,1 @@
+{"skipConnect": false, "inputSize": 103, "encodersize": [50, 30, 3], "activationFunc": "sigmoid", "weightStd": 0.1, "activationFuncFinal": "linear", "weightInitOpt": "truncated_normal", "tiedWeights": [0, 0, 0]}

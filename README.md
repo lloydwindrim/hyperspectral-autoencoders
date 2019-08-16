@@ -34,7 +34,7 @@ to test the autoencoder that was just trained, and generate some images of the l
 ## Usage
 
 The toolbox compresses several key processes:
-- data preparation
+- [data preparation](#data-preparation)
 - data iterator
 - building networks
 - adding train operations
@@ -137,6 +137,8 @@ There are several loss functions that can be used, many of which were designed s
 - [spectral information divergence (SID)](https://www.mdpi.com/2072-4292/11/7/864)
 - [sum-of-squared errors (SSE)](https://www.mdpi.com/2072-4292/11/7/864)
 
+Note that when using the CSA, SA and SID loss functions it is expected that the reconstructed spectra have a different magnitude to the target spectra, but a similar shape. The SSE should produce a similar magnitude and shape. Also, since the SID contains *log* in its expression which is undefined for values *<= 0*, it is best to use sigmoid as the activation function (including the final activation function) for networks trained with the SID loss. See train_MLP_sid.py for an example.
+
 The method of decaying the learning rate can also be customised. For example, to decay exponentially every 100 steps:
 ```
 net.add_train_op( name='experiment_1',learning_rate=1e-3, decay_steps=100, decay_rate=0.9 )
@@ -187,3 +189,29 @@ It is also possible to encode and decode in one step with:
 ```
 dataY = net.encoder_decoder(modelName='csa_100', dataZ=hypData.spectraPrep)
 ```
+
+## Results
+
+An example of a latent space for the Pavia University dataset, produced with a MLP autoencoder trained using the cosine spectral angle (CSA):
+
+![Alt text](images/mlp_latent_space.png?raw=true "MLP latent space")
+
+And an example of a latent space for the Pavia University dataset, produced with a convolutional autoencoder trained using the cosine spectral angle (CSA):
+
+![Alt text](images/cnn_latent_space.png?raw=true "CNN latent space")
+
+Both figures were made running the scripts:
+```
+train_CNN_vs_MLP.py
+_test_CNN_vs_MLP.py
+```
+
+
+### Related publications
+
+Some links to publications on deep learning for hyperspectral data:
+
+- autoencoders: [ICIP 2016](https://ieeexplore.ieee.org/abstract/document/7533202), [TIP 2017](https://ieeexplore.ieee.org/abstract/document/8063434), [Remote Sensing 2019](https://www.mdpi.com/2072-4292/11/7/864)
+- CNNs for classification using data augmentation: [BMVC 2017](https://www.researchgate.net/publication/332818169_Hyperspectral_CNN_Classification_with_Limited_Training_Samples)
+- pre-training CNNs: [TGRS 2018](https://ieeexplore.ieee.org/abstract/document/8245897)
+- [PhD thesis](https://ses.library.usyd.edu.au/handle/2123/18734)

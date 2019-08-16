@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.join('..','toolbox'))
 import autoencoder
 import data
 
-# An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset.
+# An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Saves a
+# figure of the latent vector for a 'meadow' spectral sample and the reconstruction.
 
 if __name__ == '__main__':
 

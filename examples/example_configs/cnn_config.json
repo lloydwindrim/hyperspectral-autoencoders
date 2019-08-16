@@ -1,0 +1,1 @@
+{"padding": "VALID", "skipConnect": false, "inputSize": 103, "weightInitOpt": "truncated_normal", "weightStd": 0.1, "zDim": 3, "encoderStride": [1, 1, 1], "encoderFiltersize": [20, 10, 10], "activationFuncFinal": "linear", "encoderNumfilters": [10, 10, 10], "activationFunc": "relu", "tiedWeights": [0, 0, 0]}

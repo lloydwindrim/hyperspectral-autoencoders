@@ -13,7 +13,8 @@ import autoencoder
 import data
 
 # An example script for testing a trained MLP (or dense) autoencoder and convolutional autoencoder model on the Pavia Uni
-# hyperspectral dataset.
+# hyperspectral dataset. Saves a figure of the latent space for each (plotting the two features with the highest variance).
+# Also saves a figure comparing the different reconstructions.
 
 if __name__ == '__main__':
 
@@ -69,6 +70,8 @@ if __name__ == '__main__':
         for i,gt_class in enumerate(['asphault', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']):
             ax.scatter(dataZ[gt == i+1, idx[0]], dataZ[gt == i+1, idx[1]], c='C%i'%i,s=5,label=gt_class)
         ax.legend()
+        plt.xlabel('latent feature %i'%(idx[0]))
+        plt.ylabel('latent feature %i' % (idx[1]))
         plt.title('latent representation: %s'%(method[j]))
         plt.savefig(os.path.join('results', 'test_comparison_%s.png'%(method[j])))
 
