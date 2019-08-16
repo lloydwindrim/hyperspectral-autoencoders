@@ -51,6 +51,7 @@ if __name__ == '__main__':
     #--------- visualisation ----------------------------------------
 
     # download dataset ground truth pixel labels (if already downloaded, comment this out)
+    # Use urllib.request.urlretrieve for python3
     urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
                        os.path.join(os.getcwd(), 'PaviaU_gt.mat'), reporthook )
 

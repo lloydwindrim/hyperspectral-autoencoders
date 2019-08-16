@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
 
     # download dataset (if already downloaded, comment this out)
+    # Use urllib.request.urlretrieve for python3
     urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat', os.path.join(os.getcwd(),'PaviaU.mat'), reporthook )
 
     # read data into numpy array
