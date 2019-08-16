@@ -1,6 +1,5 @@
 import sys
 import time
-import tensorflow as tf
 
 
 def reporthook(count, block_size, total_size):
@@ -23,8 +22,3 @@ def reporthook(count, block_size, total_size):
     sys.stdout.flush()
 
 
-
-
-def set_random_seed(seed=0):
-
-    tf.set_random_seed(seed)

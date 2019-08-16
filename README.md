@@ -39,18 +39,19 @@ The toolbox compresses several key processes:
 - building networks
 - adding train operations
 - training networks
+- loading a trained network
 
 Each of these are elaborated on below:
 
 ### Data preparation
 
-A class within the toolbox from the data module called HypImg handles the dataset. The class accepts the hyperspectral data  in numy format, with shape [numRows x numCols x numBands] or [numSamples x numBands]. 
+A class within the toolbox from the data module called HypImg handles the dataset. The class accepts the hyperspectral data  in numy format, with shape [numRows x numCols x numBands] or [numSamples x numBands]. The networks in the toolbox operate in the spectral domain, not the spatial, so if an image is input with shape [numRows x numCols x numBands], it is reshaped to [numSamples x numBands], collapsing the saptial dimensions into one.
 
 ```
 import data
 hypData = data.HypImg( img )
 ```
-Then the data can be pre-processed using a function of the HypImg class. For example, using the 'minmax' method:
+Then the data can be pre-processed using a function of the HypImg class. For example, using the 'minmax' approach:
 ```
 hypData.pre_process( 'minmax' )
 ```
@@ -65,13 +66,11 @@ Some hyperspectral datasets in a matlab file format (.mat) can be downloaded fro
 
 The Iterator class within the data module has methods for calling batches from the data that are used to train the network. A separate iterator object is made for the training and validation data. For example, an iterator object made from 100 pre-processed hyperspectral training samples with a batchsize of 10 is defined as:
 ```
-dataTrain = data.Iterator( dataSamples=hypData.spectraPrep[:100, :],
-targets=hypData.spectraPrep[:100, :], batchSize=10 )
+dataTrain = data.Iterator( dataSamples=hypData.spectraPrep[:100, :], targets=hypData.spectraPrep[:100, :], batchSize=10 )
 ```
 For a typical autoencoder, the targets that the network is learning to output are the same as the data samples being input into the network. Similarly, an iterator object made from 20 validation samples is defined as:
 ```
-dataVal = data.Iterator( dataSamples=hypData.spectraPrep[100:120, :],
-targets=hypData.spectraPrep[100:120, :] )
+dataVal = data.Iterator( dataSamples=hypData.spectraPrep[100:120, :], targets=hypData.spectraPrep[100:120, :] )
 ```
 Because the batchsize is unspecified, all 20 samples are used for the batch. The data in an iterator can also be shuffled before it is used to train a network:
 ```
@@ -92,25 +91,19 @@ If not using config files to set up a network, then the input size of the data m
 
 Additional aspects of the network architecture can also be specified when initialising the object. For the MLP autoencoder:
 ```
-net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10,5],
-activationFunc='relu', weightInitOpt='truncated_normal', tiedWeights=[1,0,0,0],
-skipConnect=False, activationFuncFinal='linear')
+net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10,5], activationFunc='relu', weightInitOpt='truncated_normal', tiedWeights=[1,0,0,0], skipConnect=False, activationFuncFinal='linear')
 ```
 - number of layers in the encoder (and decoder) - this is the length of the list 'encoderSize'
 - number of neurons in each layer of the encoder - these are the values in the 'encoderSize' list. The last value in the list is the number of dimensions in the latent vector.
 - the activation function which proceeds each layer and the function for the final decoder layer - activationFunc and activationFuncFinal
-- the method of initialising network parameters - weightInitOpt
+- the method of initialising network parameters (e.g. xavier improved) - weightInitOpt
 - which layers of the encoder to tie  to the decoder, such that they share a set of parameters - these are the values in the list 'tiedWeights'
 - whether the network uses skip connections between corresponding layers in the encoder and decoder - specified by the boolean argument skipConnect
 
 
 The convolutional autoencoder has similar arguments for defining the network architecture, but without 'encoderSize' and with some additional arguments:
 ```
-net = autoencoder.cnn_1D_network( inputSize=hypData.numBands, zDim=3,
-encoderNumFilters=[10,10,10], encoderFilterSize=[20,10,10], 
-activationFunc='relu', weightInitOpt='truncated_normal', 
-encoderStride=[1, 1, 1], padding='VALID', tiedWeights=[1,0,0,], 
-skipConnect=False, activationFuncFinal='linear' )
+net = autoencoder.cnn_1D_network( inputSize=hypData.numBands, zDim=3, encoderNumFilters=[10,10,10], encoderFilterSize=[20,10,10],  activationFunc='relu', weightInitOpt='truncated_normal',  encoderStride=[1, 1, 1], padding='VALID', tiedWeights=[1,0,0,],  skipConnect=False, activationFuncFinal='linear' )
 ```
 - number of layers in the encoder (and decoder) - this is the length of the list 'encodernumFilters'
 - number of filters/kernels in each conv layer - these are the values in the 'encodernumFilters' list
@@ -122,19 +115,75 @@ skipConnect=False, activationFuncFinal='linear' )
 
 Alternatively to defining the architecture by the initialisation arguments, a config.json file can be used:
 ```
-mlp = autoencoder.mlp_1D_network( configFile='config.json') )
+net = autoencoder.mlp_1D_network( configFile='config.json') )
 ```
 Some example config files can be found in examples/example_configs.
 
 
 
+### Adding training operations
 
+Once a network has been created, a training operation can be added to it. It is possible to add multiple training operations to a network, so each op must be given a name:
+```
+net.add_train_op( name='experiment_1' )
+```
+When adding a train op, details about how the network will be trained with that op can be specified. For example, a train op which uses the cosine spectral angle (CSA) loss function, a learning rate of 0.001 with no decay, optimised with Adam and no weight decay can be defined by:
+```
+net.add_train_op( name='experiment_1', lossFunc='CSA', learning_rate=1e-3, decay_steps=None, decay_rate=None, method='Adam', wd_lambda=0.0 )
+```
+There are several loss functions that can be used, many of which were designed specifically for hyperspectral data:
+- [cosine spectral angle (CSA)](https://ieeexplore.ieee.org/abstract/document/7533202)
+- [spectral angle (SA)](https://www.mdpi.com/2072-4292/11/7/864)
+- [spectral information divergence (SID)](https://www.mdpi.com/2072-4292/11/7/864)
+- [sum-of-squared errors (SSE)](https://www.mdpi.com/2072-4292/11/7/864)
 
+The method of decaying the learning rate can also be customised. For example, to decay exponentially every 100 steps:
+```
+net.add_train_op( name='experiment_1',learning_rate=1e-3, decay_steps=100, decay_rate=0.9 )
+```
+A piecewise approach of decaying the learning rate can also be used. For example, to change the learning rate from 0.001 to 0.0001 after 100 steps, and then to 0.00001 after a further 200 steps:
+```
+net.add_train_op( name='experiment_1',learning_rate=1e-3, piecewise_bounds=[100,300], piecewise_values=[1e-4,1e-5] )
+```
 
+### Training networks
 
+Once one or multiple training ops have been added to a network, they can be used to learn a model (or multiple models) for that network through training:
+```
+net.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name='experiment_1', n_epochs=100, save_addr=model_directory, visualiseRateTrain=5, visualiseRateVal=10, save_epochs=[50,100])
+```
+The train method learns a model using one train op, therefore the train method should be called at least once for each train op that was added. The name of the train op must be specified, and the training and validation iterators created previously must be input. A path to a directory to save the model must also be specified. The example above will train a network for 100 epochs of the training dataset, and save the model at 50 and 100 epochs. The training loss will be displayed every 5 epochs, and the validation loss will be displayed every 10 epochs.
 
+It is also possible to load a pre-trained model and continue to train it by passing the address of epoch folder containing the model checkpoint as the save_addr argument. For example, if the directory for the model at epoch 50 (epoch_50 folder) was passed to save_addr in the example above, then the model would be trained for an additional 50 epochs to reach 100, and it would be saved in a folder called epoch_100 in the same directory as the epoch_50 folder.
 
+### Loading a trained network
 
+To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:
 
+```
+import data
+hypData = data.HypImg( new_img )
+hypData.pre_process( 'minmax' )
+```
+Then set up the network. The network architecture must be the same as the one used for the model being loaded. However, this is easy as the directory where models are saved should contain an automatically generated config.json file, which can be used to set up the network with the same architecture:
+```
+net = autoencoder.mlp_1D_network( configFile='model_directory/config.json' )
+```
+Once the architecture has been defined, add a model to the network:
+```
+net.add_model( addr='model_directory/epoch_100'), modelName='csa_100' )
+```
+Because multiple models can be added to a single network, the added model must be given a name.
 
-
+When the network is set up and a model has been added, hyperspectral data can be passed through it. To extract the latent vectors of some spectra:
+```
+dataZ = net.encoder( modelName='csa_100', dataSamples=hypData.spectraPrep )
+```
+Make sure to refer to the name of the model the network should use. The encoded hyperspectral (dataZ) data can also be decoded to get the reconstruction:
+```
+dataY = net.decoder(modelName='csa_100', dataZ=dataZ)
+```
+It is also possible to encode and decode in one step with:
+```
+dataY = net.encoder_decoder(modelName='csa_100', dataZ=hypData.spectraPrep)
+```

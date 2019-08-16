@@ -16,8 +16,6 @@ import data
 if __name__ == '__main__':
 
 
-    #set_random_seed(seed=0)
-
     # download dataset (if already downloaded, comment this out)
     urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat', os.path.join(os.getcwd(),'PaviaU.mat'), reporthook )
 
