@@ -405,7 +405,7 @@ class cnn_1D_network():
                 self.h['h%d' % (len( self.decoderNumFilters ) - 1)] , [-1,self.encoderDataShape[layerNum]] )
         self.a['a%d' % (layerNum+2)] = net_ops.layer_activation(self.h['h%d' % (layerNum+2)], self.activationFunc)
         self.a['a%d' % (layerNum + 2)] = tf.reshape(
-            self.a['a%d' % (layerNum + 2)], [-1,self.decoderDataShape[1]/self.encoderNumFilters[-1],self.encoderNumFilters[-1]] )
+            self.a['a%d' % (layerNum + 2)], [-1,int(self.decoderDataShape[1]/self.encoderNumFilters[-1]),self.encoderNumFilters[-1]] )
         for layerNum in range( 1 , len( self.decoderNumFilters ) ):
             absLayerNum = len( self.encoderDataShape ) + layerNum
             outputShape = [tf.shape(self.a['a%d' % (absLayerNum-1)] )[0],

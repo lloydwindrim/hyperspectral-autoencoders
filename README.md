@@ -14,14 +14,14 @@ If you use the spectral angle (SA) or spectral information divergence (SID) loss
 
 ## Prerequisites
 
-The software dependencies needed to run the toolbox are python 2.7 (tested with version 2.7.15) with packages:
+The software dependencies needed to run the toolbox are python 2 or python 3 (tested with version 2.7.15 and 3.5.2) with packages:
 * tensorflow (working with v1.14.0)
 * numpy (working with v1.15.4)
 
-Each of these packages can be installed using [pip](https://pypi.org/project/pip/). The example scripts use some additional packages such as scipy and matplotlib. 
+Each of these packages can be installed using [pip](https://pypi.org/project/pip/). The example scripts use some additional packages such as scipy (tested with v1.3.1) and matplotlib (tested with v3.0.3).
 
 ## Quickstart
-To start training an autoencoder right away, run the example script:
+To start training an autoencoder right away, move to the /examples directory run the example script:
 ```
 train_MLP_basic.py
 ```
