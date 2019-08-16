@@ -35,11 +35,11 @@ to test the autoencoder that was just trained, and generate some images of the l
 
 The toolbox compresses several key processes:
 - [data preparation](#data-preparation)
-- data iterator
-- building networks
-- adding train operations
-- training networks
-- loading a trained network
+- [data iterator](#data-iterator)
+- [building networks](#building-networks)
+- [adding train operations](#adding-training-operations)
+- [training networks](#training-networks)
+- [loading a trained network](#loading-a-trained-network)
 
 Each of these are elaborated on below:
 
