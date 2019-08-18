@@ -79,7 +79,11 @@ dataTrain.shuffle()
 
 ### Building networks
 
-The autoencoder module has classes used for creating autoencoder neural networks. There are currently two type of autoencoders that can be set up. An MLP autoencoder has purely fully-connected  (i.e. dense) layers:
+The autoencoder module has classes used for creating autoencoder neural networks:
+```
+import autoencoder
+```
+There are currently two type of autoencoders that can be set up. An MLP autoencoder has purely fully-connected  (i.e. dense) layers:
 ```
 net = autoencoder.mlp_1D_network( inputSize=hypData.numBands )
 ```
