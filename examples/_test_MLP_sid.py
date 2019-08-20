@@ -1,3 +1,15 @@
+'''
+    File name: _test_MLP_sid.py
+    Author: Lloyd Windrim
+    Date created: August 2019
+    Python package: deephyp
+
+    Description: An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral
+    dataset, using the spectral angle divergence (SID) loss function. Saves a figure of the latent space for each
+    (plotting the two features with the highest variance).
+
+'''
+
 import scipy.io
 import matplotlib.pyplot as plt
 import os
@@ -7,13 +19,10 @@ from utils import reporthook
 
 # import toolbox libraries
 import sys
-sys.path.insert(0, os.path.join('..','toolbox'))
-import autoencoder
-import data
+sys.path.insert(0, '..')
+from deephyp import autoencoder
+from deephyp import data
 
-# An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset, using the
-# spectral angle divergence (SID) loss function. Saves a figure of the latent space for each (plotting the two features
-# with the highest variance).
 
 if __name__ == '__main__':
 

@@ -1,3 +1,14 @@
+'''
+    File name: _test_MLP_basic.py
+    Author: Lloyd Windrim
+    Date created: August 2019
+    Python package: deephyp
+
+    Description: An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral
+    dataset. Saves a figure of the latent vector for a 'meadow' spectral sample and the reconstruction.
+
+'''
+
 import scipy.io
 import matplotlib.pyplot as plt
 import os
@@ -6,12 +17,11 @@ import numpy as np
 
 # import toolbox libraries
 import sys
-sys.path.insert(0, os.path.join('..','toolbox'))
-import autoencoder
-import data
+sys.path.insert(0, '..')
+from deephyp import autoencoder
+from deephyp import data
 
-# An example script for testing a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Saves a
-# figure of the latent vector for a 'meadow' spectral sample and the reconstruction.
+
 
 if __name__ == '__main__':
 

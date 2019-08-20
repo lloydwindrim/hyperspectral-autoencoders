@@ -1,3 +1,14 @@
+'''
+    File name: data.py
+    Author: Lloyd Windrim
+    Date created: June 2019
+    Python package: deephyp
+
+    Description: high-level classes for using hyperspectral data with the deep learning modules.
+
+'''
+
+
 import numpy as np
 
 

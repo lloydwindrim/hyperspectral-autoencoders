@@ -1,3 +1,14 @@
+'''
+    File name: network_ops.py
+    Author: Lloyd Windrim
+    Date created: June 2019
+    Python package: deephyp
+
+    Description: various functions for deep learning built on-top of tensorflow. The high-level modules in the package
+    call these functions.
+
+'''
+
 import tensorflow as tf
 import math
 import numpy as np

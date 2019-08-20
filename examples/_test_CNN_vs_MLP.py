@@ -1,3 +1,15 @@
+'''
+    File name: _test_CNN_vs_MLP.py
+    Author: Lloyd Windrim
+    Date created: August 2019
+    Python package: deephyp
+
+    Description: An example script for testing a trained MLP (or dense) autoencoder and convolutional autoencoder model
+    on the Pavia Uni hyperspectral dataset. Saves a figure of the latent space for each (plotting the two features with
+    the highest variance). Also saves a figure comparing the different reconstructions.
+
+'''
+
 import scipy.io
 import matplotlib.pyplot as plt
 import os
@@ -8,13 +20,10 @@ from utils import reporthook
 
 # import toolbox libraries
 import sys
-sys.path.insert(0, os.path.join('..','toolbox'))
-import autoencoder
-import data
+sys.path.insert(0, '..')
+from deephyp import autoencoder
+from deephyp import data
 
-# An example script for testing a trained MLP (or dense) autoencoder and convolutional autoencoder model on the Pavia Uni
-# hyperspectral dataset. Saves a figure of the latent space for each (plotting the two features with the highest variance).
-# Also saves a figure comparing the different reconstructions.
 
 if __name__ == '__main__':
 

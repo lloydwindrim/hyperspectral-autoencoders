@@ -1,15 +1,16 @@
 # hyperspectral-autoencoders
 Tools for training and using unsupervised autoencoders for hyperspectral data. 
 
-Autoencoders are unsupervised neural networks that are useful for a range of applications such as unsupervised feature learning and dimensionality reduction. This repository provides a python-based toolbox with examples for building, training and testing both dense and convolutional autoencoders, designed for hyperspectral data. Networks are easy to setup and can be customised with different architectures. Different methods of training can also be implemented. It is built on tensorflow. 
+Autoencoders are unsupervised neural networks that are useful for a range of applications such as unsupervised feature learning and dimensionality reduction. This repository provides a python-based toolbox called **deephyp**, with examples for building, training and testing both dense and convolutional autoencoders, designed for hyperspectral data. Networks are easy to setup and can be customised with different architectures. Different methods of training can also be implemented. It is built on tensorflow. 
 
 ![Alt text](images/diagram.png?raw=true "Hyperspectral Autoencoder")
 
+If you use the toolbox in your research, please cite:
+[Windrim et al. **Unsupervised Feature-Learning for Hyperspectral Data with Autoencoders.** Remote Sensing 11.7 (2019): 864.](https://www.mdpi.com/2072-4292/11/7/864)
+This paper explains the spectral angle (SA), spectral information divergence (SID) and sum-of-squared errors (SSE) loss functions for training autoencoders.
+
 If you use the cosine spectral angle (CSA) loss function in your research, please cite: 
 [Windrim et al. **Unsupervised feature learning for illumination robustness.** 2016 IEEE International Conference on Image Processing (ICIP).](https://ieeexplore.ieee.org/abstract/document/7533202)
-
-If you use the spectral angle (SA) or spectral information divergence (SID) loss function in your research, please cite:
-[Windrim et al. **Unsupervised Feature-Learning for Hyperspectral Data with Autoencoders.** Remote Sensing 11.7 (2019): 864.](https://www.mdpi.com/2072-4292/11/7/864)
 
 
 ## Prerequisites
@@ -33,7 +34,7 @@ to test the autoencoder that was just trained, and generate some images of the l
 
 ## Usage
 
-The toolbox compresses several key processes:
+The toolbox comprises several key processes:
 - [data preparation](#data-preparation)
 - [data iterator](#data-iterator)
 - [building networks](#building-networks)
@@ -48,7 +49,7 @@ Each of these are elaborated on below:
 A class within the toolbox from the data module called HypImg handles the dataset. The class accepts the hyperspectral data  in numy format, with shape [numRows x numCols x numBands] or [numSamples x numBands]. The networks in the toolbox operate in the spectral domain, not the spatial, so if an image is input with shape [numRows x numCols x numBands], it is reshaped to [numSamples x numBands], collapsing the saptial dimensions into one.
 
 ```
-import data
+from deephyp import data
 hypData = data.HypImg( img )
 ```
 Then the data can be pre-processed using a function of the HypImg class. For example, using the 'minmax' approach:
@@ -81,7 +82,7 @@ dataTrain.shuffle()
 
 The autoencoder module has classes used for creating autoencoder neural networks:
 ```
-import autoencoder
+from deephyp import autoencoder
 ```
 There are currently two type of autoencoders that can be set up. An MLP autoencoder has purely fully-connected  (i.e. dense) layers:
 ```

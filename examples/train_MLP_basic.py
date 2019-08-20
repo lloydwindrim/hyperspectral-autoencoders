@@ -1,3 +1,13 @@
+'''
+    File name: train_MLP_basic.py
+    Author: Lloyd Windrim
+    Date created: August 2019
+    Python package: deephyp
+
+    Description: An example script for training an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset.
+
+'''
+
 import scipy.io
 import urllib
 import os
@@ -7,11 +17,10 @@ from utils import reporthook
 
 # import toolbox libraries
 import sys
-sys.path.insert(0, os.path.join('..','toolbox'))
-import autoencoder
-import data
+sys.path.insert(0, '..')
+from deephyp import autoencoder
+from deephyp import data
 
-# An example script for training an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset.
 
 if __name__ == '__main__':
 

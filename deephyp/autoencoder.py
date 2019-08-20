@@ -1,7 +1,16 @@
+'''
+    File name: autoencoder.py
+    Author: Lloyd Windrim
+    Date created: June 2019
+    Python package: deephyp
+
+    Description: high-level deep learning classes for building, training and using unsupervised autoencoders. Uses
+    functions from the low-level network_ops module.
+
+'''
+
 import tensorflow as tf
 import network_ops as net_ops
-
-
 
 
 class mlp_1D_network():

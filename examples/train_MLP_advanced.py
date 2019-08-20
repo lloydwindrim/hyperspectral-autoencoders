@@ -1,3 +1,15 @@
+'''
+    File name: train_MLP_advanced.py
+    Author: Lloyd Windrim
+    Date created: August 2019
+    Python package: deephyp
+
+    Description: An example script for training several different models for a given MLP (or dense) autoencoder
+    architecture using the Pavia Uni hyperspectral dataset. Each model is trained with a different loss function.
+
+'''
+
+
 import scipy.io
 import urllib
 import os
@@ -7,12 +19,10 @@ from utils import reporthook
 
 # import toolbox libraries
 import sys
-sys.path.insert(0, os.path.join('..','toolbox'))
-import autoencoder
-import data
+sys.path.insert(0, '..')
+from deephyp import autoencoder
+from deephyp import data
 
-# An example script for training several different models for a given MLP (or dense) autoencoder architecture using the
-# Pavia Uni hyperspectral dataset. Each model is trained with a different loss function.
 
 if __name__ == '__main__':
 

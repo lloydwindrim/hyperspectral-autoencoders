@@ -1,3 +1,14 @@
+'''
+    File name: train_MLP_sid.py
+    Author: Lloyd Windrim
+    Date created: August 2019
+    Python package: deephyp
+
+    Description: An example script for training an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset,
+    using the spectral angle divergence (SID) loss function.
+
+'''
+
 import scipy.io
 import urllib
 import os
@@ -7,12 +18,9 @@ from utils import reporthook
 
 # import toolbox libraries
 import sys
-sys.path.insert(0, os.path.join('..','toolbox'))
-import autoencoder
-import data
-
-# An example script for training an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset, using the
-# spectral angle divergence (SID) loss function.
+sys.path.insert(0, '..')
+from deephyp import autoencoder
+from deephyp import data
 
 
 if __name__ == '__main__':
