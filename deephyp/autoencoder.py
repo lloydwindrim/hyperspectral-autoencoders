@@ -57,8 +57,8 @@ class mlp_1D_network():
         self.encoderSize = [self.inputSize] + self.encodersize
         self.decoderSize = self.encoderSize[::-1]
 
-        self.x = tf.placeholder("float", [None, inputSize])
-        self.y_target = tf.placeholder("float", [None, inputSize])
+        self.x = tf.placeholder("float", [None, self.inputSize])
+        self.y_target = tf.placeholder("float", [None, self.inputSize])
 
         self.weights = { }
         self.biases = { }
