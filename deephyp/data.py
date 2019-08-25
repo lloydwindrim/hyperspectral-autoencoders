@@ -15,13 +15,15 @@ import numpy as np
 class HypImg:
 
 
-    def __init__( self , spectralInput , wavelengths=None, bands=None ):
-        """ Class for handling data.
+    def __init__( self , spectralInput , wavelengths=None, bands=None, labels=None ):
+        """ Class for handling data. If passed labels, it assumes a background class (0) is present. This class is not
+            included in numClasses and data samples with this label have a one-hot vector label of all zeros.
         - input:
             dataInput: (array) Spectral value at each band.
                         Shape can be [numRows x numCols x numBands] or [numSamples x numBands].
-            wavelengths: (numpy array) Wavelengths spanning those of spectralInput
-            bands: (array) Wavelength indexes for each band of spectralInput. Must have size numBands.
+            wavelengths: (numpy array) Wavelengths spanning those of spectralInput [numBands]
+            bands: (array) Wavelength indexes for each band of spectralInput. [numBands].
+            labels: (array) class labels for each sample. [numRows x numCols] or [numSamples]
         """
 
         # if input is of shape [numRows x numCols x numBands], convert to [numSamples x numBands]
@@ -36,6 +38,25 @@ class HypImg:
             self.numCols = None
             self.spectra = spectralInput.astype(np.float)
             self.spectraCube = None
+
+        # if labels provided, determine number of classes and one-hot labels
+        if labels is not None:
+            if len(labels.shape) == 2:
+                self.labels = np.reshape(labels, -1)
+            else:
+                self.labels = labels
+            self.numClasses = len( np.unique(self.labels)[np.unique(self.labels)>0] )
+
+            # create one-hot labels for classes > 0
+            self.labelsOnehot = np.zeros((self.numSamples, self.numClasses))
+            self.labelsOnehot[np.arange(self.numSamples)[self.labels>0], (self.labels-1)[self.labels>0]] = 1
+
+            self.labels = self.labels[:,np.newaxis]
+        else:
+            self.labels = None
+            self.labelsOnehot = None
+            self.numClasses = None
+
 
         self.wavelengths = wavelengths
         self.bands = bands
@@ -52,6 +73,7 @@ class HypImg:
             # scales each spectra to be between [0 1] (lower bound is actually a small non-zero number)
             self.spectraPrep = self.spectra - np.transpose(np.tile(np.min(self.spectra,axis=1)-(1e-3),(self.numBands,1)))
             self.spectraPrep = self.spectraPrep / np.transpose(np.tile(np.max(self.spectra, axis=1), (self.numBands, 1)))
+
 
 
 class Iterator:

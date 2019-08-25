@@ -1,5 +1,5 @@
 '''
-    File name: train_CNN_vs_MLP.py
+    File name: autoencoder_train_CNN_vs_MLP.py
     Author: Lloyd Windrim
     Date created: August 2019
     Python package: deephyp

@@ -1,12 +1,14 @@
 '''
-    File name: train_MLP_basic.py
+    File name: autoencoder_train_MLP_advanced.py
     Author: Lloyd Windrim
     Date created: August 2019
     Python package: deephyp
 
-    Description: An example script for training an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset.
+    Description: An example script for training several different models for a given MLP (or dense) autoencoder
+    architecture using the Pavia Uni hyperspectral dataset. Each model is trained with a different loss function.
 
 '''
+
 
 import scipy.io
 import urllib
@@ -24,10 +26,8 @@ from deephyp import data
 
 if __name__ == '__main__':
 
-
     # download dataset (if already downloaded, comment this out)
-    # Use urllib.request.urlretrieve for python3
-    urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat', os.path.join(os.getcwd(),'PaviaU.mat'), reporthook )
+    #urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat', os.path.join(os.getcwd(),'PaviaU.mat'), reporthook )
 
     # read data into numpy array
     mat = scipy.io.loadmat( 'PaviaU.mat' )
@@ -51,21 +51,32 @@ if __name__ == '__main__':
     dataTrain.shuffle()
 
     # setup a fully-connected autoencoder neural network with 3 encoder layers
-    net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10], activationFunc='relu',
+    net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10,3], activationFunc='relu',
                                       weightInitOpt='truncated_normal', tiedWeights=None, skipConnect=False )
 
-    # setup a training operation for the network
+    # setup multiple training operations for the network (with different loss functions)
+    net.add_train_op(name='sse', lossFunc='SSE', learning_rate=1e-3, decay_steps=None, decay_rate=None,
+                     method='Adam', wd_lambda=0.0)
+
     net.add_train_op( name='csa', lossFunc='CSA', learning_rate=1e-3, decay_steps=None, decay_rate=None,
                       method='Adam', wd_lambda=0.0 )
 
-    # create a directory to save the learnt model
-    model_dir = os.path.join('models','test_mlp')
-    if os.path.exists(model_dir):
-        # if directory already exists, delete it
-        shutil.rmtree(model_dir)
-    os.mkdir(model_dir)
+    net.add_train_op(name='sa', lossFunc='SA', learning_rate=1e-3, decay_steps=None, decay_rate=None,
+                     method='Adam', wd_lambda=0.0)
 
-    # train the network for 100 epochs, saving the model at epoch 50 and 100
-    net.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name='csa', n_epochs=100, save_addr=model_dir,
-              visualiseRateTrain=10, visualiseRateVal=10, save_epochs=[50,100])
+
+    # create directories to save the learnt models
+    for method in ['sse','csa','sa']:
+        model_dir = os.path.join('models','test_mlp_adv_%s'%(method))
+        if os.path.exists(model_dir):
+            # if directory already exists, delete it
+            shutil.rmtree(model_dir)
+        os.mkdir(model_dir)
+
+        # train a model for each training op
+        dataTrain.reset_batch()
+        net.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name=method, n_epochs=100, save_addr=model_dir,
+                  visualiseRateTrain=10, visualiseRateVal=10, save_epochs=[50, 100])
+
+
 

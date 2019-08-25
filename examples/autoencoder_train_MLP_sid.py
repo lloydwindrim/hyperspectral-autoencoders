@@ -1,5 +1,5 @@
 '''
-    File name: train_MLP_sid.py
+    File name: autoencoder_train_MLP_sid.py
     Author: Lloyd Windrim
     Date created: August 2019
     Python package: deephyp

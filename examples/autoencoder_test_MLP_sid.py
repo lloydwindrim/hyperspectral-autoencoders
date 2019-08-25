@@ -1,5 +1,5 @@
 '''
-    File name: _test_MLP_sid.py
+    File name: autoencoder_test_MLP_sid.py
     Author: Lloyd Windrim
     Date created: August 2019
     Python package: deephyp

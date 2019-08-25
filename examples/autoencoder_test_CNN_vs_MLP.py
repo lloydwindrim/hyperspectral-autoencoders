@@ -1,5 +1,5 @@
 '''
-    File name: _test_CNN_vs_MLP.py
+    File name: autoencoder_test_CNN_vs_MLP.py
     Author: Lloyd Windrim
     Date created: August 2019
     Python package: deephyp

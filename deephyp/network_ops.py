@@ -201,6 +201,29 @@ def loss_function_reconstruction_1D(y_reconstructed,y_target,func='SSE'):
     return loss
 
 
+def loss_function_crossentropy_1D( y_pred, y_target, class_weights=None, num_classes=None):
+    """ Cross entropy loss function op, comparing 1D tensors for network prediction and target. Weights the classes
+        when calculating the loss to balance un-even training batches. If class weights are not provided, then no
+        weighting is done (weight of 1 assigned to each class).
+    - input:
+        y_pred: (tensor) Output of network (1D vector of class scores). Shape [numSamples x numClasses]
+        y_target: (tensor) One-hot classification labels (1D vector). Shape [numSamples x numClasses]
+        class_weights: (op) Weight for each class. [numClasses]
+        num_classes: (int)
+    - output:
+        loss (op)
+    """
+
+    if class_weights==None:
+        class_weights = tf.constant(1,shape=[num_classes],dtype=tf.dtypes.float32)
+
+    sample_weights = tf.reduce_sum( tf.multiply(y_target, class_weights ), axis=1) # weight of each sample
+    loss = tf.reduce_mean( tf.losses.softmax_cross_entropy(
+        onehot_labels=y_target,logits=y_pred,weights=sample_weights ) )
+
+    return loss
+
+
 def loss_weight_decay(wdLambda):
     """ Weight decay loss op, regularises network by penalising parameters for being too large.
     - input:
@@ -210,6 +233,21 @@ def loss_weight_decay(wdLambda):
     """
 
     return tf.multiply( wdLambda , tf.reduce_sum(tf.get_collection('wd')) )
+
+def balance_classes(y_target,num_classes):
+    """ Calculates the class weights needed to balance the classes, based on the number of samples of each class in the
+        batch of data.
+    - input:
+        y_target: (tensor) One-hot classification labels (1D vector). Shape [numSamples x numClasses]
+        num_classes: (int)
+    - output:
+        class_weights (op) weight for each class that balances their contribution to the loss. [numClasses]
+    """
+    y_target = tf.reshape( y_target, [-1, num_classes] )
+    class_count = tf.add( tf.reduce_sum( y_target, axis=0 ), tf.constant( [1]*num_classes, dtype=tf.float32 ) )
+    class_weights = tf.multiply( tf.divide( tf.ones( ( 1, num_classes) ), class_count ), tf.reduce_max( class_count ) )
+
+    return class_weights
 
 
 def save_model(addr,sess,saver,current_epoch,epochs_to_save):
