@@ -9,11 +9,14 @@
 '''
 
 import scipy.io
-import urllib
 import os
 import shutil
 import numpy as np
 from utils import reporthook
+try:
+    from urllib import urlretrieve # python2
+except:
+    from urllib.request import urlretrieve # python3
 
 # import toolbox libraries
 import sys
@@ -25,9 +28,9 @@ if __name__ == '__main__':
 
     # download dataset and ground truth (if already downloaded, comment this out)
     # Use urllib.request.urlretrieve for python3
-    urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat',
+    urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat',
                         os.path.join(os.getcwd(),'PaviaU.mat'), reporthook )
-    urllib.urlretrieve('http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
+    urlretrieve('http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
                        os.path.join(os.getcwd(), 'PaviaU_gt.mat'), reporthook)
 
     # read data into numpy array

@@ -14,8 +14,11 @@ import scipy.io
 import matplotlib.pyplot as plt
 import os
 import numpy as np
-import urllib
 from utils import reporthook
+try:
+    from urllib import urlretrieve # python2
+except:
+    from urllib.request import urlretrieve # python3
 
 
 # import toolbox libraries
@@ -23,6 +26,8 @@ import sys
 sys.path.insert(0, '..')
 from deephyp import autoencoder
 from deephyp import data
+
+
 
 
 if __name__ == '__main__':
@@ -59,9 +64,8 @@ if __name__ == '__main__':
     #--------- visualisation ----------------------------------------
 
     # download dataset ground truth pixel labels (if already downloaded, comment this out).
-    # Use urllib.request.urlretrieve for python3
-    urllib.urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
-                       os.path.join(os.getcwd(), 'PaviaU_gt.mat'), reporthook )
+    urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
+                            os.path.join(os.getcwd(), 'PaviaU_gt.mat'), reporthook )
 
     # read labels into numpy array
     mat_gt = scipy.io.loadmat( 'PaviaU_gt.mat' )
