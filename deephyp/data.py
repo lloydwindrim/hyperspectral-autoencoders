@@ -15,7 +15,7 @@ import numpy as np
 class HypImg:
 
 
-    def __init__( self , spectralInput , wavelengths=None, bands=None, labels=None ):
+    def __init__( self , spectralInput , labels=None, wavelengths=None, bands=None  ):
         """ Class for handling data. If passed labels, it assumes a background class (0) is present. This class is not
             included in numClasses and data samples with this label have a one-hot vector label of all zeros.
         - input:

@@ -34,7 +34,7 @@ if __name__ == '__main__':
     img_gt = mat_gt['paviaU_gt']
 
     # create a hyperspectral dataset object from the numpy array
-    hypData = data.HypImg(img,labels=img_gt)
+    hypData = data.HypImg( img )
 
     # pre-process data to make the model easier to train
     hypData.pre_process('minmax')
