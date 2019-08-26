@@ -1,4 +1,4 @@
-# hyperspectral-autoencoders
+# deephyp: deep learning for hyperspectral 
 Tools for training and using unsupervised autoencoders and supervised deep learning classifiers for hyperspectral data.
 
 Autoencoders are unsupervised neural networks that are useful for a range of applications such as unsupervised feature learning and dimensionality reduction. Supervised deep learning classifiers can be trained on labelled data to predict the class of spectra. This repository provides a python-based toolbox called **deephyp**, with examples for building, training and testing both dense and convolutional autoencoders and classification neural networks, designed for hyperspectral data. Networks are easy to setup and can be customised with different architectures. Different methods of training can also be implemented. The toolbox is built on tensorflow.
