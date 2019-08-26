@@ -231,7 +231,7 @@ The train method learns a model using one train op, therefore the train method s
 
 It is also possible to load a pre-trained model and continue to train it by passing the address of epoch folder containing the model checkpoint as the save_addr argument. For example, if the directory for the model at epoch 50 (epoch_50 folder) was passed to save_addr in the example above, then the model would be trained for an additional 50 epochs to reach 100, and it would be saved in a folder called epoch_100 in the same directory as the epoch_50 folder.
 
-The method for interface for training autoencoder and classifiers is the same.
+The interface for training autoencoder and classifiers is the same.
 
 ### Loading a trained network
 
