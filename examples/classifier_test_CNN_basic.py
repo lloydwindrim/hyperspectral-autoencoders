@@ -29,10 +29,6 @@ if __name__ == '__main__':
     mat = scipy.io.loadmat('PaviaU.mat')
     img = mat['paviaU']
 
-    # read labels into numpy array
-    mat_gt = scipy.io.loadmat('PaviaU_gt.mat')
-    img_gt = mat_gt['paviaU_gt']
-
     # create a hyperspectral dataset object from the numpy array
     hypData = data.HypImg( img )
 
@@ -55,7 +51,12 @@ if __name__ == '__main__':
 
     #--------- visualisation ----------------------------------------
 
+    # reshape predicted labels to an image
     img_pred = np.reshape(data_pred, (hypData.numRows, hypData.numCols))
+
+    # read labels into numpy array
+    mat_gt = scipy.io.loadmat('PaviaU_gt.mat')
+    img_gt = mat_gt['paviaU_gt']
 
 
     class_names = ['asphault', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']
