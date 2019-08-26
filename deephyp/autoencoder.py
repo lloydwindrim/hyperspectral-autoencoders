@@ -10,7 +10,7 @@
 '''
 
 import tensorflow as tf
-import network_ops as net_ops
+from deephyp import network_ops as net_ops
 
 
 class mlp_1D_network():
