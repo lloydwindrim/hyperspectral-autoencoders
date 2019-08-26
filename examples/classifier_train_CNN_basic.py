@@ -27,7 +27,6 @@ from deephyp import data
 if __name__ == '__main__':
 
     # download dataset and ground truth (if already downloaded, comment this out)
-    # Use urllib.request.urlretrieve for python3
     urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat',
                         os.path.join(os.getcwd(),'PaviaU.mat'), reporthook )
     urlretrieve('http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
