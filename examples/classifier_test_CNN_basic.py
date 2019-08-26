@@ -50,6 +50,9 @@ if __name__ == '__main__':
     data_pred = net.predict_labels( modelName='basic_model', dataSamples=hypData.spectraPrep  )
     data_scores = net.predict_scores( modelName='basic_model', dataSamples=hypData.spectraPrep  )
 
+    # extract features at second last layer
+    data_features = net.predict_features(modelName='basic_model', dataSamples=hypData.spectraPrep, layer=net.numLayers-1)
+
     #--------- visualisation ----------------------------------------
 
     img_pred = np.reshape(data_pred, (hypData.numRows, hypData.numCols))

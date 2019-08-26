@@ -151,6 +151,8 @@ class cnn_1D_network():
         # output of final layer
         self.y_pred = self.a['a%d' % (absLayerNum)]
 
+        self.numLayers = len(self.a) - 1
+
 
     def add_train_op(self,name, balance_classes=True, learning_rate=1e-3, decay_steps=None, decay_rate=None,
                      piecewise_bounds=None, piecewise_values=None, method='Adam', wd_lambda=0.0 ):
@@ -261,6 +263,31 @@ class cnn_1D_network():
             pred_labels = sess.run(tf.math.argmax(self.y_pred,axis=1), feed_dict={self.x: dataSamples}) + 1
 
             return pred_labels
+
+    def predict_features( self, modelName, dataSamples, layer ):
+        """ Extract the predicted feature values at a particular layer of the network.
+        - input:
+            modelName: (str) Name of the model to use (previously added with add_model() )
+            dataSample: (array) Shape [numSamples x inputSize]
+            layer: (int) Layer at which to extract features. Must be between 1 and numLayers inclusive.
+        - output:
+            predFeatures: (array) Values of neurons at layer. Shape [numSamples x numNeurons] if fully-connected layer
+                        [numSamples x convDim1 x convDim2] if convolutional layer.
+
+        """
+        if (layer > self.numLayers ) | (layer < 1 ):
+            raise ValueError('layer must be between 1 and numLayers (%i) inclusive. '
+                             'Layer input: %i'% (self.numLayers,layer) )
+
+        with tf.Session() as sess:
+
+            # load the model
+            net_ops.load_model(self.modelsAddrs[modelName], sess)
+
+            predFeatures = sess.run(self.a['a%i'%(layer)], feed_dict={self.x: dataSamples})
+
+            return predFeatures
+
 
 
 
