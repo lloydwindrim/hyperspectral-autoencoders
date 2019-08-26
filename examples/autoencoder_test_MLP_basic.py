@@ -36,10 +36,10 @@ if __name__ == '__main__':
     hypData.pre_process( 'minmax' )
 
     # setup a network from a config file
-    net = autoencoder.mlp_1D_network( configFile=os.path.join('models','test_mlp','config.json') )
+    net = autoencoder.mlp_1D_network( configFile=os.path.join('models','test_ae_mlp','config.json') )
 
     # assign previously trained parameters to the network, and name model
-    net.add_model( addr=os.path.join('models','test_mlp','epoch_100'), modelName='csa_100' )
+    net.add_model( addr=os.path.join('models','test_ae_mlp','epoch_100'), modelName='csa_100' )
 
     # feed forward hyperspectral dataset through encoder (get latent encoding)
     dataZ = net.encoder( modelName='csa_100', dataSamples=hypData.spectraPrep )

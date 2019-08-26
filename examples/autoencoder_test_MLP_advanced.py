@@ -43,12 +43,12 @@ if __name__ == '__main__':
     hypData.pre_process( 'minmax' )
 
     # setup a network from a config file
-    net = autoencoder.mlp_1D_network( configFile=os.path.join('models','test_mlp_adv_sse','config.json') )
+    net = autoencoder.mlp_1D_network( configFile=os.path.join('models','test_ae_mlp_adv_sse','config.json') )
 
     # assign previously trained parameters to the network, and name each model
-    net.add_model( addr=os.path.join('models','test_mlp_adv_sse','epoch_100'), modelName='sse_100' )
-    net.add_model(addr=os.path.join('models', 'test_mlp_adv_csa', 'epoch_100'), modelName='csa_100')
-    net.add_model(addr=os.path.join('models', 'test_mlp_adv_sa', 'epoch_100'), modelName='sa_100')
+    net.add_model( addr=os.path.join('models','test_ae_mlp_adv_sse','epoch_100'), modelName='sse_100' )
+    net.add_model(addr=os.path.join('models', 'test_ae_mlp_adv_csa', 'epoch_100'), modelName='csa_100')
+    net.add_model(addr=os.path.join('models', 'test_ae_mlp_adv_sa', 'epoch_100'), modelName='sa_100')
 
     # feed forward hyperspectral dataset through each encoder model (get latent encoding)
     dataZ_sse = net.encoder( modelName='sse_100', dataSamples=hypData.spectraPrep )

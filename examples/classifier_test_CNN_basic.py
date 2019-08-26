@@ -41,10 +41,10 @@ if __name__ == '__main__':
 
 
     # setup a fully-connected autoencoder neural network with 3 encoder layers
-    net = classifier.cnn_1D_network(configFile=os.path.join('models','test_clf','config.json'))
+    net = classifier.cnn_1D_network(configFile=os.path.join('models','test_clf_cnn','config.json'))
 
     # assign previously trained parameters to the network, and name model
-    net.add_model( addr=os.path.join('models','test_clf','epoch_1000'), modelName='basic_model' )
+    net.add_model( addr=os.path.join('models','test_clf_cnn','epoch_1000'), modelName='basic_model' )
 
     # feed forward hyperspectral dataset through the model to predict class labels and scores for each sample
     data_pred = net.predict_labels( modelName='basic_model', dataSamples=hypData.spectraPrep  )

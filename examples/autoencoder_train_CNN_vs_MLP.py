@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # create directories to save the learnt models
     model_dirs = []
     for method in ['mlp','cnn']:
-        model_dir = os.path.join('models','test_comparison_%s'%(method))
+        model_dir = os.path.join('models','test_ae_comparison_%s'%(method))
         if os.path.exists(model_dir):
             # if directory already exists, delete it
             shutil.rmtree(model_dir)

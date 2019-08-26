@@ -59,7 +59,7 @@ if __name__ == '__main__':
                       method='Adam', wd_lambda=0.0 )
 
     # create a directory to save the learnt model
-    model_dir = os.path.join('models','test_mlp_sid')
+    model_dir = os.path.join('models','test_ae_mlp_sid')
     if os.path.exists(model_dir):
         # if directory already exists, delete it
         shutil.rmtree(model_dir)

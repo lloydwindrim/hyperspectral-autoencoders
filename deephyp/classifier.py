@@ -275,6 +275,7 @@ class cnn_1D_network():
                         [numSamples x convDim1 x convDim2] if convolutional layer.
 
         """
+
         if (layer > self.numLayers ) | (layer < 1 ):
             raise ValueError('layer must be between 1 and numLayers (%i) inclusive. '
                              'Layer input: %i'% (self.numLayers,layer) )

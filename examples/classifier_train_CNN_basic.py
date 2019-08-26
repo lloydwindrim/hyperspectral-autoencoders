@@ -74,7 +74,7 @@ if __name__ == '__main__':
     net.add_train_op('basic50',balance_classes=True)
 
     # create a directory to save the learnt model
-    model_dir = os.path.join('models', 'test_clf')
+    model_dir = os.path.join('models', 'test_clf_cnn')
     if os.path.exists(model_dir):
         # if directory already exists, delete it
         shutil.rmtree(model_dir)

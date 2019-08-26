@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     # create directories to save the learnt models
     for method in ['sse','csa','sa']:
-        model_dir = os.path.join('models','test_mlp_adv_%s'%(method))
+        model_dir = os.path.join('models','test_ae_mlp_adv_%s'%(method))
         if os.path.exists(model_dir):
             # if directory already exists, delete it
             shutil.rmtree(model_dir)

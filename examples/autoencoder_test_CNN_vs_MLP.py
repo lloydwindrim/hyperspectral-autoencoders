@@ -41,12 +41,12 @@ if __name__ == '__main__':
     hypData.pre_process( 'minmax' )
 
     # setup each network from the config files
-    net_mlp = autoencoder.mlp_1D_network( configFile=os.path.join('models','test_comparison_mlp','config.json') )
-    net_cnn = autoencoder.cnn_1D_network(configFile=os.path.join('models', 'test_comparison_cnn', 'config.json'))
+    net_mlp = autoencoder.mlp_1D_network( configFile=os.path.join('models','test_ae_comparison_mlp','config.json') )
+    net_cnn = autoencoder.cnn_1D_network(configFile=os.path.join('models', 'test_ae_comparison_cnn', 'config.json'))
 
     # assign previously trained parameters to the network, and name each model
-    net_mlp.add_model( addr=os.path.join('models','test_comparison_mlp','epoch_100'), modelName='mlp_100' )
-    net_cnn.add_model(addr=os.path.join('models', 'test_comparison_cnn', 'epoch_10'), modelName='cnn_10')
+    net_mlp.add_model( addr=os.path.join('models','test_ae_comparison_mlp','epoch_100'), modelName='mlp_100' )
+    net_cnn.add_model(addr=os.path.join('models', 'test_ae_comparison_cnn', 'epoch_10'), modelName='cnn_10')
 
 
     # feed forward hyperspectral dataset through each encoder model (get latent encoding)

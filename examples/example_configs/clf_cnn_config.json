@@ -1,0 +1,1 @@
+{"fcSize": [20, 20], "convFilterSize": [20, 10, 10], "inputSize": 103, "activationFunc": "relu", "weightStd": 0.1, "numClasses": 9, "padding": "VALID", "convStride": [1, 1, 1], "convNumFilters": [10, 10, 10], "weightInitOpt": "truncated_normal"}
