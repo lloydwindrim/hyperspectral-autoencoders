@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # save a scatter plot image of 2 of 3 latent dimensions
     idx = np.argsort(-np.std(dataZ, axis=0))
     fig, ax = plt.subplots()
-    for i,gt_class in enumerate(['asphault', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']):
+    for i,gt_class in enumerate(['asphalt', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']):
         ax.scatter(dataZ[gt == i+1, idx[0]], dataZ[gt == i+1, idx[1]], c='C%i'%i,s=5,label=gt_class)
     ax.legend()
     plt.title('latent representation: sid')

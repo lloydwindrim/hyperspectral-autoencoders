@@ -59,7 +59,7 @@ if __name__ == '__main__':
     img_gt = mat_gt['paviaU_gt']
 
 
-    class_names = ['asphault', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']
+    class_names = ['asphalt', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']
     cmap = pl.cm.jet
 
     # save ground truth figure
