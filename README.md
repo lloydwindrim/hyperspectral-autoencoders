@@ -1,4 +1,5 @@
 # deephyp: deep learning for hyperspectral 
+![PyPI](https://img.shields.io/pypi/v/deephyp)  ![PyPI - Downloads](https://img.shields.io/pypi/dw/deephyp)
 Tools for training and using unsupervised autoencoders and supervised deep learning classifiers for hyperspectral data.
 
 Autoencoders are unsupervised neural networks that are useful for a range of applications such as unsupervised feature learning and dimensionality reduction. Supervised deep learning classifiers can be trained on labelled data to predict the class of spectra. This repository provides a python-based toolbox called **deephyp**, with examples for building, training and testing both dense and convolutional autoencoders and classification neural networks, designed for hyperspectral data. Networks are easy to setup and can be customised with different architectures. Different methods of training can also be implemented. The toolbox is built on tensorflow.
@@ -33,13 +34,13 @@ import deephyp
 ## Prerequisites
 
 The software dependencies needed to run the toolbox are python 2 or python 3 (tested with version 2.7.15 and 3.5.2) with packages:
-* tensorflow (tested with v1.14.0) - cpu or gpu version
+* tensorflow (tested with v1.14.0) 
 * numpy (tested with v1.15.4)
 
 Each of these packages can be installed using [pip](https://pypi.org/project/pip/). The example scripts use some additional packages such as scipy (tested with v1.3.1) and matplotlib (tested with v3.0.3).
 
 ## Quickstart
-To start training an autoencoder right away, move to the /examples directory and run the example script:
+To start training an autoencoder right away, move to the /examples directory in the [github repo](https://github.com/lloydwindrim/hyperspectral-autoencoders) and run the example script:
 ```
 autoencoder_train_MLP_basic.py
 ```
