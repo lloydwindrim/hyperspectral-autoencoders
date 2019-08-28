@@ -1,6 +1,7 @@
 # deephyp: deep learning for hyperspectral 
 
-![PyPI](https://img.shields.io/pypi/v/deephyp) ![PyPI - Downloads](https://img.shields.io/pypi/dw/deephyp?color=brightgreen)
+![PyPI](https://img.shields.io/pypi/v/deephyp) 
+![PyPI - Downloads](https://img.shields.io/pypi/dw/deephyp?color=brightgreen)
 
 Tools for training and using unsupervised autoencoders and supervised deep learning classifiers for hyperspectral data.
 
@@ -20,7 +21,7 @@ If you use the classification networks in your research, please cite:
 
 ## Installation
 
-The latest release of the toolbox can be installed from the command line using pip:
+The [latest release](https://pypi.org/project/deephyp/) of the toolbox can be installed from the command line using pip:
 ```
 pip install deephyp
 ```
