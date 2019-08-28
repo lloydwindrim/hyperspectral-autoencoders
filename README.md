@@ -1,7 +1,6 @@
 # deephyp: deep learning for hyperspectral 
 
-![PyPI](https://img.shields.io/pypi/v/deephyp) 
-![PyPI - Downloads](https://img.shields.io/pypi/dw/deephyp?color=brightgreen)
+![PyPI](https://img.shields.io/pypi/v/deephyp) ![PyPI - Downloads](https://img.shields.io/pypi/dw/deephyp?color=brightgreen)
 
 Tools for training and using unsupervised autoencoders and supervised deep learning classifiers for hyperspectral data.
 
