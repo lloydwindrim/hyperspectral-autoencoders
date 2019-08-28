@@ -206,6 +206,11 @@ class cnn_1D_network():
             save_epochs: (int list) Epochs to save checkpoints at.
         """
 
+        # make sure a checkpoint is saved at n_epochs
+        if n_epochs not in save_epochs:
+            save_epochs.append(n_epochs)
+
+
         net_ops.train( self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain,
                        visualiseRateVal, save_epochs )
 
