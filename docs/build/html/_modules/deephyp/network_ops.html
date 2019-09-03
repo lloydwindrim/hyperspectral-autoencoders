@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deephyp.network_ops &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/citing.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/get_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/examples.html">Code Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>deephyp.network_ops</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deephyp.network_ops</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Description: various functions for deep learning built on-top of tensorflow. The high-level modules in the package</span>
+<span class="sd">    call these functions.</span>
+
+<span class="sd">    - File name: network_ops.py</span>
+<span class="sd">    - Author: Lloyd Windrim</span>
+<span class="sd">    - Date created: June 2019</span>
+<span class="sd">    - Python package: deephyp</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">exists</span><span class="p">,</span> <span class="n">basename</span><span class="p">,</span> <span class="n">split</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="create_variable"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.create_variable">[docs]</a><span class="k">def</span> <span class="nf">create_variable</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span><span class="n">wd</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Setup a trainable variable (collection of parameters) of a particular shape.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shape (list): Data shape.</span>
+<span class="sd">        method (str): How to initialise parameter values.</span>
+<span class="sd">        wd (boolean): Setup weight decay for this variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Set of parameters for the given variable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">init_weight</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="n">wd</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="layer_fullyConn"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.layer_fullyConn">[docs]</a><span class="k">def</span> <span class="nf">layer_fullyConn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Define a fully connected layer operation. Also called a &#39;dense&#39; layer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input (tensor): Data input into the layer. Shape [numSamples x numInputNeurons].</span>
+<span class="sd">        W (tensor): Weight parameters for the layer. Shape [numInputNeurons x numOutputNeurons].</span>
+<span class="sd">        b (tensor): Bias parameters for the layer. Shape [numOutputNeurons].</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Computes layer output. Shape [numSamples x numOutputNeurons].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="layer_conv1d"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.layer_conv1d">[docs]</a><span class="k">def</span> <span class="nf">layer_conv1d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Define a 1 dimensional convolution layer operation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input (tensor): Data input into the layer. Shape [numSamples x numInputNeurons x numFiltersIn].</span>
+<span class="sd">        W (tensor): Weight parameters of the filters/kernels. Shape [filterSize x numFiltersIn x numFiltersOut].</span>
+<span class="sd">        b (tensor): Bias parameters for the layer. Shape [numFiltersOut].</span>
+<span class="sd">        stride (int): Stride at which to convolve (must be &gt;= 1).</span>
+<span class="sd">        padding (str): Type of padding to use (&#39;SAME&#39; or &#39;VALID&#39;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Computes layer output. Shape [numSamples x numOutputNeurons x numFiltersOut].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">padding</span><span class="o">!=</span><span class="s1">&#39;SAME&#39;</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">padding</span><span class="o">!=</span><span class="s1">&#39;VALID&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown padding type: </span><span class="si">%s</span><span class="s1">. Use SAME or VALID&#39;</span> <span class="o">%</span> <span class="n">padding</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;stride must be greater than 0. Stride = </span><span class="si">%d</span><span class="s1"> found in conv layer.&#39;</span><span class="o">%</span> <span class="n">stride</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv1d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span><span class="n">W</span><span class="p">,</span><span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span><span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span></div>
+
+
+<div class="viewcode-block" id="layer_deconv1d"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.layer_deconv1d">[docs]</a><span class="k">def</span> <span class="nf">layer_deconv1d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">outputShape</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Define a 1 dimensional deconvolution layer operation. Also called convolutional transpose or upsampling layer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input (tensor): Data input into the layer. Shape [numSamples x numInputNeurons x numFiltersIn].</span>
+<span class="sd">        W (tensor): Weight parameters of the filters/kernels. Shape [filterSize x numFiltersOut x numFiltersIn].</span>
+<span class="sd">        b (tensor): Bias parameters for the layer. Shape [numFiltersOut].</span>
+<span class="sd">        outputShape (list): Expected shape of the layer output. Shape [numSamples x numOutputNeurons x numFiltersOut].</span>
+<span class="sd">        stride (int): Stride at which to convolve (must be &gt;= 1).</span>
+<span class="sd">        padding (str): Type of padding to use (&#39;SAME&#39; or &#39;VALID&#39;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Computes layer output. Shape [numSamples x numOutputNeurons x numFiltersOut].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">padding</span><span class="o">!=</span><span class="s1">&#39;SAME&#39;</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">padding</span><span class="o">!=</span><span class="s1">&#39;VALID&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown padding type: </span><span class="si">%s</span><span class="s1">. Use SAME or VALID&#39;</span> <span class="o">%</span> <span class="n">padding</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;stride must be greater than 0. Stride = </span><span class="si">%d</span><span class="s1"> found in deconv layer.&#39;</span><span class="o">%</span> <span class="n">stride</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv1d_transpose</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span><span class="n">W</span><span class="p">,</span><span class="n">outputShape</span><span class="p">,</span><span class="n">strides</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span><span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span></div>
+
+
+
+<div class="viewcode-block" id="layer_activation"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.layer_activation">[docs]</a><span class="k">def</span> <span class="nf">layer_activation</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Define an activation function operation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input (tensor): Data input into the function.</span>
+<span class="sd">        func (str): Type of activation function. (relu, sigmoid, linear).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Computes activation. Shape is same as input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;relu&#39;</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;sigmoid&#39;</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">input</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown activation function: </span><span class="si">%s</span><span class="s1">. Use relu, sigmoid or linear.&#39;</span> <span class="o">%</span> <span class="n">func</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a</span></div>
+
+<div class="viewcode-block" id="conv_output_shape"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.conv_output_shape">[docs]</a><span class="k">def</span> <span class="nf">conv_output_shape</span><span class="p">(</span><span class="n">inputShape</span><span class="p">,</span> <span class="n">filterSize</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">stride</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the expected output shape (for the convolving axis only) of a convolution layer given an input shape.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inputShape (int): Shape of convolving axis of input data.</span>
+<span class="sd">        filterSize (int): Size of filter/kernel of convolution layer.</span>
+<span class="sd">        stride (int): Stride at which to convolve (must be &gt;= 1).</span>
+<span class="sd">        padding (str): Type of padding to use (&#39;SAME&#39; or &#39;VALID&#39;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (int): Output shape of convolving axis for given layer and input shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">padding</span><span class="o">==</span><span class="s1">&#39;VALID&#39;</span><span class="p">:</span>
+        <span class="n">outputShape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span> <span class="p">(</span><span class="n">inputShape</span> <span class="o">-</span> <span class="p">(</span><span class="n">filterSize</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">stride</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">padding</span><span class="o">==</span><span class="s1">&#39;SAME&#39;</span><span class="p">:</span>
+        <span class="n">outputShape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">inputShape</span> <span class="o">/</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown padding type: </span><span class="si">%s</span><span class="s1">. Use SAME or VALID&#39;</span> <span class="o">%</span> <span class="n">padding</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">outputShape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="train_step"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.train_step">[docs]</a><span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decay_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">piecewise_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">piecewise_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Operation for training the weights of the network by optimising them to minimise the loss function. Note that \</span>
+<span class="sd">        the default is a constant learning rate (no decay).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        loss (tensor): Output of network loss function.</span>
+<span class="sd">        learning_rate: (float) Controls the degree to which the weights are updated during training.</span>
+<span class="sd">        decay_steps (int): Epoch frequency at which to decay the learning rate.</span>
+<span class="sd">        decay_rate (float): Fraction at which to decay the learning rate.</span>
+<span class="sd">        piecewise_bounds (int list): Epoch step intervals for decaying the learning rate. Alternative to decay steps.</span>
+<span class="sd">        piecewise_values (float list): Rate at which to decay the learning rate at the piecewise_bounds.</span>
+<span class="sd">        method (str): Optimisation method. (Adam, SGD).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (op) A train op.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">global_step</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;global_step&#39;</span><span class="p">)</span>
+
+    <span class="c1"># update learning rate for current step</span>
+    <span class="k">if</span> <span class="n">decay_rate</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">exponential_decay</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span>
+                                        <span class="n">global_step</span><span class="p">,</span>
+                                        <span class="n">decay_steps</span><span class="p">,</span>
+                                        <span class="n">decay_rate</span><span class="p">,</span> <span class="n">staircase</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">piecewise_bounds</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">piecewise_constant</span><span class="p">(</span><span class="n">global_step</span><span class="p">,</span> <span class="n">piecewise_bounds</span><span class="p">,</span> <span class="p">[</span><span class="n">learning_rate</span><span class="p">]</span> <span class="o">+</span> <span class="n">piecewise_values</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="n">learning_rate</span>
+
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Adam&#39;</span><span class="p">:</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SGD&#39;</span><span class="p">:</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown optimisation method: </span><span class="si">%s</span><span class="s1">. Use Adam or SGD.&#39;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
+
+    <span class="n">train_op</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">train_op</span></div>
+
+
+<div class="viewcode-block" id="loss_function_reconstruction_1D"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.loss_function_reconstruction_1D">[docs]</a><span class="k">def</span> <span class="nf">loss_function_reconstruction_1D</span><span class="p">(</span><span class="n">y_reconstructed</span><span class="p">,</span><span class="n">y_target</span><span class="p">,</span><span class="n">func</span><span class="o">=</span><span class="s1">&#39;SSE&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Reconstruction loss function op, comparing 1D tensors for network reconstruction and target.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        y_reconstructed (tensor): Output of network (reconstructed 1D vector). Shape [numSamples x inputSize].</span>
+<span class="sd">        y_target (tensor): What the network is trying to reconstruct (1D vector). Shape [numSamples x inputSize].</span>
+<span class="sd">        func (string): The name of the loss function to be used. &#39;SSE&#39;-sum of square errors,&#39;CSA&#39;-cosine spectral angle, \</span>
+<span class="sd">            &#39;SA&#39;-spectral angle, &#39;SID&#39;-spectral information divergence.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Reconstruction loss.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;SSE&#39;</span><span class="p">:</span>
+        <span class="c1"># sum of squared errors loss</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_target</span> <span class="o">-</span> <span class="n">y_reconstructed</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;CSA&#39;</span><span class="p">:</span>
+        <span class="c1"># cosine of spectral angle loss</span>
+        <span class="n">normalize_r</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">l2_normalize</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_reconstructed</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">normalize_t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">l2_normalize</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_target</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">normalize_r</span><span class="p">,</span> <span class="n">normalize_t</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;SA&#39;</span><span class="p">:</span>
+        <span class="c1"># spectral angle loss</span>
+        <span class="n">normalize_r</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">l2_normalize</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_reconstructed</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">normalize_t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">l2_normalize</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_target</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">normalize_r</span><span class="p">,</span> <span class="n">normalize_t</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">func</span> <span class="o">==</span> <span class="s1">&#39;SID&#39;</span><span class="p">:</span>
+        <span class="c1"># spectral information divergence loss</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_target</span><span class="p">)</span> <span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_target</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_reconstructed</span><span class="p">)</span> <span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">y_reconstructed</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">r</span><span class="p">)))</span> <span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                              <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">)))</span> <span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown loss function: </span><span class="si">%s</span><span class="s1">. Use SSE, CSA, SA or SID.&#39;</span> <span class="o">%</span> <span class="n">func</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">loss</span></div>
+
+
+<div class="viewcode-block" id="loss_function_crossentropy_1D"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.loss_function_crossentropy_1D">[docs]</a><span class="k">def</span> <span class="nf">loss_function_crossentropy_1D</span><span class="p">(</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">class_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Cross entropy loss function op, comparing 1D tensors for network prediction and target. Weights the classes \</span>
+<span class="sd">        when calculating the loss to balance un-even training batches. If class weights are not provided, then no \</span>
+<span class="sd">        weighting is done (weight of 1 assigned to each class).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        y_pred (tensor): Output of network (1D vector of class scores). Shape [numSamples x numClasses].</span>
+<span class="sd">        y_target (tensor): One-hot classification labels (1D vector). Shape [numSamples x numClasses].</span>
+<span class="sd">        class_weights (tensor): Weight for each class. Shape [numClasses].</span>
+<span class="sd">        num_classes (int):</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): Cross-entropy loss.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">class_weights</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+        <span class="n">class_weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">num_classes</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="n">sample_weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">y_target</span><span class="p">,</span> <span class="n">class_weights</span> <span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># weight of each sample</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">softmax_cross_entropy</span><span class="p">(</span>
+        <span class="n">onehot_labels</span><span class="o">=</span><span class="n">y_target</span><span class="p">,</span><span class="n">logits</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span><span class="n">weights</span><span class="o">=</span><span class="n">sample_weights</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">loss</span></div>
+
+
+<div class="viewcode-block" id="loss_weight_decay"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.loss_weight_decay">[docs]</a><span class="k">def</span> <span class="nf">loss_weight_decay</span><span class="p">(</span><span class="n">wdLambda</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Weight decay loss op, regularises network by penalising parameters for being too large.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        wdLambda (float): Scalar to control weighting of weight decay in loss.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor) : Weight-decay loss.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">wdLambda</span> <span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;wd&#39;</span><span class="p">))</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="balance_classes"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.balance_classes">[docs]</a><span class="k">def</span> <span class="nf">balance_classes</span><span class="p">(</span><span class="n">y_target</span><span class="p">,</span><span class="n">num_classes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculates the class weights needed to balance the classes, based on the number of samples of each class in the \</span>
+<span class="sd">        batch of data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        y_target (tensor): One-hot classification labels (1D vector). Shape [numSamples x numClasses]</span>
+<span class="sd">        num_classes (int):</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tensor): A weighting for each class that balances their contribution to the loss. Shape [numClasses].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_target</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">y_target</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">class_count</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">class_weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span> <span class="p">),</span> <span class="n">class_count</span> <span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_max</span><span class="p">(</span> <span class="n">class_count</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">class_weights</span></div>
+
+
+<div class="viewcode-block" id="save_model"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.save_model">[docs]</a><span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="n">sess</span><span class="p">,</span><span class="n">saver</span><span class="p">,</span><span class="n">current_epoch</span><span class="p">,</span><span class="n">epochs_to_save</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Saves a checkpoint at a list of epochs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        addr (str): Address of a directory to save checkpoint for current epoch.</span>
+<span class="sd">        sess (obj): Tensor flow session object.</span>
+<span class="sd">        saver (obj): Tensor flow save object.</span>
+<span class="sd">        current_epoch (int): The current epoch.</span>
+<span class="sd">        epochs_to_save (int list): Epochs to save checkpoints at.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">current_epoch</span> <span class="ow">in</span> <span class="n">epochs_to_save</span><span class="p">:</span>
+        <span class="n">saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">join</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="s2">&quot;epoch_</span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">current_epoch</span><span class="p">),</span><span class="s2">&quot;model.ckpt&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="load_model"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.load_model">[docs]</a><span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="n">sess</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loads a model from the address of a checkpoint.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        addr (str): Address of a directory to save checkpoint for current epoch.</span>
+<span class="sd">        sess (obj): Tensor flow session object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
+    <span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+    <span class="n">saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">join</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;model.ckpt&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="save_config"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.save_config">[docs]</a><span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="n">net_obj</span><span class="p">,</span><span class="n">addr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Saves a network config file. Saves the variables listed in net_config within the network object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        net_obj (obj): Network object.</span>
+<span class="sd">        addr (obj): Directory of where to store the config.json file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">config_parameter</span> <span class="ow">in</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">net_config</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">config_parameter</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">net_obj</span><span class="p">,</span><span class="n">config_parameter</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="s1">&#39;config.json&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="load_config"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.load_config">[docs]</a><span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="n">net_obj</span><span class="p">,</span><span class="n">addr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loads a network config file. Loads from variables in the config.json file and overwrites variables in network \</span>
+<span class="sd">        object. Applies to variables in the net_config list in the network object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        net_obj (obj): Network object.</span>
+<span class="sd">        addr (obj): Directory location of config.json file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">config_parameter</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">net_obj</span><span class="p">,</span><span class="n">config_parameter</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="n">config_parameter</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="train"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.train">[docs]</a><span class="k">def</span> <span class="nf">train</span><span class="p">(</span> <span class="n">net_obj</span> <span class="p">,</span> <span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">save_addr</span><span class="p">,</span> <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+           <span class="n">save_epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Function for training a network. Updates the network weights through the training op. The function will check \</span>
+<span class="sd">        the save address for a model checkpoint to load, otherwise it will begin training from scratch.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        net_obj (obj): Network object.</span>
+<span class="sd">        dataTrain (obj): Iterator object for training data.</span>
+<span class="sd">        dataVal (obj): Iterator object for validation data.</span>
+<span class="sd">        train_op_name (string): Name of training op created.</span>
+<span class="sd">        n_epochs (int): Number of loops through dataset to train for.</span>
+<span class="sd">        save_addr (str): Address of a directory to save checkpoints for desired epochs, or address of saved checkpoint. \</span>
+<span class="sd">                        If address is for an epoch and contains a previously saved checkpoint, then the network will \</span>
+<span class="sd">                        start training from there. Otherwise it will be trained from scratch.</span>
+<span class="sd">        visualiseRateTrain (int): Epoch rate at which to print training loss in console.</span>
+<span class="sd">        visualiseRateVal (int): Epoch rate at which to print validation loss in console.</span>
+<span class="sd">        save_epochs (int list): Epochs to save checkpoints at.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">dataTrain</span><span class="o">.</span><span class="n">dataSamples</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">inputSize</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;the data dimensionality must match the network input size. &#39;</span>
+                        <span class="s1">&#39;Data size: </span><span class="si">%d</span><span class="s1">, network input size: </span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">dataTrain</span><span class="o">.</span><span class="n">dataSamples</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">inputSize</span><span class="p">))</span>
+
+    <span class="n">batchSize</span> <span class="o">=</span> <span class="n">dataTrain</span><span class="o">.</span><span class="n">batchSize</span>
+    <span class="n">numSamples</span> <span class="o">=</span> <span class="n">dataTrain</span><span class="o">.</span><span class="n">numSamples</span>
+
+    <span class="n">numIters</span> <span class="o">=</span> <span class="n">numSamples</span> <span class="o">//</span> <span class="n">batchSize</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">numSamples</span> <span class="o">%</span> <span class="n">batchSize</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">numIters</span><span class="o">+=</span><span class="mi">1</span>
+
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+        <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
+        <span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+
+        <span class="c1"># check if addr has &#39;epoch&#39; in name and contains a checkpoint</span>
+        <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">save_addr</span><span class="p">,</span><span class="s1">&#39;checkpoint&#39;</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="s1">&#39;epoch&#39;</span> <span class="ow">in</span> <span class="n">basename</span><span class="p">(</span><span class="n">save_addr</span><span class="p">)):</span>
+            <span class="c1"># load a checkpoint</span>
+            <span class="n">saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span><span class="n">join</span><span class="p">(</span><span class="n">save_addr</span><span class="p">,</span><span class="s1">&#39;model.ckpt&#39;</span><span class="p">))</span>
+            <span class="n">epoch_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">basename</span><span class="p">(</span><span class="n">save_addr</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">save_addr</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">save_addr</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># save directory is empty</span>
+            <span class="n">epoch_start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># create network config file in directory</span>
+            <span class="n">save_config</span><span class="p">(</span><span class="n">net_obj</span><span class="p">,</span><span class="n">save_addr</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">epoch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epoch_start</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">train_error</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">batch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numIters</span><span class="p">):</span>
+                <span class="n">train_batch_x</span> <span class="p">,</span> <span class="n">train_batch_y</span> <span class="o">=</span> <span class="n">dataTrain</span><span class="o">.</span><span class="n">next_batch</span><span class="p">()</span>
+
+                <span class="c1"># update weights and biases</span>
+                <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">net_obj</span><span class="o">.</span><span class="n">train_ops</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_train&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">train_op_name</span><span class="p">)],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">net_obj</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="n">train_batch_x</span><span class="p">,</span>
+                                                                                   <span class="n">net_obj</span><span class="o">.</span><span class="n">y_target</span><span class="p">:</span> <span class="n">train_batch_y</span><span class="p">})</span>
+
+                <span class="c1"># training loss</span>
+                <span class="k">if</span> <span class="n">visualiseRateTrain</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">epoch_i</span> <span class="o">%</span> <span class="n">visualiseRateTrain</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">train_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">train_ops</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_loss&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">train_op_name</span><span class="p">)]</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span>
+                            <span class="p">{</span><span class="n">net_obj</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="n">train_batch_x</span><span class="p">,</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">y_target</span><span class="p">:</span> <span class="n">train_batch_y</span><span class="p">})</span> <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">batch_i</span> <span class="o">==</span> <span class="n">numIters</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">dataTrain</span><span class="o">.</span><span class="n">reset_batch</span><span class="p">()</span>
+
+            <span class="c1"># outputs average batch error</span>
+            <span class="k">if</span> <span class="n">visualiseRateTrain</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">epoch_i</span> <span class="o">%</span> <span class="n">visualiseRateTrain</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">train_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">train_error</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;epoch: </span><span class="si">%d</span><span class="s2">, training loss: </span><span class="si">%g</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">epoch_i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">train_error</span><span class="p">)))</span>
+
+
+
+
+            <span class="c1"># iterate over validation samples and output loss</span>
+            <span class="k">if</span> <span class="n">visualiseRateVal</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">epoch_i</span> <span class="o">%</span> <span class="n">visualiseRateVal</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                    <span class="n">val_error</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">batch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dataVal</span><span class="o">.</span><span class="n">numSamples</span> <span class="o">//</span> <span class="n">dataVal</span><span class="o">.</span><span class="n">batchSize</span><span class="p">):</span>
+                        <span class="n">val_batch_x</span><span class="p">,</span> <span class="n">val_batch_y</span> <span class="o">=</span> <span class="n">dataVal</span><span class="o">.</span><span class="n">next_batch</span><span class="p">()</span>
+
+                        <span class="n">val_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">train_ops</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_loss&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">train_op_name</span><span class="p">)]</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span>
+                                <span class="p">{</span><span class="n">net_obj</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="n">val_batch_x</span><span class="p">,</span> <span class="n">net_obj</span><span class="o">.</span><span class="n">y_target</span><span class="p">:</span> <span class="n">val_batch_y</span><span class="p">})</span> <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">batch_i</span> <span class="o">==</span> <span class="p">(</span><span class="n">dataVal</span><span class="o">.</span><span class="n">numSamples</span> <span class="o">//</span> <span class="n">dataVal</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">dataVal</span><span class="o">.</span><span class="n">reset_batch</span><span class="p">()</span>
+
+                    <span class="n">val_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">val_error</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;epoch: </span><span class="si">%d</span><span class="s2">, validation loss: </span><span class="si">%g</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">epoch_i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">val_error</span><span class="p">)))</span>
+
+            <span class="n">save_model</span><span class="p">(</span><span class="n">save_addr</span><span class="p">,</span><span class="n">sess</span><span class="p">,</span><span class="n">saver</span><span class="p">,</span><span class="n">epoch_i</span><span class="p">,</span><span class="n">save_epochs</span><span class="p">)</span></div>
+
+
+
+
+
+
+
+
+
+<div class="viewcode-block" id="init_weight"><a class="viewcode-back" href="../../deephyp.html#deephyp.network_ops.init_weight">[docs]</a><span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">wd</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Weight initialisation function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        opts (str): Method for initialising variable. (&#39;gaussian&#39;,&#39;truncated_normal&#39;,&#39;xavier&#39;,&#39;xavier_improved&#39;, \</span>
+<span class="sd">            &#39;constant&#39;).</span>
+<span class="sd">        shape (list): Data shape.</span>
+<span class="sd">        stddev (int): Standard deviation used by &#39;gaussian&#39; and &#39;truncated_normal&#39; variable initialisation methods.</span>
+<span class="sd">        const (int): Constant value to initialise variable to if using &#39;constant&#39; method.</span>
+<span class="sd">        wd (boolean): Whether this variable contributes to weight decay or not.</span>
+<span class="sd">        dtype (tf.dtype): Data type for variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        weights:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opts</span> <span class="o">==</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="n">stddev</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span> <span class="o">==</span> <span class="s1">&#39;truncated_normal&#39;</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="n">stddev</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span> <span class="o">==</span> <span class="s1">&#39;xavier&#39;</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">num_in</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">num_in</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">3.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">num_in</span><span class="p">))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span> <span class="o">==</span> <span class="s1">&#39;xavier_improved&#39;</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">num_out</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">num_out</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">num_out</span><span class="p">))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span> <span class="n">sc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span> <span class="o">==</span> <span class="s1">&#39;constant&#39;</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">const</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown weight initialization method </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="c1"># set up weight decay on weights</span>
+    <span class="k">if</span> <span class="n">wd</span><span class="p">:</span>
+        <span class="n">weight_decay</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">l2_loss</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">add_to_collection</span><span class="p">(</span><span class="s1">&#39;wd&#39;</span><span class="p">,</span> <span class="n">weight_decay</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">weights</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

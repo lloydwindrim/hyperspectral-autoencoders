@@ -1,0 +1,77 @@
+.. deephyp documentation master file, created by
+   sphinx-quickstart on Thu Aug 29 19:50:37 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+train a basic MLP
+==========================
+
+The code below will train an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a \
+folder in your directory called 'models'. Once trained, look at 'test a basic MLP' to try out the trained autoencoder.
+
+The network has three encoder and three decoder layers, with 50 neurons in the first layer, 30 in the second and 10 in \
+the third (the latent layer). A model is trained with 200,000 spectral samples and 100 validation samples with a batch \
+size of 1000 samples. Training lasts for 100 epochs, with a learning rate of 0.001, the Adam optimiser and cosine \
+spectral angle (CSA) reconstruction loss function. The train loss and validation loss are displayed every 10 epochs. \
+Models are saved at 50 and 100 epochs. The models are saved in the models/test_ae_mlp folder.
+
+.. code-block:: python
+
+   import deephyp
+
+   import scipy.io
+   import os
+   import shutil
+   try:
+       from urllib import urlretrieve # python2
+   except:
+       from urllib.request import urlretrieve # python3
+
+
+    # download dataset (if already downloaded, comment this out)
+    urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat', os.path.join(os.getcwd(),'PaviaU.mat') )
+
+    # read data into numpy array
+    mat = scipy.io.loadmat( 'PaviaU.mat' )
+    img = mat[ 'paviaU' ]
+
+    # create a hyperspectral dataset object from the numpy array
+    hypData = deephyp.data.HypImg( img )
+
+    # pre-process data to make the model easier to train
+    hypData.pre_process( 'minmax' )
+
+    # create data iterator objects for training and validation using the pre-processed data
+    trainSamples = 200000
+    valSamples = 100
+    dataTrain = deephyp.data.Iterator( dataSamples=hypData.spectraPrep[:trainSamples, :],
+                              targets=hypData.spectraPrep[:trainSamples, :], batchSize=1000 )
+    dataVal = deephyp.data.Iterator( dataSamples=hypData.spectraPrep[trainSamples:trainSamples+valSamples, :],
+                            targets=hypData.spectraPrep[trainSamples:trainSamples+valSamples, :] )
+
+    # shuffle training data
+    dataTrain.shuffle()
+
+    # setup a fully-connected autoencoder neural network with 3 encoder layers
+    net = deephyp.autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10], activationFunc='relu',
+                                      weightInitOpt='truncated_normal', tiedWeights=None, skipConnect=False )
+
+    # setup a training operation for the network
+    net.add_train_op( name='csa', lossFunc='CSA', learning_rate=1e-3, decay_steps=None, decay_rate=None,
+                      method='Adam', wd_lambda=0.0 )
+
+    # create a directory to save the learnt model
+    model_dir = os.path.join('models','test_ae_mlp')
+    if os.path.exists(model_dir):
+        # if directory already exists, delete it
+        shutil.rmtree(model_dir)
+    os.mkdir(model_dir)
+
+    # train the network for 100 epochs, saving the model at epoch 50 and 100
+    net.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name='csa', n_epochs=100, save_addr=model_dir,
+              visualiseRateTrain=10, visualiseRateVal=10, save_epochs=[50,100])
+
+
+
+
+

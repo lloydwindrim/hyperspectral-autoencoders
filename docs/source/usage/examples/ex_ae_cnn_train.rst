@@ -1,0 +1,200 @@
+.. deephyp documentation master file, created by
+   sphinx-quickstart on Thu Aug 29 19:50:37 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+train and compare an MLP and CNN autoencoder
+============================================
+
+The code block directly below will train an MLP (or dense) autoencoder and a CNN autoencoder on the Pavia Uni \
+hyperspectral dataset. Make sure you have a folder in your directory called 'models'. Once trained, look at the next \
+code block to test out the trained autoencoders. If you have already downloaded the Pavia Uni dataset (e.g. from another \
+example) you can comment out that step.
+
+The MLP network has four encoder and four decoder layers, with 50 neurons in the first layer, 30 in the second, 10 in \
+the third and 3 in the fourth layer (the latent layer) of the encocer. The CNN network has an encoder with three \
+convolutional layers and a fully-connected layer joining the output of the third convolutional layer to the latent layer. \
+The decoder has a fully-connected layer joining the latent layer to the deconvolutional layers followed by three \
+deconvolutional layers. The first convolutional layer has 10 filters of size 20, with the second and third both having \
+10 filters of size 10. All convolutional layers have a stride of 1. The decoder is symmetric. The CNN latent layer has \
+3 neurons (to have the same dimensionality as the MLP).
+
+Both the mlp and cnn models are trained with 200,000 spectral samples and 100 validation samples with a batch size of \
+1000 samples, with a learning rate of 0.001 and the Adam optimiser. The MLP is trained for 100 epochs and the CNN is \
+trained for 10 epochs. Both networks are trained with the cosine spectral angle (CSA) reconstruction loss function. The \
+train loss and validation loss are visualised every 10 epochs, except for the CNN training loss which is visualised \
+every 1 epoch. The MLP is saved at 100 epochs and the CNN is saved at 10 epochs. The models are saved in the \
+models/test_ae_comparison_mlp and models/test_ae_comparison_cnn folders.
+
+.. code-block:: python
+
+   import deephyp
+
+   import scipy.io
+   import os
+   import shutil
+   try:
+       from urllib import urlretrieve # python2
+   except:
+       from urllib.request import urlretrieve # python3
+
+
+    # download dataset (if already downloaded, comment this out)
+    urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat', os.path.join(os.getcwd(),'PaviaU.mat') )
+
+    # read data into numpy array
+    mat = scipy.io.loadmat( 'PaviaU.mat' )
+    img = mat[ 'paviaU' ]
+
+    # create a hyperspectral dataset object from the numpy array
+    hypData = deephyp.data.HypImg( img )
+
+    # pre-process data to make the model easier to train
+    hypData.pre_process( 'minmax' )
+
+    # create data iterator objects for training and validation using the pre-processed data
+    trainSamples = 200000
+    valSamples = 100
+    dataTrain = deephyp.data.Iterator( dataSamples=hypData.spectraPrep[:trainSamples, :],
+                              targets=hypData.spectraPrep[:trainSamples, :], batchSize=1000 )
+    dataVal = deephyp.data.Iterator( dataSamples=hypData.spectraPrep[trainSamples:trainSamples+valSamples, :],
+                            targets=hypData.spectraPrep[trainSamples:trainSamples+valSamples, :] )
+
+    # shuffle training data
+    dataTrain.shuffle()
+
+    # setup a fully-connected autoencoder neural network with 3 encoder layers
+    net_mlp = deephyp.autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30,10,3], activationFunc='relu',
+                                      weightInitOpt='truncated_normal', tiedWeights=None, skipConnect=False )
+
+    # setup a convolutional autoencoder neural network with 3 conv encoder layers
+    net_cnn = deephyp.autoencoder.cnn_1D_network( inputSize=hypData.numBands, zDim=3, encoderNumFilters=[10,10,10] ,
+                                     encoderFilterSize=[20,10,10], activationFunc='relu', weightInitOpt='truncated_normal',
+                                     encoderStride=[1, 1, 1], tiedWeights=None, skipConnect=False )
+
+    # setup a training operation for each network (using the same loss function)
+    net_mlp.add_train_op(name='csa', lossFunc='CSA', learning_rate=1e-3, decay_steps=None, decay_rate=None,
+                     method='Adam', wd_lambda=0.0)
+
+    net_cnn.add_train_op( name='csa', lossFunc='CSA', learning_rate=1e-3, decay_steps=None, decay_rate=None,
+                      method='Adam', wd_lambda=0.0 )
+
+
+
+    # create directories to save the learnt models
+    model_dirs = []
+    for method in ['mlp','cnn']:
+        model_dir = os.path.join('models','test_ae_comparison_%s'%(method))
+        if os.path.exists(model_dir):
+            # if directory already exists, delete it
+            shutil.rmtree(model_dir)
+        os.mkdir(model_dir)
+        model_dirs.append( model_dir )
+
+    # train the mlp model (100 epochs)
+    dataTrain.reset_batch()
+    net_mlp.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name='csa', n_epochs=100, save_addr=model_dirs[0],
+              visualiseRateTrain=10, visualiseRateVal=10, save_epochs=[100])
+
+    # train the cnn model (takes longer, so only 10 epochs)
+    dataTrain.reset_batch()
+    net_cnn.train(dataTrain=dataTrain, dataVal=dataVal, train_op_name='csa', n_epochs=10, save_addr=model_dirs[1],
+              visualiseRateTrain=1, visualiseRateVal=10, save_epochs=[10])
+
+
+
+The code below will test the MLP (or dense) and CNN autoencoder models trained in the above code block, on the Pavia Uni \
+hyperspectral dataset. Make sure you have a folder in your directory called 'results'. Run the testing code \
+block as a separate script to the training code block. The code block below downloads the Pavia Uni ground truth labels.
+
+The networks are setup using the config files output during training. Each of the models are added to their respective \
+networks. The models are each used to encode a latent representation of the Pavia Uni data and a scatter plot figure of \
+the samples in two of the three latent dimensions are shown for each model. The two latent features with the greatest \
+standard deviation of the data samples are used for the scatter plot.
+
+.. code-block:: python
+
+   import deephyp
+
+   import scipy.io
+   import matplotlib.pyplot as plt
+   import os
+   import numpy as np
+
+
+    # read data into numpy array
+    mat = scipy.io.loadmat( 'PaviaU.mat' )
+    img = mat[ 'paviaU' ]
+
+    # create a hyperspectral dataset object from the numpy array
+    hypData = deephyp.data.HypImg( img )
+
+    # pre-process data to make the model easier to train
+    hypData.pre_process( 'minmax' )
+
+    # setup each network from the config files
+    net_mlp = deephyp.autoencoder.mlp_1D_network( configFile=os.path.join('models','test_ae_comparison_mlp','config.json') )
+    net_cnn = deephyp.autoencoder.cnn_1D_network(configFile=os.path.join('models', 'test_ae_comparison_cnn', 'config.json'))
+
+    # assign previously trained parameters to the network, and name each model
+    net_mlp.add_model( addr=os.path.join('models','test_ae_comparison_mlp','epoch_100'), modelName='mlp_100' )
+    net_cnn.add_model(addr=os.path.join('models', 'test_ae_comparison_cnn', 'epoch_10'), modelName='cnn_10')
+
+
+    # feed forward hyperspectral dataset through each encoder model (get latent encoding)
+    dataZ_mlp = net_mlp.encoder( modelName='mlp_100', dataSamples=hypData.spectraPrep )
+    dataZ_cnn = net_cnn.encoder(modelName='cnn_10', dataSamples=hypData.spectraPrep)
+
+
+    # feed forward latent encoding through each decoder model (get reconstruction)
+    dataY_mlp = net_mlp.decoder(modelName='mlp_100', dataZ=dataZ_mlp)
+    dataY_cnn = net_cnn.decoder(modelName='cnn_10', dataZ=dataZ_cnn)
+
+
+
+    #--------- visualisation ----------------------------------------
+
+    # download dataset ground truth pixel labels (if already downloaded, comment this out)
+    urlretrieve( 'http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat',
+                       os.path.join(os.getcwd(), 'PaviaU_gt.mat') )
+
+    # read labels into numpy array
+    mat_gt = scipy.io.loadmat( 'PaviaU_gt.mat' )
+    img_gt = mat_gt['paviaU_gt']
+    gt = np.reshape( img_gt , ( -1 ) )
+
+    method = ['mlp','cnn']
+
+    dataZ_collection = [dataZ_mlp, dataZ_cnn]
+    for j,dataZ in enumerate(dataZ_collection):
+
+        # save a scatter plot image of 2 of 3 latent dimensions
+        idx = np.argsort(-np.std(dataZ, axis=0))
+        fig, ax = plt.subplots()
+        for i,gt_class in enumerate(['asphalt', 'meadow', 'gravel','tree','painted metal','bare soil','bitumen','brick','shadow']):
+            ax.scatter(dataZ[gt == i+1, idx[0]], dataZ[gt == i+1, idx[1]], c='C%i'%i,s=5,label=gt_class)
+        ax.legend()
+        plt.xlabel('latent feature %i'%(idx[0]))
+        plt.ylabel('latent feature %i' % (idx[1]))
+        plt.title('latent representation: %s'%(method[j]))
+        plt.savefig(os.path.join('results', 'test_comparison_%s.png'%(method[j])))
+
+
+    # reshape reconstruction to original image dimensions
+    imgY_mlp = np.reshape(dataY_mlp, (hypData.numRows, hypData.numCols, -1))
+    imgY_cnn = np.reshape(dataY_cnn, (hypData.numRows, hypData.numCols, -1))
+    imgX = np.reshape(hypData.spectraPrep, (hypData.numRows, hypData.numCols, -1))
+
+    # save plot comparing pre-processed 'meadow' spectra input with decoder reconstruction
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    ax.plot(range(hypData.numBands),imgX[576, 210, :],label='pre-processed input')
+    ax.plot(range(hypData.numBands),imgY_mlp[576, 210, :],label='mlp reconstruction')
+    ax.plot(range(hypData.numBands), imgY_cnn[576, 210, :], label='cnn reconstruction')
+    plt.xlabel('band')
+    plt.ylabel('value')
+    plt.title('meadow spectra')
+    ax.legend()
+    plt.savefig(os.path.join('results', 'test_reconstruct_comparison.png'))
+
+

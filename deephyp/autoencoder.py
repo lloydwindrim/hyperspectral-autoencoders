@@ -1,11 +1,13 @@
 '''
-    File name: autoencoder.py
-    Author: Lloyd Windrim
-    Date created: June 2019
-    Python package: deephyp
-
     Description: high-level deep learning classes for building, training and using unsupervised autoencoders. Uses
     functions from the low-level network_ops module.
+
+    - File name: autoencoder.py
+    - Author: Lloyd Windrim
+    - Date created: June 2019
+    - Python package: deephyp
+
+
 
 '''
 
@@ -14,27 +16,52 @@ from deephyp import network_ops as net_ops
 
 
 class mlp_1D_network():
+    """ Class for setting up a 1-D multi-layer perceptron (mlp) autoencoder network. Layers are all fully-connected \
+        (i.e. dense).
+
+    Args:
+        configFile (str): Optional way of setting up the network. All other inputs can be ignored (will be overwritten). \
+                        Pass the address of the .json config file.
+        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands). Value must be input if \
+                        not using a config file.
+        encoderSize (int list): Number of nodes at each layer of the encoder. List length is number of encoder layers.
+        activationFunc (str): Activation function for all layers except the last one. Current options: ['sigmoid', \
+                        'relu', 'linear'].
+        tiedWeights (binary list or None): Specifies whether or not to tie weights at each layer:
+                        - 1: tied weights of specific encoder layer to corresponding decoder weights
+                        - 0: do not tie weights of specific layer
+                        - None: sets all layers to 0
+        weightInitOpt (string): Method of weight initialisation. Current options: ['gaussian', 'truncated_normal', \
+                        'xavier', 'xavier_improved'].
+        weightStd (float): Used by 'gaussian' and 'truncated_normal' weight initialisation methods.
+        skipConnect (boolean): Whether to use skip connections throughout the network.
+        activationFuncFinal (str): Activation function for final layer. Current options: ['sigmoid', 'relu', 'linear'].
+
+    Attributes:
+        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands).
+        activationFunc (str): Activation function for all layers except the last one.
+        tiedWeights (binary list): Whether (1) or not (0) the weights of an encoder layer are tied to a decoder layer.
+        skipConnect (boolean): Whether the network uses skip connections between corresponding encoder and decoder layers.
+        weightInitOpt (string): Method of weight initialisation.
+        weightStd (float): Parameter for 'gaussian' and 'truncated_normal' weight initialisation methods.
+        activationFuncFinal (str): Activation function for final layer.
+        encoderSize (int list): Number of inputs and number of nodes at each layer of the encoder.
+        decoderSize (int list): Number of nodes at each layer of the decoder and number of outputs.
+        z (tensor): Latent representation of data. Accessible through the *encoder* class function, requiring a trained \
+            model.
+        y_recon (tensor): Reconstructed output of network. Accessible through the *decoder* and *encoder_decoder* class \
+            functions, requiring a trained model.
+        train_ops (dict): Dictionary of names of train and loss ops (suffixed with _train and _loss) added to the \
+            network using the *add_train_op* class function. The name (without suffix) is passed to the *train* class \
+            function to train the network with the referenced train and loss op.
+        modelsAddrs (dict): Dictionary of model names added to the network using the *add_model* class function. The \
+            names reference models which can be used by the *encoder*, *decoder* and *encoder_decoder* class functions.
+
+    """
 
     def __init__( self , configFile=None, inputSize=None , encoderSize=[50,30,10] , activationFunc='sigmoid' ,
                   tiedWeights=None , weightInitOpt='truncated_normal' , weightStd=0.1, skipConnect=False,
                   activationFuncFinal='linear'  ):
-
-        """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
-        - input:
-            configFile: (.json) Optional way of setting up the network. All other inputs can be ignored (will be overwritten).
-            inputSize: (int) Number of dimensions of input data (i.e. number of spectral bands). Value must be input if
-                            not done so with a config file.
-            encoderSize: (int list) Number of nodes at each layer of the encoder. List length is number of encoder layers.
-            activationFunc: (str) [sigmoid, relu, linear] Function for all layers except the last one.
-            tiedWeights: (binary list or None) Specifies whether or not to tie weights at each layer.
-                            1 - tied weights of specific encoder layer to corresponding decoder weights.
-                            0 - do not tie weights of specific layer
-                            None - sets all layers to 0
-            weightInitOpt: (string) Method of weight initialisation. [gaussian, truncated_normal, xavier, xavier_improved]
-            weightStd: (float) Used by 'gaussian' and 'truncated_normal' weight initialisation methods
-            skipConnect: (boolean) Whether to use skip connections throughout the network.
-            activationFuncFinal: (str) [sigmoid, relu, linear] Activation function for final layer.
-        """
 
         self.inputSize = inputSize
         self.activationFunc = activationFunc
@@ -135,20 +162,22 @@ class mlp_1D_network():
         self.y_recon = self.a['a%d' % (absLayerNum)]
 
 
+
     def add_train_op(self,name,lossFunc='CSA',learning_rate=1e-3, decay_steps=None, decay_rate=None,
                      piecewise_bounds=None, piecewise_values=None, method='Adam', wd_lambda=0.0 ):
-        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a
-            name, and the train op and loss opp are stored in a dictionary under that name
-        - input:
-            name: (str) Name of the training op (to refer to it later in-case of multiple training ops).
-            lossFunc: (str) Reconstruction loss function
-            learning rate: (float) Controls the degree to which the weights are updated during training.
-            decay_steps: (int) Epoch frequency at which to decay the learning rate.
-            decay_rate: (float) Fraction at which to decay the learning rate.
-            piecewise_bounds: (int list) Epoch step intervals for decaying the learning rate. Alternative to decay steps.
-            piecewise_values: (float list) Rate at which to decay the learning rate at the piecewise_bounds.
-            method: (str) Optimisation method.
-            wd_lambda: (float) Scalar to control weighting of weight decay in loss.
+        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a \
+            name, and the train op and loss opp are stored in a dictionary (train_ops) under that name.
+
+        Args:
+            name (str): Name of the training op (to refer to it later in-case of multiple training ops).
+            lossFunc (str): Reconstruction loss function.
+            learning_rate (float): Controls the degree to which the weights are updated during training.
+            decay_steps (int): Epoch frequency at which to decay the learning rate.
+            decay_rate (float): Fraction at which to decay the learning rate.
+            piecewise_bounds (int list): Epoch step intervals for decaying the learning rate. Alternative to decay steps.
+            piecewise_values (float list): Rate at which to decay the learning rate at the piecewise_bounds.
+            method (str): Optimisation method.
+            wd_lambda (float): Scalar to control weighting of weight decay in loss.
 
         """
         # construct loss op
@@ -168,17 +197,18 @@ class mlp_1D_network():
     def train(self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0,
               save_epochs=[1000]):
         """ Calls network_ops function to train a network.
-        - input:
-            dataTrain: (obj) Iterator object for training data.
-            dataVal: (obj) Iterator object for validation data.
-            train_op_name: (str) Name of training op created.
-            n_epochs: (int) Number of loops through dataset to train for.
-            save_addr: (str) Address of a directory to save checkpoints for desired epochs, or address of saved
-                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the
+
+        Args:
+            dataTrain (obj): Iterator object for training data.
+            dataVal (obj): Iterator object for validation data.
+            train_op_name (str): Name of training op created.
+            n_epochs (int): Number of loops through dataset to train for.
+            save_addr (str): Address of a directory to save checkpoints for desired epochs, or address of saved \
+                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the \
                         network will start training from there. Otherwise it will be trained from scratch.
-            visualiseRateTrain: (int) Epoch rate at which to print training loss in console
-            visualiseRateVal: (int) Epoch rate at which to print validation loss in console
-            save_epochs: (int list) Epochs to save checkpoints at.
+            visualiseRateTrain (int): Epoch rate at which to print training loss in console.
+            visualiseRateVal (int): Epoch rate at which to print validation loss in console.
+            save_epochs (int list): Epochs to save checkpoints at.
         """
 
         # make sure a checkpoint is saved at n_epochs
@@ -191,20 +221,23 @@ class mlp_1D_network():
 
     def add_model(self,addr,modelName):
         """ Loads a saved set of model parameters for the network.
-        - input:
-            addr: (str) Address of the directory containing the checkpoint files.
-            modelName: (str) Name of the model (to refer to it later in-case of multiple models for a given network).
+
+        Args:
+            addr (str): Address of the directory containing the checkpoint files.
+            modelName (str): Name of the model (to refer to it later in-case of multiple models for a given network).
         """
 
         self.modelsAddrs[modelName] = addr
 
     def encoder( self, modelName, dataSamples  ):
-        """ Extract the latent variable of some dataSamples using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-        - output:
-            dataZ: (array) Shape [numSamples x arbitrary]
+        """ Extract the latent variable of some dataSamples using a trained model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataSample (np.array): Shape [numSamples x inputSize].
+
+        Returns:
+            (np.array): Latent representation z of dataSamples. Shape [numSamples x arbitrary].
 
         """
 
@@ -221,12 +254,16 @@ class mlp_1D_network():
 
 
     def decoder( self, modelName, dataZ  ):
-        """ Extract the reconstruction of some dataSamples (with latent representation) using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataZ: (array) Latent representation of data samples. Shape [numSamples x arbitrary]
-        - output:
-            dataY_recon: (array) Reconstructed data. Shape [numSamples x arbitrary]
+        """ Extract the reconstruction of some dataSamples from their latent representation encoding  using a trained \
+            model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataZ (np.array): Latent representation of data samples to reconstruct using the network. Shape \
+                    [numSamples x arbitrary].
+
+        Returns:
+            (np.array): Reconstructed data (y_recon attribute). Shape [numSamples x arbitrary].
 
         """
 
@@ -242,12 +279,14 @@ class mlp_1D_network():
 
 
     def encoder_decoder( self, modelName, dataSamples  ):
-        """ Extract the reconstruction of some dataSamples using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-        - output:
-            dataY_recon: (array) Reconstructed data. Shape [numSamples x arbitrary]
+        """ Extract the reconstruction of some dataSamples using a trained model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataSample (np.array): Data samples to reconstruct using the network. Shape [numSamples x inputSize].
+
+        Returns:
+            (np.array): Reconstructed data (y_recon attribute). Shape [numSamples x arbitrary].
 
         """
 
@@ -266,34 +305,73 @@ class mlp_1D_network():
 
 
 class cnn_1D_network():
+    """ Class for setting up a 1-D convolutional autoencoder network. Builds a network with an encoder containing  \
+        convolutional layers followed by a single fully-connected layer to map from the final convolutional layer in \
+        the encoder to the latent layer. The decoder contains a single fully-connected layer and then several \
+        deconvolutional layers which reconstruct the spectra in the output.
+
+
+    Args:
+        configFile (str): Optional way of setting up the network. All other inputs can be ignored (will be overwritten). \
+                        Pass the address of the .json config file.
+        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands). Value must be input if not \
+                        using a config file.
+        zDim (int): Dimensionality of latent vector.
+        encoderNumFilters (int list): Number of filters at each layer of the encoder. List length is number of \
+                        convolutional encoder layers. Note that there is a single mlp layer after the last \
+                        convolutional layer.
+        encoderFilterSize (int list): Size of filter at each layer of the encoder. List length is number of encoder layers.
+        activationFunc (str): Activation function for all layers except the last one. Current options: ['sigmoid', \
+                        'relu', 'linear'].
+        tiedWeights (binary list or None): Specifies whether or not to tie weights at each layer:
+                    - 1: tied weights of specific encoder layer to corresponding decoder weights
+                    - 0: do not tie weights of specific layer
+                    - None: sets all layers to 0
+        weightInitOpt (string): Method of weight initialisation. Current options: ['gaussian', 'truncated_normal', \
+                    'xavier', 'xavier_improved'].
+        weightStd (float): Used by 'gaussian' and 'truncated_normal' weight initialisation methods.
+        skipConnect (boolean): Whether to use skip connections throughout the network.
+        padding (str): Type of padding used. Current options: ['VALID', 'SAME'].
+        encoderStride (int list): Stride at each convolutional encoder layer.
+        activationFuncFinal (str): Activation function for final layer. Current options: ['sigmoid', 'relu', 'linear'].
+
+
+    Attributes:
+        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands).
+        activationFunc (str): Activation function for all layers except the last one.
+        tiedWeights (binary list): Whether (1) or not (0) the weights of an encoder layer are tied to a decoder layer.
+        skipConnect (boolean): Whether the network uses skip connections between corresponding encoder and decoder layers.
+        weightInitOpt (string): Method of weight initialisation.
+        weightStd (float): Parameter for 'gaussian' and 'truncated_normal' weight initialisation methods.
+        activationFuncFinal (str): Activation function for final layer.
+        encoderNumFilters (int list): Number of filters at each layer of the encoder. List length is number of \
+                        convolutional encoder layers. Note that there is a single mlp layer after the last \
+                        convolutional layer.
+        encoderFilterSize (int list): Size of filter at each layer of the encoder. List length is number of encoder layers.
+        encoderStride (int list): Stride at each convolutional encoder layer.
+        decoderNumFilters (int list):
+        decoderFilterSize (int list):
+        decoderStride (int list):
+        zDim (int): Dimensionality of latent vector.
+        padding (str): Type of padding used. Current options: ['VALID', 'SAME'].
+        z (tensor): Latent representation of data. Accessible through the *encoder* class function, requiring a trained \
+            model.
+        y_recon (tensor): Reconstructed output of network. Accessible through the *decoder* and *encoder_decoder* class \
+            functions, requiring a trained model.
+        train_ops (dict): Dictionary of names of train and loss ops (suffixed with _train and _loss) added to the \
+            network using the *add_train_op* class function. The name (without suffix) is passed to the *train* class \
+            function to train the network with the referenced train and loss op.
+        modelsAddrs (dict): Dictionary of model names added to the network using the *add_model* class function. The \
+            names reference models which can be used by the *encoder*, *decoder* and *encoder_decoder* class functions.
+
+
+
+    """
 
     def __init__( self , configFile=None, inputSize=None , zDim=5, encoderNumFilters=[10,10,10] ,
                   encoderFilterSize=[20,10,10], activationFunc='sigmoid', tiedWeights=None,
                   weightInitOpt='truncated_normal', weightStd=0.1, skipConnect=False, padding='VALID',
                   encoderStride=[1,1,1], activationFuncFinal='linear' ):
-
-        """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
-        - input:
-            configFile: (.json) Optional way of setting up the network. All other inputs can be ignored (will be overwritten).
-            inputSize: (int) Number of dimensions of input data (i.e. number of spectral bands). Value must be input if
-                            not done so with a config file.
-            zDim: (int) Dimensionality of latent vector.
-            encoderNumFilters: (int list) Number of filters at each layer of the encoder. List length is number of
-                            convolutional encoder layers. Note that there is a single mlp layer after the last
-                            convolutional layer.
-            encoderFilterSize: (int list) Size of filter at each layer of the encoder. List length is number of encoder layers.
-            activationFunc: (str) [sigmoid, relu, linear] Function for all layers except the last one.
-            tiedWeights: (binary list or None) Specifies whether or not to tie weights at each layer.
-                            1 - tied weights of specific encoder layer to corresponding decoder weights.
-                            0 - do not tie weights of specific layer
-                            None - sets all layers to 0
-            weightInitOpt: (str) Method of weight initialisation. [gaussian, truncated_normal, xavier, xavier_improved]
-            weightStd: (float) Used by 'gaussian' and 'truncated_normal' weight initialisation methods
-            skipConnect: (boolean) Whether to use skip connections throughout the network.
-            padding: (string)
-            encoderStride: (int list) Stride at each convolutional encoder layer.
-            activationFuncFinal: (str) [sigmoid, relu, linear] Activation function for final layer.
-        """
 
 
         self.inputSize = inputSize
@@ -439,20 +517,23 @@ class cnn_1D_network():
         # output of final layer
         self.y_recon = tf.squeeze( self.a['a%d' % (absLayerNum)] , axis=2)
 
+
+
     def add_train_op(self,name,lossFunc='SSE',learning_rate=1e-3, decay_steps=None, decay_rate=None,
                      piecewise_bounds=None, piecewise_values=None, method='Adam', wd_lambda=0.0 ):
-        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a name, and the train op
-            and loss opp are stored in a dictionary under that name
-        - input:
-            name: (str) Name of the training op (to refer to it later in-case of multiple training ops).
-            lossFunc: (str) Reconstruction loss function
-            learning rate: (float) Controls the degree to which the weights are updated during training.
-            decay_steps: (int) epoch frequency at which to decay the learning rate.
-            decay_rate: (float) fraction at which to decay the learning rate.
-            piecewise_bounds: (int list) epoch step intervals for decaying the learning rate. Alternative to decay steps.
-            piecewise_values: (float list) rate at which to decay the learning rate at the piecewise_bounds.
-            method: (str) optimisation method.
-            wd_lambda: (float) scalar to control weighting of weight decay in loss.
+        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a name, \
+            and the train op and loss opp are stored in a dictionary (train_ops) under that name.
+
+        Args:
+            name (str): Name of the training op (to refer to it later in-case of multiple training ops).
+            lossFunc (str): Reconstruction loss function.
+            learning_rate (float): Controls the degree to which the weights are updated during training.
+            decay_steps (int): Epoch frequency at which to decay the learning rate.
+            decay_rate (float): Fraction at which to decay the learning rate.
+            piecewise_bounds (int list): Epoch step intervals for decaying the learning rate. Alternative to decay steps.
+            piecewise_values (float list): Rate at which to decay the learning rate at the piecewise_bounds.
+            method (str): Optimisation method.
+            wd_lambda (float): Scalar to control weighting of weight decay in loss.
 
         """
         # construct loss op
@@ -471,17 +552,18 @@ class cnn_1D_network():
     def train(self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0,
               save_epochs=[1000]):
         """ Calls network_ops function to train a network.
-        - input:
-            dataTrain: (obj) Iterator object for training data.
-            dataVal: (obj) Iterator object for validation data.
-            train_op_name: (string) Name of training op created.
-            n_epochs: (int) Number of loops through dataset to train for.
-            save_addr: (str) Address of a directory to save checkpoints for desired epochs, or address of saved
-                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the
+
+        Args:
+            dataTrain (obj): Iterator object for training data.
+            dataVal (obj): Iterator object for validation data.
+            train_op_name (str): Name of training op created.
+            n_epochs (int): Number of loops through dataset to train for.
+            save_addr (str): Address of a directory to save checkpoints for desired epochs, or address of saved \
+                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the \
                         network will start training from there. Otherwise it will be trained from scratch.
-            visualiseRateTrain: (int) Epoch rate at which to print training loss in console
-            visualiseRateVal: (int) Epoch rate at which to print validation loss in console
-            save_epochs: (int list) Epochs to save checkpoints at.
+            visualiseRateTrain (int): Epoch rate at which to print training loss in console.
+            visualiseRateVal (int): Epoch rate at which to print validation loss in console.
+            save_epochs (int list): Epochs to save checkpoints at.
         """
 
         # make sure a checkpoint is saved at n_epochs
@@ -493,20 +575,24 @@ class cnn_1D_network():
 
     def add_model(self,addr,modelName):
         """ Loads a saved set of model parameters for the network.
-        - input:
-            addr: (str) Address of the directory containing the checkpoint files.
-            modelName: (str) Name of the model (to refer to it later in-case of multiple models for a given network).
+
+        Args:
+            addr (str): Address of the directory containing the checkpoint files.
+            modelName (str): Name of the model (to refer to it later in-case of multiple models for a given network).
         """
 
         self.modelsAddrs[modelName] = addr
 
+
     def encoder( self, modelName, dataSamples  ):
-        """ Extract the latent variable of some dataSamples using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-        - output:
-            dataZ: (array) Shape [numSamples x arbitrary]
+        """ Extract the latent variable of some dataSamples using a trained model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataSample (np.array): Shape [numSamples x inputSize].
+
+        Returns:
+            (np.array): Latent representation z of dataSamples. Shape [numSamples x arbitrary].
 
         """
 
@@ -523,12 +609,16 @@ class cnn_1D_network():
 
 
     def decoder( self, modelName, dataZ  ):
-        """ Extract the reconstruction of some dataSamples (with latent representation) using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataZ: (array) Latent representation of data samples. Shape [numSamples x arbitrary]
-        - output:
-            dataY_recon: (array) Reconstructed data. Shape [numSamples x inputSize]
+        """ Extract the reconstruction of some dataSamples from their latent representation encoding  using a trained \
+            model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataZ (np.array): Latent representation of data samples to reconstruct using the network. Shape \
+                    [numSamples x arbitrary].
+
+        Returns:
+            (np.array): Reconstructed data (y_recon attribute). Shape [numSamples x arbitrary].
 
         """
 
@@ -544,12 +634,14 @@ class cnn_1D_network():
 
 
     def encoder_decoder( self, modelName, dataSamples  ):
-        """ Extract the reconstruction of some dataSamples using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-        - output:
-            dataY_recon: (array) Reconstructed data. Shape [numSamples x inputSize]
+        """ Extract the reconstruction of some dataSamples using a trained model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataSample (np.array): Data samples to reconstruct using the network. Shape [numSamples x inputSize].
+
+        Returns:
+            (np.array): Reconstructed data (y_recon attribute). Shape [numSamples x arbitrary].
 
         """
 

@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deephyp.classifier.cnn_1D_network &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Code Examples" href="../examples.html" />
+    <link rel="prev" title="deephyp.classifier" href="mod_clf.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mod_data.html">deephyp.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mod_ae.html">deephyp.autoencoder</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="mod_clf.html">deephyp.classifier</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">deephyp.classifier.cnn_1D_network</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Code Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="mod_clf.html">deephyp.classifier</a> &raquo;</li>
+        
+      <li>deephyp.classifier.cnn_1D_network</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/usage/mods/mod_clf_cnn.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deephyp-classifier-cnn-1d-network">
+<h1>deephyp.classifier.cnn_1D_network<a class="headerlink" href="#deephyp-classifier-cnn-1d-network" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="deephyp.classifier.cnn_1D_network">
+<em class="property">class </em><code class="descclassname">deephyp.classifier.</code><code class="descname">cnn_1D_network</code><span class="sig-paren">(</span><em>configFile=None, inputSize=None, numClasses=None, convFilterSize=[20, 10, 10], convNumFilters=[10, 10, 10], convStride=[1, 1, 1], fcSize=[20, 20], activationFunc='relu', weightInitOpt='truncated_normal', weightStd=0.1, padding='VALID'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for setting up a 1-D convolutional neural network (cnn) for classification. Contains several convolutional         layers followed by several fully-connected layers. The network outputs scores for each class, for a given set         of input data samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>configFile</strong> (<em>str</em>) – Optional way of setting up the network. All other inputs can be ignored (will be overwritten).                         Pass the address of the .json config file.</li>
+<li><strong>inputSize</strong> (<em>int</em>) – Number of dimensions of input data (i.e. number of spectral bands). Value must be input if not                         using a config file.</li>
+<li><strong>numClasses</strong> (<em>int</em>) – Number of labelled classes in the dataset (not including the zero class).</li>
+<li><strong>convFilterSize</strong> (<em>int list</em>) – Size of filter at each convolutional layer. List length is number of                         convolutional layers.</li>
+<li><strong>convNumFilters</strong> (<em>int list</em>) – Number of filters at each convolutional layer of the network. List length is                         number of convolutional layers.</li>
+<li><strong>convStride</strong> (<em>int list</em>) – Stride at each convolutional layer. List length is number of convolutional layers.         fcSize (int list): Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length                         is number of fully-connected layers.</li>
+<li><strong>activationFunc</strong> (<em>str</em>) – Activation function for all layers except the last one. Current options: [‘sigmoid’,                         ‘relu’, ‘linear’].</li>
+<li><strong>weightInitOpt</strong> (<em>string</em>) – Method of weight initialisation. Current options: [‘gaussian’, ‘truncated_normal’,                     ‘xavier’, ‘xavier_improved’].</li>
+<li><strong>weightStd</strong> (<em>float</em>) – Used by ‘gaussian’ and ‘truncated_normal’ weight initialisation methods.</li>
+<li><strong>padding</strong> (<em>str</em>) – Type of padding used. Current options: [‘VALID’, ‘SAME’].</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.inputSize">
+<code class="descname">inputSize</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.inputSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of dimensions of input data (i.e. number of spectral bands).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.activationFunc">
+<code class="descname">activationFunc</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.activationFunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activation function for all layers except the last one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.weightInitOpt">
+<code class="descname">weightInitOpt</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.weightInitOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method of weight initialisation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.weightStd">
+<code class="descname">weightStd</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.weightStd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter for ‘gaussian’ and ‘truncated_normal’ weight initialisation methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.convFilterSize">
+<code class="descname">convFilterSize</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.convFilterSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of filter at each convolutional layer. List length is number of                         convolutional layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.convNumFilters">
+<code class="descname">convNumFilters</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.convNumFilters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of filters at each convolutional layer of the network. List length is                         number of convolutional layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.convStride">
+<code class="descname">convStride</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.convStride" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stride at each convolutional layer. List length is number of convolutional layers.         padding (str): Type of padding used. Current options: [‘VALID’, ‘SAME’].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.fcSize">
+<code class="descname">fcSize</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.fcSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length                         is number of fully-connected layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.numLayers">
+<code class="descname">numLayers</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.numLayers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of layers (convolutional and fully-connected).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.y_pred">
+<code class="descname">y_pred</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.y_pred" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output of network - class scores with shape [numSamples x numClasses]. Accessible through the             <em>predict_scores</em> class functions, requiring a trained model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">tensor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.train_ops">
+<code class="descname">train_ops</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.train_ops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of names of train and loss ops (suffixed with _train and _loss) added to the             network using the <em>add_train_op</em> class function. The name (without suffix) is passed to the <em>train</em> class             function to train the network with the referenced train and loss op.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.classifier.cnn_1D_network.modelsAddrs">
+<code class="descname">modelsAddrs</code><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.modelsAddrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of model names added to the network using the <em>add_model</em> class function. The             names reference models which can be used by the <em>predict_scores</em>, <em>predict_labels</em> and <em>predict_features</em>             class functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.classifier.cnn_1D_network.add_model">
+<code class="descname">add_model</code><span class="sig-paren">(</span><em>addr</em>, <em>modelName</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network.add_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.add_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a saved set of model parameters for the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>addr</strong> (<em>str</em>) – Address of the directory containing the checkpoint files.</li>
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model (to refer to it later in-case of multiple models for a given network).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.classifier.cnn_1D_network.add_train_op">
+<code class="descname">add_train_op</code><span class="sig-paren">(</span><em>name</em>, <em>balance_classes=True</em>, <em>learning_rate=0.001</em>, <em>decay_steps=None</em>, <em>decay_rate=None</em>, <em>piecewise_bounds=None</em>, <em>piecewise_values=None</em>, <em>method='Adam'</em>, <em>wd_lambda=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network.add_train_op"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.add_train_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a             name, and the train op and loss opp are stored in a dictionary (train_ops) under that name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) – Name of the training op (to refer to it later in-case of multiple training ops).</li>
+<li><strong>balance_classes</strong> (<em>boolean</em>) – Weight the samples during training so that the contribtion to the loss of each                             class is balanced by the number of samples the class has (in a given batch).</li>
+<li><strong>learning_rate</strong> (<em>float</em>) – Controls the degree to which the weights are updated during training.</li>
+<li><strong>decay_steps</strong> (<em>int</em>) – Epoch frequency at which to decay the learning rate.</li>
+<li><strong>decay_rate</strong> (<em>float</em>) – Fraction at which to decay the learning rate.</li>
+<li><strong>piecewise_bounds</strong> (<em>int list</em>) – Epoch step intervals for decaying the learning rate. Alternative to decay steps.</li>
+<li><strong>piecewise_values</strong> (<em>float list</em>) – Rate at which to decay the learning rate at the piecewise_bounds.</li>
+<li><strong>method</strong> (<em>str</em>) – Optimisation method.</li>
+<li><strong>wd_lambda</strong> (<em>float</em>) – Scalar to control weighting of weight decay in loss.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.classifier.cnn_1D_network.predict_features">
+<code class="descname">predict_features</code><span class="sig-paren">(</span><em>modelName</em>, <em>dataSamples</em>, <em>layer</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network.predict_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.predict_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the predicted feature values at a particular layer of the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model to use (previously added with add_model() )</li>
+<li><strong>dataSamples</strong> (<em>np.array</em>) – Shape [numSamples x inputSize]</li>
+<li><strong>layer</strong> (<em>int</em>) – Layer at which to extract features. Must be between 1 and numLayers inclusive.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Values of neurons at layer. Shape [numSamples x numNeurons] if fully-connected layer and                         [numSamples x convDim1 x convDim2] if convolutional layer.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.classifier.cnn_1D_network.predict_labels">
+<code class="descname">predict_labels</code><span class="sig-paren">(</span><em>modelName</em>, <em>dataSamples</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network.predict_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.predict_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the predicted classification labels of some dataSamples using a trained model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model to use (previously added with add_model() )</li>
+<li><strong>dataSamples</strong> (<em>array</em>) – Shape [numSamples x inputSize]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Predicted classification labels of dataSamples. Shape [numSamples].</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.classifier.cnn_1D_network.predict_scores">
+<code class="descname">predict_scores</code><span class="sig-paren">(</span><em>modelName</em>, <em>dataSamples</em>, <em>useSoftmax=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network.predict_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.predict_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the predicted classification scores of some dataSamples using a trained model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model to use (previously added with add_model() ).</li>
+<li><strong>dataSamples</strong> (<em>np.array</em>) – Shape [numSamples x inputSize].</li>
+<li><strong>useSoftmax</strong> (<em>boolean</em>) – Pass predicted scores output by network through a softmax function.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Predicted classification scores of dataSamples. Shape [numSamples x numClasses].</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.classifier.cnn_1D_network.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0, save_epochs=[1000]</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/classifier.html#cnn_1D_network.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.classifier.cnn_1D_network.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls network_ops function to train a network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dataTrain</strong> (<em>obj</em>) – Iterator object for training data.</li>
+<li><strong>dataVal</strong> (<em>obj</em>) – Iterator object for validation data.</li>
+<li><strong>train_op_name</strong> (<em>str</em>) – Name of training op created.</li>
+<li><strong>n_epochs</strong> (<em>int</em>) – Number of loops through dataset to train for.</li>
+<li><strong>save_addr</strong> (<em>str</em>) – Address of a directory to save checkpoints for desired epochs, or address of saved                         checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the                         network will start training from there. Otherwise it will be trained from scratch.</li>
+<li><strong>visualiseRateTrain</strong> (<em>int</em>) – Epoch rate at which to print training loss in console.</li>
+<li><strong>visualiseRateVal</strong> (<em>int</em>) – Epoch rate at which to print validation loss in console.</li>
+<li><strong>save_epochs</strong> (<em>int list</em>) – Epochs to save checkpoints at.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../examples.html" class="btn btn-neutral float-right" title="Code Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mod_clf.html" class="btn btn-neutral float-left" title="deephyp.classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

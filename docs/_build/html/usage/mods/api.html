@@ -1,0 +1,574 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Reference &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>API Reference</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/usage/mods/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="deephyp.autoencoder.mlp_1D_network">
+<em class="property">class </em><code class="descclassname">deephyp.autoencoder.</code><code class="descname">mlp_1D_network</code><span class="sig-paren">(</span><em>configFile=None, inputSize=None, encoderSize=[50, 30, 10], activationFunc='sigmoid', tiedWeights=None, weightInitOpt='truncated_normal', weightStd=0.1, skipConnect=False, activationFuncFinal='linear'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for setting up a 1-D multi-layer perceptron (mlp) autoencoder network. Layers are all fully-connected         (i.e. dense).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>configFile</strong> (<em>str</em>) – Optional way of setting up the network. All other inputs can be ignored (will be overwritten).                         Pass the address of the .json config file.</li>
+<li><strong>inputSize</strong> (<em>int</em>) – Number of dimensions of input data (i.e. number of spectral bands). Value must be input if                         not using a config file.</li>
+<li><strong>encoderSize</strong> (<em>int list</em>) – Number of nodes at each layer of the encoder. List length is number of encoder layers.</li>
+<li><strong>activationFunc</strong> (<em>str</em>) – Activation function for all layers except the last one. Current options: [‘sigmoid’,                         ‘relu’, ‘linear’].</li>
+<li><strong>tiedWeights</strong> (<em>binary list</em><em> or </em><em>None</em>) – Specifies whether or not to tie weights at each layer:
+- 1: tied weights of specific encoder layer to corresponding decoder weights
+- 0: do not tie weights of specific layer
+- None: sets all layers to 0</li>
+<li><strong>weightInitOpt</strong> (<em>string</em>) – Method of weight initialisation. Current options: [‘gaussian’, ‘truncated_normal’,                         ‘xavier’, ‘xavier_improved’].</li>
+<li><strong>weightStd</strong> (<em>float</em>) – Used by ‘gaussian’ and ‘truncated_normal’ weight initialisation methods.</li>
+<li><strong>skipConnect</strong> (<em>boolean</em>) – Whether to use skip connections throughout the network.</li>
+<li><strong>activationFuncFinal</strong> (<em>str</em>) – Activation function for final layer. Current options: [‘sigmoid’, ‘relu’, ‘linear’].</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.inputSize">
+<code class="descname">inputSize</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.inputSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of dimensions of input data (i.e. number of spectral bands).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.activationFunc">
+<code class="descname">activationFunc</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.activationFunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activation function for all layers except the last one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.tiedWeights">
+<code class="descname">tiedWeights</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.tiedWeights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether (1) or not (0) the weights of an encoder layer are tied to a decoder layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">binary list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.skipConnect">
+<code class="descname">skipConnect</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.skipConnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the network uses skip connections between corresponding encoder and decoder layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.weightInitOpt">
+<code class="descname">weightInitOpt</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.weightInitOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method of weight initialisation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.weightStd">
+<code class="descname">weightStd</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.weightStd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter for ‘gaussian’ and ‘truncated_normal’ weight initialisation methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.activationFuncFinal">
+<code class="descname">activationFuncFinal</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.activationFuncFinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activation function for final layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.encoderSize">
+<code class="descname">encoderSize</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.encoderSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of inputs and number of nodes at each layer of the encoder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.decoderSize">
+<code class="descname">decoderSize</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.decoderSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of nodes at each layer of the decoder and number of outputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.z">
+<code class="descname">z</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Latent representation of data. Accessible through the <em>encoder</em> class function, requiring a trained             model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">tensor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.y_recon">
+<code class="descname">y_recon</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.y_recon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstructed output of network. Accessible through the <em>decoder</em> and <em>encoder_decoder</em> class             functions, requiring a trained model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">tensor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.train_ops">
+<code class="descname">train_ops</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.train_ops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of names of train and loss ops (suffixed with _train and _loss) added to the             network using the <em>add_train_op</em> class function. The name (without suffix) is passed to the <em>train</em> class             function to train the network with the referenced train and loss op.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.autoencoder.mlp_1D_network.modelsAddrs">
+<code class="descname">modelsAddrs</code><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.modelsAddrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of model names added to the network using the <em>add_model</em> class function. The             names reference models which can be used by the <em>encoder</em>, <em>decoder</em> and <em>encoder_decoder</em> class functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.autoencoder.mlp_1D_network.add_model">
+<code class="descname">add_model</code><span class="sig-paren">(</span><em>addr</em>, <em>modelName</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network.add_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.add_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a saved set of model parameters for the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>addr</strong> (<em>str</em>) – Address of the directory containing the checkpoint files.</li>
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model (to refer to it later in-case of multiple models for a given network).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.autoencoder.mlp_1D_network.add_train_op">
+<code class="descname">add_train_op</code><span class="sig-paren">(</span><em>name</em>, <em>lossFunc='CSA'</em>, <em>learning_rate=0.001</em>, <em>decay_steps=None</em>, <em>decay_rate=None</em>, <em>piecewise_bounds=None</em>, <em>piecewise_values=None</em>, <em>method='Adam'</em>, <em>wd_lambda=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network.add_train_op"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.add_train_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a             name, and the train op and loss opp are stored in a dictionary (train_ops) under that name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) – Name of the training op (to refer to it later in-case of multiple training ops).</li>
+<li><strong>lossFunc</strong> (<em>str</em>) – Reconstruction loss function.</li>
+<li><strong>learning_rate</strong> (<em>float</em>) – Controls the degree to which the weights are updated during training.</li>
+<li><strong>decay_steps</strong> (<em>int</em>) – Epoch frequency at which to decay the learning rate.</li>
+<li><strong>decay_rate</strong> (<em>float</em>) – Fraction at which to decay the learning rate.</li>
+<li><strong>piecewise_bounds</strong> (<em>int list</em>) – Epoch step intervals for decaying the learning rate. Alternative to decay steps.</li>
+<li><strong>piecewise_values</strong> (<em>float list</em>) – Rate at which to decay the learning rate at the piecewise_bounds.</li>
+<li><strong>method</strong> (<em>str</em>) – Optimisation method.</li>
+<li><strong>wd_lambda</strong> (<em>float</em>) – Scalar to control weighting of weight decay in loss.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.autoencoder.mlp_1D_network.decoder">
+<code class="descname">decoder</code><span class="sig-paren">(</span><em>modelName</em>, <em>dataZ</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network.decoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the reconstruction of some dataSamples from their latent representation encoding  using a trained             model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model to use (previously added with add_model() ).</li>
+<li><strong>dataZ</strong> (<em>np.array</em>) – Latent representation of data samples to reconstruct using the network. Shape                     [numSamples x arbitrary].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Reconstructed data (y_recon attribute). Shape [numSamples x arbitrary].</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.autoencoder.mlp_1D_network.encoder">
+<code class="descname">encoder</code><span class="sig-paren">(</span><em>modelName</em>, <em>dataSamples</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network.encoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.encoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the latent variable of some dataSamples using a trained model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model to use (previously added with add_model() ).</li>
+<li><strong>dataSample</strong> (<em>np.array</em>) – Shape [numSamples x inputSize].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Latent representation z of dataSamples. Shape [numSamples x arbitrary].</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.autoencoder.mlp_1D_network.encoder_decoder">
+<code class="descname">encoder_decoder</code><span class="sig-paren">(</span><em>modelName</em>, <em>dataSamples</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network.encoder_decoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.encoder_decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the reconstruction of some dataSamples using a trained model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>modelName</strong> (<em>str</em>) – Name of the model to use (previously added with add_model() ).</li>
+<li><strong>dataSample</strong> (<em>np.array</em>) – Data samples to reconstruct using the network. Shape [numSamples x inputSize].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Reconstructed data (y_recon attribute). Shape [numSamples x arbitrary].</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.autoencoder.mlp_1D_network.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0, save_epochs=[1000]</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/autoencoder.html#mlp_1D_network.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.autoencoder.mlp_1D_network.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls network_ops function to train a network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dataTrain</strong> (<em>obj</em>) – Iterator object for training data.</li>
+<li><strong>dataVal</strong> (<em>obj</em>) – Iterator object for validation data.</li>
+<li><strong>train_op_name</strong> (<em>str</em>) – Name of training op created.</li>
+<li><strong>n_epochs</strong> (<em>int</em>) – Number of loops through dataset to train for.</li>
+<li><strong>save_addr</strong> (<em>str</em>) – Address of a directory to save checkpoints for desired epochs, or address of saved                         checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the                         network will start training from there. Otherwise it will be trained from scratch.</li>
+<li><strong>visualiseRateTrain</strong> (<em>int</em>) – Epoch rate at which to print training loss in console.</li>
+<li><strong>visualiseRateVal</strong> (<em>int</em>) – Epoch rate at which to print validation loss in console.</li>
+<li><strong>save_epochs</strong> (<em>int list</em>) – Epochs to save checkpoints at.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="deephyp.network_ops.balance_classes">
+<code class="descclassname">deephyp.network_ops.</code><code class="descname">balance_classes</code><span class="sig-paren">(</span><em>y_target</em>, <em>num_classes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/network_ops.html#balance_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.network_ops.balance_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the class weights needed to balance the classes, based on the number of samples of each class in the         batch of data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>y_target</strong> (<em>tensor</em>) – One-hot classification labels (1D vector). Shape [numSamples x numClasses]</li>
+<li><strong>num_classes</strong> (<em>int</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A weighting for each class that balances their contribution to the loss. Shape [numClasses].</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(tensor)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="enumerate">
+<code class="descname">enumerate</code><span class="sig-paren">(</span><em>sequence</em><span class="optional">[</span>, <em>start=0</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#enumerate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that yields tuples of an index and an item of the
+<em>sequence</em>. (And so on.)</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

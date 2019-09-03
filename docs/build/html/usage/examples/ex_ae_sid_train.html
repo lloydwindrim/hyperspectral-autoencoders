@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>train an MLP with the SID loss function &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="train and compare an MLP and CNN autoencoder" href="ex_ae_cnn_train.html" />
+    <link rel="prev" title="train multiple models for an MLP" href="ex_ae_adv_train.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Code Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ex_ae.html">autoencoder examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ex_ae_basic_train.html">train and test a basic MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex_ae_adv_train.html">train multiple models for an MLP</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">train an MLP with the SID loss function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex_ae_cnn_train.html">train and compare an MLP and CNN autoencoder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ex_clf.html">classifier examples</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../examples.html">Code Examples</a> &raquo;</li>
+        
+          <li><a href="ex_ae.html">autoencoder examples</a> &raquo;</li>
+        
+      <li>train an MLP with the SID loss function</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/usage/examples/ex_ae_sid_train.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="train-an-mlp-with-the-sid-loss-function">
+<h1>train an MLP with the SID loss function<a class="headerlink" href="#train-an-mlp-with-the-sid-loss-function" title="Permalink to this headline">¶</a></h1>
+<p>The code block directly below will train an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘models’. Once trained, look at the next code block to test out the trained autoencoder. If you have already downloaded the Pavia Uni dataset (e.g. from another example) you can comment out that step.</p>
+<p>The network has three encoder and three decoder layers, with 50 neurons in the first layer, 30 in the second and 10 in the third (the latent layer). A model is trained with 200,000 spectral samples and 100 validation samples with a batch size of 1000 samples. Training lasts for 100 epochs, with a learning rate of 0.001, the Adam optimiser and spectral information divergence (SID) reconstruction loss function. The train loss and validation loss are displayed every 10 epochs. Models are saved at 50 and 100 epochs. The models are saved in the models/test_ae_mlp_sid folder.</p>
+<p>Since the SID loss contains log in its expression which is undefined for values &lt;= 0, it is best to use sigmoid as the activation function (including the final activation function) for networks trained with the SID loss.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+
+<span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python2</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python3</span>
+
+
+ <span class="c1"># download dataset (if already downloaded, comment this out)</span>
+ <span class="n">urlretrieve</span><span class="p">(</span> <span class="s1">&#39;http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;PaviaU.mat&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+ <span class="c1"># read data into numpy array</span>
+ <span class="n">mat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span> <span class="s1">&#39;PaviaU.mat&#39;</span> <span class="p">)</span>
+ <span class="n">img</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span> <span class="s1">&#39;paviaU&#39;</span> <span class="p">]</span>
+
+ <span class="c1"># create a hyperspectral dataset object from the numpy array</span>
+ <span class="n">hypData</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">img</span> <span class="p">)</span>
+
+ <span class="c1"># pre-process data to make the model easier to train</span>
+ <span class="n">hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># create data iterator objects for training and validation using the pre-processed data</span>
+ <span class="n">trainSamples</span> <span class="o">=</span> <span class="mi">200000</span>
+ <span class="n">valSamples</span> <span class="o">=</span> <span class="mi">100</span>
+ <span class="n">dataTrain</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[:</span><span class="n">trainSamples</span><span class="p">,</span> <span class="p">:],</span>
+                           <span class="n">targets</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[:</span><span class="n">trainSamples</span><span class="p">,</span> <span class="p">:],</span> <span class="n">batchSize</span><span class="o">=</span><span class="mi">1000</span> <span class="p">)</span>
+ <span class="n">dataVal</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[</span><span class="n">trainSamples</span><span class="p">:</span><span class="n">trainSamples</span><span class="o">+</span><span class="n">valSamples</span><span class="p">,</span> <span class="p">:],</span>
+                         <span class="n">targets</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[</span><span class="n">trainSamples</span><span class="p">:</span><span class="n">trainSamples</span><span class="o">+</span><span class="n">valSamples</span><span class="p">,</span> <span class="p">:]</span> <span class="p">)</span>
+
+ <span class="c1"># shuffle training data</span>
+ <span class="n">dataTrain</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
+
+ <span class="c1"># setup a fully-connected autoencoder neural network with 3 encoder layers</span>
+ <span class="n">net</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">autoencoder</span><span class="o">.</span><span class="n">mlp_1D_network</span><span class="p">(</span> <span class="n">inputSize</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">numBands</span><span class="p">,</span> <span class="n">encoderSize</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">activationFunc</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span>
+                                   <span class="n">weightInitOpt</span><span class="o">=</span><span class="s1">&#39;truncated_normal&#39;</span><span class="p">,</span> <span class="n">tiedWeights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">skipConnect</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                   <span class="n">activationFuncFinal</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># setup a training operation for the network</span>
+ <span class="n">net</span><span class="o">.</span><span class="n">add_train_op</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sid&#39;</span><span class="p">,</span> <span class="n">lossFunc</span><span class="o">=</span><span class="s1">&#39;SID&#39;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay_steps</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">decay_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="n">wd_lambda</span><span class="o">=</span><span class="mf">0.0</span> <span class="p">)</span>
+
+ <span class="c1"># create a directory to save the learnt model</span>
+ <span class="n">model_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">,</span><span class="s1">&#39;test_ae_mlp_sid&#39;</span><span class="p">)</span>
+ <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_dir</span><span class="p">):</span>
+     <span class="c1"># if directory already exists, delete it</span>
+     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
+ <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
+
+ <span class="c1"># train the network for 100 epochs, saving the model at epoch 50 and 100</span>
+ <span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">dataTrain</span><span class="o">=</span><span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="o">=</span><span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="o">=</span><span class="s1">&#39;sid&#39;</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">save_addr</span><span class="o">=</span><span class="n">model_dir</span><span class="p">,</span>
+           <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save_epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The code below will test a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘results’. The network can be trained using the above code block. Run the testing code block as a separate script to the training code block.</p>
+<p>The network is setup using the config file output during training. Then the 100 epoch model is added (named ‘sid_100’). The model is used to encode a latent representation of the Pavia Uni data and a scatter plot figure of the samples in two of the ten latent dimensions are shown for each model. The two latent features with the greatest standard deviation of the data samples are used for the scatter plot.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+
+<span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+ <span class="c1"># read data into numpy array</span>
+ <span class="n">mat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span> <span class="s1">&#39;PaviaU.mat&#39;</span> <span class="p">)</span>
+ <span class="n">img</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span> <span class="s1">&#39;paviaU&#39;</span> <span class="p">]</span>
+
+ <span class="c1"># create a hyperspectral dataset object from the numpy array</span>
+ <span class="n">hypData</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">img</span> <span class="p">)</span>
+
+ <span class="c1"># pre-process data to make the model easier to train</span>
+ <span class="n">hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># setup a network from a config file</span>
+ <span class="n">net</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">autoencoder</span><span class="o">.</span><span class="n">mlp_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">,</span><span class="s1">&#39;test_ae_mlp_sid&#39;</span><span class="p">,</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+ <span class="c1"># assign previously trained parameters to the network, and name model</span>
+ <span class="n">net</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span> <span class="n">addr</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">,</span><span class="s1">&#39;test_ae_mlp_sid&#39;</span><span class="p">,</span><span class="s1">&#39;epoch_100&#39;</span><span class="p">),</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;sid_100&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># feed forward hyperspectral dataset through encoder (get latent encoding)</span>
+ <span class="n">dataZ</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;sid_100&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span> <span class="p">)</span>
+
+ <span class="c1"># feed forward latent encoding through decoder (get reconstruction)</span>
+ <span class="n">dataY</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;sid_100&#39;</span><span class="p">,</span> <span class="n">dataZ</span><span class="o">=</span><span class="n">dataZ</span><span class="p">)</span>
+
+
+ <span class="c1">#--------- visualisation ----------------------------------------</span>
+
+ <span class="c1"># download dataset ground truth pixel labels (if already downloaded, comment this out)</span>
+ <span class="n">urlretrieve</span><span class="p">(</span> <span class="s1">&#39;http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat&#39;</span><span class="p">,</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;PaviaU_gt.mat&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+ <span class="c1"># read labels into numpy array</span>
+ <span class="n">mat_gt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span> <span class="s1">&#39;PaviaU_gt.mat&#39;</span> <span class="p">)</span>
+ <span class="n">img_gt</span> <span class="o">=</span> <span class="n">mat_gt</span><span class="p">[</span><span class="s1">&#39;paviaU_gt&#39;</span><span class="p">]</span>
+ <span class="n">gt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">img_gt</span> <span class="p">,</span> <span class="p">(</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+
+
+ <span class="c1"># save a scatter plot image of 2 of 3 latent dimensions</span>
+ <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">dataZ</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+ <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+ <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">gt_class</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;asphalt&#39;</span><span class="p">,</span> <span class="s1">&#39;meadow&#39;</span><span class="p">,</span> <span class="s1">&#39;gravel&#39;</span><span class="p">,</span><span class="s1">&#39;tree&#39;</span><span class="p">,</span><span class="s1">&#39;painted metal&#39;</span><span class="p">,</span><span class="s1">&#39;bare soil&#39;</span><span class="p">,</span><span class="s1">&#39;bitumen&#39;</span><span class="p">,</span><span class="s1">&#39;brick&#39;</span><span class="p">,</span><span class="s1">&#39;shadow&#39;</span><span class="p">]):</span>
+     <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dataZ</span><span class="p">[</span><span class="n">gt</span> <span class="o">==</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dataZ</span><span class="p">[</span><span class="n">gt</span> <span class="o">==</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;C</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">gt_class</span><span class="p">)</span>
+ <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;latent representation: sid&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;latent feature </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;latent feature </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;test_mlp_scatter_sid.png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex_ae_cnn_train.html" class="btn btn-neutral float-right" title="train and compare an MLP and CNN autoencoder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex_ae_adv_train.html" class="btn btn-neutral float-left" title="train multiple models for an MLP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

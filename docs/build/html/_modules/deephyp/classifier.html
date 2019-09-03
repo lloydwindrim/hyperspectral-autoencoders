@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deephyp.classifier &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/citing.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/get_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/examples.html">Code Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>deephyp.classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deephyp.classifier</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Description: high-level deep learning classes for building, training and using supervised neural network \</span>
+<span class="sd">    classifiers. Uses functions from the low-level network_ops module.</span>
+
+<span class="sd">    - File name: classifier.py</span>
+<span class="sd">    - Author: Lloyd Windrim</span>
+<span class="sd">    - Date created: August 2019</span>
+<span class="sd">    - Python package: deephyp</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">deephyp</span> <span class="k">import</span> <span class="n">network_ops</span> <span class="k">as</span> <span class="n">net_ops</span>
+
+
+<div class="viewcode-block" id="cnn_1D_network"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network">[docs]</a><span class="k">class</span> <span class="nc">cnn_1D_network</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Class for setting up a 1-D convolutional neural network (cnn) for classification. Contains several convolutional \</span>
+<span class="sd">        layers followed by several fully-connected layers. The network outputs scores for each class, for a given set \</span>
+<span class="sd">        of input data samples.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        configFile (str): Optional way of setting up the network. All other inputs can be ignored (will be overwritten). \</span>
+<span class="sd">                        Pass the address of the .json config file.</span>
+<span class="sd">        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands). Value must be input if not \</span>
+<span class="sd">                        using a config file.</span>
+<span class="sd">        numClasses (int): Number of labelled classes in the dataset (not including the zero class).</span>
+<span class="sd">        convFilterSize (int list): Size of filter at each convolutional layer. List length is number of \</span>
+<span class="sd">                        convolutional layers.</span>
+<span class="sd">        convNumFilters (int list): Number of filters at each convolutional layer of the network. List length is \</span>
+<span class="sd">                        number of convolutional layers.</span>
+<span class="sd">        convStride (int list): Stride at each convolutional layer. List length is number of convolutional layers. \</span>
+<span class="sd">        fcSize (int list): Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length \</span>
+<span class="sd">                        is number of fully-connected layers.</span>
+<span class="sd">        activationFunc (str): Activation function for all layers except the last one. Current options: [&#39;sigmoid&#39;, \</span>
+<span class="sd">                        &#39;relu&#39;, &#39;linear&#39;].</span>
+<span class="sd">        weightInitOpt (string): Method of weight initialisation. Current options: [&#39;gaussian&#39;, &#39;truncated_normal&#39;, \</span>
+<span class="sd">                    &#39;xavier&#39;, &#39;xavier_improved&#39;].</span>
+<span class="sd">        weightStd (float): Used by &#39;gaussian&#39; and &#39;truncated_normal&#39; weight initialisation methods.</span>
+<span class="sd">        padding (str): Type of padding used. Current options: [&#39;VALID&#39;, &#39;SAME&#39;].</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands).</span>
+<span class="sd">        activationFunc (str): Activation function for all layers except the last one.</span>
+<span class="sd">        weightInitOpt (string): Method of weight initialisation.</span>
+<span class="sd">        weightStd (float): Parameter for &#39;gaussian&#39; and &#39;truncated_normal&#39; weight initialisation methods.</span>
+<span class="sd">        convFilterSize (int list): Size of filter at each convolutional layer. List length is number of \</span>
+<span class="sd">                        convolutional layers.</span>
+<span class="sd">        convNumFilters (int list): Number of filters at each convolutional layer of the network. List length is \</span>
+<span class="sd">                        number of convolutional layers.</span>
+<span class="sd">        convStride (int list): Stride at each convolutional layer. List length is number of convolutional layers. \</span>
+<span class="sd">        padding (str): Type of padding used. Current options: [&#39;VALID&#39;, &#39;SAME&#39;].</span>
+<span class="sd">        fcSize (int list): Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length \</span>
+<span class="sd">                        is number of fully-connected layers.</span>
+<span class="sd">        numLayers (int): Total number of layers (convolutional and fully-connected).</span>
+<span class="sd">        y_pred (tensor): Output of network - class scores with shape [numSamples x numClasses]. Accessible through the \</span>
+<span class="sd">            *predict_scores* class functions, requiring a trained model.</span>
+<span class="sd">        train_ops (dict): Dictionary of names of train and loss ops (suffixed with _train and _loss) added to the \</span>
+<span class="sd">            network using the *add_train_op* class function. The name (without suffix) is passed to the *train* class \</span>
+<span class="sd">            function to train the network with the referenced train and loss op.</span>
+<span class="sd">        modelsAddrs (dict): Dictionary of model names added to the network using the *add_model* class function. The \</span>
+<span class="sd">            names reference models which can be used by the *predict_scores*, *predict_labels* and *predict_features* \</span>
+<span class="sd">            class functions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">configFile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputSize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numClasses</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">convFilterSize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+                  <span class="n">convNumFilters</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">convStride</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">fcSize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">],</span> <span class="n">activationFunc</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+                  <span class="n">weightInitOpt</span><span class="o">=</span><span class="s1">&#39;truncated_normal&#39;</span><span class="p">,</span> <span class="n">weightStd</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputSize</span> <span class="o">=</span> <span class="n">inputSize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span> <span class="o">=</span> <span class="n">numClasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activationFunc</span> <span class="o">=</span> <span class="n">activationFunc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span> <span class="o">=</span> <span class="n">weightInitOpt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weightStd</span> <span class="o">=</span> <span class="n">weightStd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convFilterSize</span> <span class="o">=</span> <span class="n">convFilterSize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span> <span class="o">=</span> <span class="n">convNumFilters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convStride</span> <span class="o">=</span> <span class="n">convStride</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span> <span class="o">=</span> <span class="n">fcSize</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">net_config</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;inputSize&#39;</span><span class="p">,</span><span class="s1">&#39;numClasses&#39;</span><span class="p">,</span><span class="s1">&#39;activationFunc&#39;</span><span class="p">,</span><span class="s1">&#39;weightInitOpt&#39;</span><span class="p">,</span><span class="s1">&#39;weightStd&#39;</span><span class="p">,</span><span class="s1">&#39;convFilterSize&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;convNumFilters&#39;</span><span class="p">,</span><span class="s1">&#39;convStride&#39;</span><span class="p">,</span><span class="s1">&#39;padding&#39;</span><span class="p">,</span><span class="s1">&#39;fcSize&#39;</span><span class="p">]</span>
+        <span class="c1"># loading config file overwrites input arguments</span>
+        <span class="k">if</span> <span class="n">configFile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">configFile</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputSize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;value must be given for inputSize (not None)&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;value must be given for numClasses (not None)&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convFilterSize</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convStride</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;the length of convNumfilters, convFilterSize and convStride must be equal.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputSize</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_target</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span> <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="p">{</span> <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_ops</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modelsAddrs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># pre-compute shape of data after each layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inputSize</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span> <span class="p">)</span>   <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">conv_output_shape</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span><span class="p">[</span><span class="n">layerNum</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">convFilterSize</span><span class="p">[</span><span class="n">layerNum</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">convStride</span><span class="p">[</span><span class="n">layerNum</span><span class="p">])</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span><span class="p">[</span><span class="n">layerNum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span><span class="p">[</span><span class="n">layerNum</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fcDataShape</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span> <span class="p">)</span>  <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fcDataShape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span><span class="p">[</span><span class="n">layerNum</span><span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fcDataShape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span> <span class="p">)</span>
+
+
+        <span class="c1"># conv layer weights</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span> <span class="p">)</span> <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;conv_w</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> \
+                <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">convFilterSize</span><span class="p">[</span><span class="n">layerNum</span><span class="p">],</span> <span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span><span class="p">)[</span><span class="n">layerNum</span><span class="p">],</span>
+                                         <span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span><span class="p">)[</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># fc layer weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc_w1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span><span class="p">[</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span> <span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc_w</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> \
+                <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span><span class="p">[</span><span class="n">layerNum</span><span class="p">],</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span><span class="p">[</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span><span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc_w</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">3</span><span class="p">)]</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span><span class="p">[</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+
+        <span class="c1"># conv layer biases</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span> <span class="p">)</span>  <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">[</span><span class="s1">&#39;conv_b</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> \
+                <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span><span class="p">[</span><span class="n">layerNum</span><span class="p">]]</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># fc layer biases</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span> <span class="p">)</span> <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">[</span><span class="s1">&#39;fc_b</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> \
+                <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span><span class="p">[</span><span class="n">layerNum</span><span class="p">]]</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">[</span><span class="s1">&#39;fc_b</span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> \
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">create_variable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightInitOpt</span><span class="p">,</span> <span class="n">wd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+
+        <span class="c1"># build network using conv layers, fc layers and x placeholder as input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>   <span class="c1"># expand to shape None x inputSize x 1</span>
+
+        <span class="c1"># conv layers</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span><span class="p">)]</span> <span class="o">=</span> \
+                <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_conv1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;conv_w</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="p">)],</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">[</span><span class="s1">&#39;conv_b</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="p">)],</span><span class="n">padding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span><span class="n">stride</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">convStride</span><span class="p">[</span><span class="n">layerNum</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span><span class="p">)]</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">activationFunc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="p">)],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">convDataShape</span><span class="p">[</span><span class="n">layerNum</span><span class="p">]]</span> <span class="p">)</span>
+
+        <span class="c1"># fc layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> \
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_fullyConn</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="p">)],</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc_w1&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">[</span><span class="s1">&#39;fc_b1&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">activationFunc</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">layerNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span> <span class="p">)</span><span class="o">+</span><span class="mi">1</span> <span class="p">):</span>
+            <span class="n">absLayerNum</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">convNumFilters</span> <span class="p">)</span> <span class="o">+</span> <span class="n">layerNum</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">absLayerNum</span><span class="p">)]</span> <span class="o">=</span> \
+                <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_fullyConn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">absLayerNum</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc_w</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">[</span><span class="s1">&#39;fc_b</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layerNum</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="n">layerNum</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcSize</span> <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">absLayerNum</span><span class="p">)]</span> <span class="o">=</span> \
+                    <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">absLayerNum</span><span class="p">)],</span> <span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">absLayerNum</span><span class="p">)]</span> <span class="o">=</span> \
+                    <span class="n">net_ops</span><span class="o">.</span><span class="n">layer_activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;h</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">absLayerNum</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">activationFunc</span><span class="p">)</span>
+
+        <span class="c1"># output of final layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">absLayerNum</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">numLayers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="cnn_1D_network.add_train_op"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.add_train_op">[docs]</a>    <span class="k">def</span> <span class="nf">add_train_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span> <span class="n">balance_classes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decay_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">piecewise_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">piecewise_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="n">wd_lambda</span><span class="o">=</span><span class="mf">0.0</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a \</span>
+<span class="sd">            name, and the train op and loss opp are stored in a dictionary (train_ops) under that name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): Name of the training op (to refer to it later in-case of multiple training ops).</span>
+<span class="sd">            balance_classes (boolean): Weight the samples during training so that the contribtion to the loss of each \</span>
+<span class="sd">                            class is balanced by the number of samples the class has (in a given batch).</span>
+<span class="sd">            learning_rate (float): Controls the degree to which the weights are updated during training.</span>
+<span class="sd">            decay_steps (int): Epoch frequency at which to decay the learning rate.</span>
+<span class="sd">            decay_rate (float): Fraction at which to decay the learning rate.</span>
+<span class="sd">            piecewise_bounds (int list): Epoch step intervals for decaying the learning rate. Alternative to decay steps.</span>
+<span class="sd">            piecewise_values (float list): Rate at which to decay the learning rate at the piecewise_bounds.</span>
+<span class="sd">            method (str): Optimisation method.</span>
+<span class="sd">            wd_lambda (float): Scalar to control weighting of weight decay in loss.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># construct loss op</span>
+        <span class="k">if</span> <span class="n">balance_classes</span><span class="p">:</span>
+            <span class="n">class_weights</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">balance_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_target</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">class_weights</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_ops</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_loss&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">loss_function_crossentropy_1D</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_target</span><span class="p">,</span> <span class="n">class_weights</span><span class="o">=</span><span class="n">class_weights</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span><span class="p">)</span>
+
+        <span class="c1"># weight decay loss contribution</span>
+        <span class="n">wdLoss</span> <span class="o">=</span> <span class="n">net_ops</span><span class="o">.</span><span class="n">loss_weight_decay</span><span class="p">(</span><span class="n">wd_lambda</span><span class="p">)</span>
+
+        <span class="c1"># construct training op</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_ops</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_train&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_ops</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_loss&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">]</span><span class="o">+</span><span class="n">wdLoss</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">,</span> <span class="n">decay_steps</span><span class="p">,</span> <span class="n">decay_rate</span><span class="p">,</span>
+                               <span class="n">piecewise_bounds</span><span class="p">,</span> <span class="n">piecewise_values</span><span class="p">,</span><span class="n">method</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="cnn_1D_network.train"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">save_addr</span><span class="p">,</span> <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+              <span class="n">save_epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot; Calls network_ops function to train a network.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataTrain (obj): Iterator object for training data.</span>
+<span class="sd">            dataVal (obj): Iterator object for validation data.</span>
+<span class="sd">            train_op_name (str): Name of training op created.</span>
+<span class="sd">            n_epochs (int): Number of loops through dataset to train for.</span>
+<span class="sd">            save_addr (str): Address of a directory to save checkpoints for desired epochs, or address of saved \</span>
+<span class="sd">                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the \</span>
+<span class="sd">                        network will start training from there. Otherwise it will be trained from scratch.</span>
+<span class="sd">            visualiseRateTrain (int): Epoch rate at which to print training loss in console.</span>
+<span class="sd">            visualiseRateVal (int): Epoch rate at which to print validation loss in console.</span>
+<span class="sd">            save_epochs (int list): Epochs to save checkpoints at.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># make sure a checkpoint is saved at n_epochs</span>
+        <span class="k">if</span> <span class="n">n_epochs</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">save_epochs</span><span class="p">:</span>
+            <span class="n">save_epochs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">)</span>
+
+
+        <span class="n">net_ops</span><span class="o">.</span><span class="n">train</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">save_addr</span><span class="p">,</span> <span class="n">visualiseRateTrain</span><span class="p">,</span>
+                       <span class="n">visualiseRateVal</span><span class="p">,</span> <span class="n">save_epochs</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cnn_1D_network.add_model"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">addr</span><span class="p">,</span><span class="n">modelName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Loads a saved set of model parameters for the network.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            addr (str): Address of the directory containing the checkpoint files.</span>
+<span class="sd">            modelName (str): Name of the model (to refer to it later in-case of multiple models for a given network).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modelsAddrs</span><span class="p">[</span><span class="n">modelName</span><span class="p">]</span> <span class="o">=</span> <span class="n">addr</span></div>
+
+<div class="viewcode-block" id="cnn_1D_network.predict_scores"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.predict_scores">[docs]</a>    <span class="k">def</span> <span class="nf">predict_scores</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span> <span class="n">useSoftmax</span><span class="o">=</span><span class="kc">True</span>  <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract the predicted classification scores of some dataSamples using a trained model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            modelName (str): Name of the model to use (previously added with add_model() ).</span>
+<span class="sd">            dataSamples (np.array): Shape [numSamples x inputSize].</span>
+<span class="sd">            useSoftmax (boolean): Pass predicted scores output by network through a softmax function.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): Predicted classification scores of dataSamples. Shape [numSamples x numClasses].</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+
+            <span class="c1"># load the model</span>
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modelsAddrs</span><span class="p">[</span><span class="n">modelName</span><span class="p">],</span> <span class="n">sess</span><span class="p">)</span>
+
+            <span class="c1"># get scores</span>
+            <span class="k">if</span> <span class="n">useSoftmax</span><span class="p">:</span>
+                <span class="n">scores</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span>
+            <span class="n">predScores</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="n">dataSamples</span><span class="p">})</span>
+
+            <span class="k">return</span> <span class="n">predScores</span></div>
+
+
+<div class="viewcode-block" id="cnn_1D_network.predict_labels"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.predict_labels">[docs]</a>    <span class="k">def</span> <span class="nf">predict_labels</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span>  <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract the predicted classification labels of some dataSamples using a trained model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            modelName (str): Name of the model to use (previously added with add_model() )</span>
+<span class="sd">            dataSamples (array): Shape [numSamples x inputSize]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): Predicted classification labels of dataSamples. Shape [numSamples].</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+
+            <span class="c1"># load the model</span>
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modelsAddrs</span><span class="p">[</span><span class="n">modelName</span><span class="p">],</span> <span class="n">sess</span><span class="p">)</span>
+
+            <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="n">dataSamples</span><span class="p">})</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">pred_labels</span></div>
+
+
+<div class="viewcode-block" id="cnn_1D_network.predict_features"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.predict_features">[docs]</a>    <span class="k">def</span> <span class="nf">predict_features</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span> <span class="n">layer</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract the predicted feature values at a particular layer of the network.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            modelName (str): Name of the model to use (previously added with add_model() )</span>
+<span class="sd">            dataSamples (np.array): Shape [numSamples x inputSize]</span>
+<span class="sd">            layer (int): Layer at which to extract features. Must be between 1 and numLayers inclusive.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): Values of neurons at layer. Shape [numSamples x numNeurons] if fully-connected layer and \</span>
+<span class="sd">                        [numSamples x convDim1 x convDim2] if convolutional layer.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">layer</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">numLayers</span> <span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">layer</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;layer must be between 1 and numLayers (</span><span class="si">%i</span><span class="s1">) inclusive. &#39;</span>
+                             <span class="s1">&#39;Layer input: </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numLayers</span><span class="p">,</span><span class="n">layer</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+
+            <span class="c1"># load the model</span>
+            <span class="n">net_ops</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modelsAddrs</span><span class="p">[</span><span class="n">modelName</span><span class="p">],</span> <span class="n">sess</span><span class="p">)</span>
+
+            <span class="n">predFeatures</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;a</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">layer</span><span class="p">)],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="n">dataSamples</span><span class="p">})</span>
+
+            <span class="k">return</span> <span class="n">predFeatures</span></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

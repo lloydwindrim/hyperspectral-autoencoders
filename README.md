@@ -1,8 +1,10 @@
 # deephyp: deep learning for hyperspectral 
 
-![PyPI](https://img.shields.io/pypi/v/deephyp) ![PyPI - Downloads](https://img.shields.io/pypi/dw/deephyp?color=brightgreen)
+![PyPI](https://img.shields.io/pypi/v/deephyp) ![PyPI - Downloads](https://img.shields.io/pypi/dm/deephyp?color=brightgreen)
 
 Tools for training and using unsupervised autoencoders and supervised deep learning classifiers for hyperspectral data.
+
+Source code avalaible on [Github](https://github.com/lloydwindrim/hyperspectral-autoencoders).
 
 Autoencoders are unsupervised neural networks that are useful for a range of applications such as unsupervised feature learning and dimensionality reduction. Supervised deep learning classifiers can be trained on labelled data to predict the class of spectra. This repository provides a python-based toolbox called **deephyp**, with examples for building, training and testing both dense and convolutional autoencoders and classification neural networks, designed for hyperspectral data. Networks are easy to setup and can be customised with different architectures. Different methods of training can also be implemented. The toolbox is built on tensorflow.
 
@@ -153,7 +155,7 @@ net = autoencoder.mlp_1D_network( inputSize=hypData.numBands, encoderSize=[50,30
 
 The convolutional autoencoder has similar arguments for defining the network architecture, but without 'encoderSize' and with some additional arguments:
 ```
-net = autoencoder.cnn_1D_network( inputSize=hypData.numBands, zDim=3, encoderNumFilters=[10,10,10], encoderFilterSize=[20,10,10],  activationFunc='relu', weightInitOpt='truncated_normal',  encoderStride=[1, 1, 1], padding='VALID', tiedWeights=[1,0,0,],  skipConnect=False, activationFuncFinal='linear' )
+net = autoencoder.cnn_1D_network( inputSize=hypData.numBands, zDim=3, encoderNumFilters=[10,10,10], encoderFilterSize=[20,10,10],  activationFunc='relu', weightInitOpt='truncated_normal',  encoderStride=[1, 1, 1], padding='VALID', tiedWeights=[1,0,0],  skipConnect=False, activationFuncFinal='linear' )
 ```
 - number of layers in the encoder (and decoder) - this is the length of the list 'encodernumFilters'
 - number of filters/kernels in each conv layer - these are the values in the 'encodernumFilters' list

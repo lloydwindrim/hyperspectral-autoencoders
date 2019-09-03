@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deephyp.data &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="API Reference" href="../api.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">Citing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">deephyp.data</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li>deephyp.data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/usage/mods/data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deephyp-data">
+<h1>deephyp.data<a class="headerlink" href="#deephyp-data" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="deephyp.data.HypImg">
+<em class="property">class </em><code class="descclassname">deephyp.data.</code><code class="descname">HypImg</code><span class="sig-paren">(</span><em>spectralInput</em>, <em>labels=None</em>, <em>wavelengths=None</em>, <em>bands=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#HypImg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.HypImg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for handling data. Stores meta-data and contains attributes for pre-processing the data. If passed labels,         samples with label zero are considered as a background class. This class is not included in numClasses and data         samples with this label have a one-hot vector label of all zeros.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spectralInput</strong> (<em>np.array float</em>) – Spectral dataset. Shape can be [numRows x numCols x numBands] or             [numSamples x numBands].</li>
+<li><strong>wavelengths</strong> (<em>np.array float</em>) – Vector of wavelengths that spectralInput wavelengths lie within.</li>
+<li><strong>bands</strong> (<em>np.array int</em>) – Wavelength indexes for each band of spectralInput. Shape [numBands].</li>
+<li><strong>labels</strong> (<em>np.array int</em>) – Class labels for each spectral sample in spectralInput. Shape can be [numRows x numCols]             or [numSamples].</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.spectra">
+<code class="descname">spectra</code><a class="headerlink" href="#deephyp.data.HypImg.spectra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Un-pre-processed spectral data with shape [numSamples x numBands].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.spectraCube">
+<code class="descname">spectraCube</code><a class="headerlink" href="#deephyp.data.HypImg.spectraCube" title="Permalink to this definition">¶</a></dt>
+<dd><p>If data passed as image - un-pre-processed spectral datacube with             shape [numSamples x numBands]. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.spectraPrep">
+<code class="descname">spectraPrep</code><a class="headerlink" href="#deephyp.data.HypImg.spectraPrep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-processed spectral data with shape [numSamples x numBands].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.numSamples">
+<code class="descname">numSamples</code><a class="headerlink" href="#deephyp.data.HypImg.numSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of spectra.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.numRows">
+<code class="descname">numRows</code><a class="headerlink" href="#deephyp.data.HypImg.numRows" title="Permalink to this definition">¶</a></dt>
+<dd><p>If data passed as image - the number of image rows. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.numCols">
+<code class="descname">numCols</code><a class="headerlink" href="#deephyp.data.HypImg.numCols" title="Permalink to this definition">¶</a></dt>
+<dd><p>If data passed as image - the number of image columns. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.wavelengths">
+<code class="descname">wavelengths</code><a class="headerlink" href="#deephyp.data.HypImg.wavelengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>If provided - vector of wavelengths that spectra wavelengths lie within. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.bands">
+<code class="descname">bands</code><a class="headerlink" href="#deephyp.data.HypImg.bands" title="Permalink to this definition">¶</a></dt>
+<dd><p>If provided - wavelength indexes for each band of spectra with shape [numBands]. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.labels">
+<code class="descname">labels</code><a class="headerlink" href="#deephyp.data.HypImg.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>If provided - class labels for each spectral sample with shape [numSamples]. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.HypImg.labelsOnehot">
+<code class="descname">labelsOnehot</code><a class="headerlink" href="#deephyp.data.HypImg.labelsOnehot" title="Permalink to this definition">¶</a></dt>
+<dd><p>If labels provided - the one-hot label vector for each sample. Samples with label             zero (background class) have a one-hot vector of all zeros. Else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.data.HypImg.pre_process">
+<code class="descname">pre_process</code><span class="sig-paren">(</span><em>method='minmax'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#HypImg.pre_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.HypImg.pre_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-process data for input into the network. Stores in the spectraPrep attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>method</strong> (<em>str</em>) – Method of pre-processing. Current options: ‘minmax’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deephyp.data.Iterator">
+<em class="property">class </em><code class="descclassname">deephyp.data.</code><code class="descname">Iterator</code><span class="sig-paren">(</span><em>dataSamples</em>, <em>targets</em>, <em>batchSize=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#Iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.Iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for iterating through data, to train the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dataSamples</strong> (<em>np.array float</em>) – Data to be input into the network. Shape [numSamples x numBands].</li>
+<li><strong>targets</strong> (<em>np.array int</em>) – Network output target of each dataSample. For classification, these are the class                 labels, and it could be the dataSamples for autoencoders. Shape [numSamples x arbitrary]</li>
+<li><strong>batchSize</strong> (<em>int</em>) – Number of dataSamples per batch</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="deephyp.data.Iterator.dataSamples">
+<code class="descname">dataSamples</code><a class="headerlink" href="#deephyp.data.Iterator.dataSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data to be input into the network. Shape [numSamples x numBands].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.Iterator.targets">
+<code class="descname">targets</code><a class="headerlink" href="#deephyp.data.Iterator.targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Network output target of each dataSample. For classification, these are the class                 labels, and it could be the dataSamples for autoencoders. Shape [numSamples x arbitrary]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">np.array int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.Iterator.batchSize">
+<code class="descname">batchSize</code><a class="headerlink" href="#deephyp.data.Iterator.batchSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of dataSamples per batch. If None - set to numSamples (i.e. whole dataset).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.Iterator.numSamples">
+<code class="descname">numSamples</code><a class="headerlink" href="#deephyp.data.Iterator.numSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of data samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deephyp.data.Iterator.currentBatch">
+<code class="descname">currentBatch</code><a class="headerlink" href="#deephyp.data.Iterator.currentBatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of indexes specifying the data samples in the current batch.                 Shape [batchSize]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.data.Iterator.get_batch">
+<code class="descname">get_batch</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#Iterator.get_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.Iterator.get_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a specified set of samples and targets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>int list</em>) – Indexes of samples (and targets) to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">2-element tuple containing:<ul class="simple">
+<li>(<em>np.array float</em>) - Batch of data samples at [idx] indexes. Shape [length(idx) x numBands].</li>
+<li>(<em>np.array int</em>) - Batch of targets at [idx] indexes. Shape [length(idx) x arbitrary].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(tuple)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.data.Iterator.next_batch">
+<code class="descname">next_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#Iterator.next_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.Iterator.next_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return next batch of samples and targets (with batchSize number of samples). The currentBatch indexes are             incremented. If end of dataset reached, the indexes wraps around to the beginning.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">2-element tuple containing:<ul class="simple">
+<li>(<em>np.array float</em>) - Batch of data samples at currentBatch indexes. Shape [batchSize x numBands].</li>
+<li>(<em>np.array int</em>) - Batch of targets at currentBatch indexes. Shape [batchSize x arbitrary].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(tuple)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.data.Iterator.reset_batch">
+<code class="descname">reset_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#Iterator.reset_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.Iterator.reset_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the current batch to the beginning.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deephyp.data.Iterator.shuffle">
+<code class="descname">shuffle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/deephyp/data.html#Iterator.shuffle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deephyp.data.Iterator.shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly permutes all dataSamples (and corresponding targets).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../api.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

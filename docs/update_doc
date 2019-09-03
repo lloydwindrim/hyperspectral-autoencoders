@@ -1,0 +1,8 @@
+#!/bin/bash
+
+rm source/modules.rst
+rm source/deephyp.rst
+cd ..
+sphinx-apidoc -f -o docs/source deephyp
+cd docs 
+make html

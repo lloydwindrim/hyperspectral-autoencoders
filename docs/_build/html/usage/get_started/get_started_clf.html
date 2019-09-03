@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting started with classifiers &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Reference" href="../api.html" />
+    <link rel="prev" title="Getting started with autoencoders" href="get_started_ae.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">How to cite</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../get_started.html">Getting Started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="get_started_ae.html">Getting started with autoencoders</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Getting started with classifiers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#download-a-hyperspectral-dataset">Download a hyperspectral dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-preparation">Data preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-iterator">Data iterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-networks">Building networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-training-operations">Adding training operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-networks">Training networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-and-testing-a-trained-network">Loading and testing a trained network</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Code Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../get_started.html">Getting Started</a> &raquo;</li>
+        
+      <li>Getting started with classifiers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/usage/get_started/get_started_clf.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started-with-classifiers">
+<h1>Getting started with classifiers<a class="headerlink" href="#getting-started-with-classifiers" title="Permalink to this headline">¶</a></h1>
+<p>Classifiers are supervised neural networks that can be trained to automatically predict the class label of a data sample based on it spectral characteristics. Classifiers are trained to map input data samples to one-hot binary vectors which indicate the class of the data sample. The network requires data samples with class labels to train on (hence it is <em>supervised</em>). Once trained, a classifier can predict the class of new data samples.</p>
+<img alt="../../_images/classification_pred.png" src="../../_images/classification_pred.png" />
+<div class="section" id="download-a-hyperspectral-dataset">
+<h2>Download a hyperspectral dataset<a class="headerlink" href="#download-a-hyperspectral-dataset" title="Permalink to this headline">¶</a></h2>
+<p>Some hyperspectral datasets in a matlab file format (.mat) can be downloaded from <a class="reference external" href="http://www.ehu.eus/ccwintco/index.php/Hyperspectral_Remote_Sensing_Scenes">here</a>. To get started, download the ‘Pavia University’ dataset and its ground truth labels.</p>
+<p><strong>deephyp</strong> operates on hyperspectral data in numpy array format. The matlab files (.mat) you just downloaded can be read as a numpy array using the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.loadmat.html">scipy.io.loadmat</a> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="n">mat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span> <span class="s1">&#39;PaviaU.mat&#39;</span> <span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span> <span class="s1">&#39;paviaU&#39;</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>where <em>img</em> is a numpy array. Use the same function to read the ground truth class labels:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mat_gt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;PaviaU_gt.mat&#39;</span><span class="p">)</span>
+<span class="n">img_gt</span> <span class="o">=</span> <span class="n">mat_gt</span><span class="p">[</span><span class="s1">&#39;paviaU_gt&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>You are now ready to use the toolbox!</p>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>For both autoencoders and classifiers, the toolbox uses several key processes:</p>
+<ul class="simple">
+<li>data preparation</li>
+<li>data iterator</li>
+<li>building networks</li>
+<li>adding train operations</li>
+<li>training networks</li>
+<li>loading and testing a trained network</li>
+</ul>
+<p>Each of these are elaborated on below:</p>
+</div>
+<div class="section" id="data-preparation">
+<h2>Data preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
+<p>A class within the toolbox from the <em>data</em> module called <em>HypImg</em> handles the hyperspectral dataset and all of its meta-data. As mentioned earlier, the class accepts the hyperspectral data in numpy format, with shape [numRows x numCols x numBands] or [numSamples x numBands]. The networks in the toolbox operate in the spectral domain, not the spatial, so if a hypercube image is input with shape [numRows x numCols x numBands], it is reshaped to [numSamples x numBands], collapsing the spatial dimensions into a single dimension.</p>
+<p>The Pavia Uni hyperspectral image and labels can be passed to the <em>HypImg</em> class as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deephyp</span> <span class="kn">import</span> <span class="n">data</span>
+<span class="n">hypData</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">img</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">img_gt</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Upon initialisation the <em>HypImg</em> object will automatically generate one-hot labels from the labels input, stored in the <em>labelsOnehot</em> attribute. Classes with a label &lt;= 0 are considered a background class, and are not included in the <em>numClasses</em> attribute. Any samples with a zero label will appear as a row of zeros in <em>labelsOnehot</em>.</p>
+<p>The data can be pre-processed using a function of the <em>HypImg</em> class. For example, using the ‘minmax’ approach:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The result is stored in the <em>spectraPrep</em> attribute. Currently, only the ‘minmax’ approach is available, but additions will be made in future versions.</p>
+</div>
+<div class="section" id="data-iterator">
+<h2>Data iterator<a class="headerlink" href="#data-iterator" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Iterator</em> class within the <em>data</em> module has methods for calling batches from the data that are used to train the network. A separate iterator object is made for the training and validation data.</p>
+<p>Before setting up an <em>Iterator</em> object, establish which data samples from the hyperspectral image you will use to train and validate the network. For example, you can use the following code to get the indexes of 50 training samples and 15 validation samples per class, for each of the nine non-background classes in the Pavia Uni dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainSamples</span> <span class="o">=</span> <span class="mi">50</span> <span class="c1"># per class</span>
+<span class="n">valSamples</span> <span class="o">=</span> <span class="mi">15</span> <span class="c1"># per class</span>
+<span class="n">train_indexes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">train_indexes</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">hypData</span><span class="o">.</span><span class="n">labels</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="n">trainSamples</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">val_indexes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">val_indexes</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">hypData</span><span class="o">.</span><span class="n">labels</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">trainSamples</span><span class="p">:</span><span class="n">trainSamples</span><span class="o">+</span><span class="n">valSamples</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now, to build an iterator object for training from the pre-processed hyperspectral training samples and their labels, with a batchsize of 50, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataTrain</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[</span><span class="n">train_indexes</span><span class="p">,</span> <span class="p">:],</span> <span class="n">targets</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">labelsOnehot</span><span class="p">[</span><span class="n">train_indexes</span><span class="p">,:],</span> <span class="n">batchSize</span><span class="o">=</span><span class="mi">50</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Since we are training a supervised classifier, the targets are the ground truth class labels.</p>
+<p>Similarly, an iterator object for validation is defined with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataVal</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[</span><span class="n">val_indexes</span><span class="p">,</span> <span class="p">:],</span> <span class="n">targets</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">labelsOnehot</span><span class="p">[</span><span class="n">val_indexes</span><span class="p">,:]</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Because the batchsize is unspecified for the validation iterator, all samples are used for each batch.</p>
+<p>The data in any iterator can also be shuffled before it is used to train a network:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataTrain</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-networks">
+<h2>Building networks<a class="headerlink" href="#building-networks" title="Permalink to this headline">¶</a></h2>
+<p>The <em>classifier</em> module has a class for creating supervised classification neural networks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deephyp</span> <span class="kn">import</span> <span class="n">classifier</span>
+</pre></div>
+</div>
+<p>There is currently one type of classifier that can be set up, which contains a combination of convolutional layers (at the start) and fully-connected layers (at the end).:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">inputSize</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">numBands</span><span class="p">,</span> <span class="n">numClasses</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">numClasses</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>If not using config files to set up a network, then the input size of the data (which should be the number of spectral bands) and the number of classes must be specified. These are stored in <em>hypData.numBands</em> and <em>hypData.numClasses</em> for convenience.</p>
+<p>Additional aspects of the network architecture can also be specified when initialising the <em>classifier</em> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">inputSize</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">numBands</span><span class="p">,</span> <span class="n">numClasses</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">numClasses</span><span class="p">,</span> <span class="n">convFilterSize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">convNumFilters</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">convStride</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">fcSize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">],</span> <span class="n">activationFunc</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">weightInitOpt</span><span class="o">=</span><span class="s1">&#39;truncated_normal&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>where the following components of the architecture can be specified:</p>
+<ul class="simple">
+<li>number of convolutional layers - this is the length of the list ‘convNumFilters’</li>
+<li>number of filters/kernels in each conv layer - these are the values in the ‘convNumFilters’ list</li>
+<li>the size of the filters/kernels in each conv layer - these are the values in the ‘convFilterSize’ list</li>
+<li>the stride of the filters/kernels in each conv layer - these are the values in the ‘convStride’ list</li>
+<li>the type of padding each conv layer uses - padding</li>
+<li>number of fully-connected layers - this is the length of the list ‘fcSize’</li>
+<li>number of neurons in each fully-connected layer - these are the values in the ‘fcSize’ list</li>
+<li>the activation function which proceeds each layer - activationFunc</li>
+<li>the method of initialising network parameters (e.g. xavier improved) - ‘weightInitOpt’</li>
+</ul>
+<p>Therefore, the above CNN classifier has three convolutional layers, two fully-connected layers and an output layer. The three convolutional layers each have 10 filters, with sizes 20, 10 and 10. The fully-connected layers both have 20 neurons.</p>
+<p>Instead of defining the network architecture by the initialisation arguments, a config.json file can be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>A config file is generated each time a network in the toolbox is trained, so you can use one from another network as a template for making a new one.</p>
+</div>
+<div class="section" id="adding-training-operations">
+<h2>Adding training operations<a class="headerlink" href="#adding-training-operations" title="Permalink to this headline">¶</a></h2>
+<p>Once a network has been created, a training operation can be added to it. It is possible to add multiple training operations to a network, so each op must be given a name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_train_op</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;experiment_1&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>When adding a train op, details about how the network will be trained with that op can also be specified. For example, a train op for a classifier with a learning rate of 0.001 with no decay, optimised with Adam, class balancing and no weight decay can be defined by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_train_op</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;experiment_1&#39;</span><span class="p">,</span> <span class="n">balance_classes</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="n">wd_lambda</span><span class="o">=</span><span class="mf">0.0</span>  <span class="p">)</span>
+</pre></div>
+</div>
+<p>Classification networks are trained using a cross-entropy loss function.</p>
+<p>The method for decaying the learning rate can also be customised. For example, to decay the learning rate exponentially every 100 steps (starting at 0.001):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_train_op</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;experiment_1&#39;</span><span class="p">,</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">decay_rate</span><span class="o">=</span><span class="mf">0.9</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>A piecewise approach to decaying the learning rate can also be used. For example, to change the learning rate from 0.001 to 0.0001 after 100 steps, and then to 0.00001 after a further 200 steps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_train_op</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;experiment_1&#39;</span><span class="p">,</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">piecewise_bounds</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span> <span class="n">piecewise_values</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span><span class="mf">1e-5</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="training-networks">
+<h2>Training networks<a class="headerlink" href="#training-networks" title="Permalink to this headline">¶</a></h2>
+<p>Once one or multiple training ops have been added to a network, they can be used to learn a model (or multiple models) for that network through training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span> <span class="n">dataTrain</span><span class="o">=</span><span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="o">=</span><span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="o">=</span><span class="s1">&#39;experiment_1&#39;</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">save_addr</span><span class="o">=</span><span class="n">model_directory</span><span class="p">,</span> <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save_epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The train method learns a model using one train op, therefore the train method should be called at least once for each train op that was added. The name of the train op must be specified, and the training and validation iterators created previously must be input. A path to a directory to save the model must also be specified. The example above will train a network for 100 epochs of the training dataset (that is, loop through the entire training dataset 100 times), and save the model at 50 and 100 epochs. The training loss will be displayed every 5 epochs, and the validation loss will be displayed every 10 epochs.</p>
+<p>It is also possible to load a pre-trained model and continue to train it by passing the address of the epoch folder containing the model checkpoint as the save_addr argument. For example, if the directory for the model at epoch 50 (epoch_50 folder) was passed to save_addr in the example above, then the model would initialise with the epoch 50 parameters and be trained for an additional 50 epochs to reach 100, at which point the model would be saved in a folder called epoch_100 in the same directory as the epoch_50 folder.</p>
+<p>The interface for training autoencoders and classifiers is the same.</p>
+</div>
+<div class="section" id="loading-and-testing-a-trained-network">
+<h2>Loading and testing a trained network<a class="headerlink" href="#loading-and-testing-a-trained-network" title="Permalink to this headline">¶</a></h2>
+<p>Once you have a trained network, it can be loaded and tested out on some hyperspectral data.</p>
+<p>To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">data</span>
+<span class="n">new_hypData</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">new_img</span> <span class="p">)</span>
+<span class="n">new_hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>When doing inference, labels do not need to be input into <em>HypImg</em> (unless you want to use them for evaluation).</p>
+<p>Set up the network. The network architecture must be the same as the one used to train the model being loaded. However, this is easy as the directory where models are saved should contain an automatically generated config.json file, which can be used to set up the network with the same architecture:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="s1">&#39;model_directory/config.json&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Once the architecture has been defined, add a model to the network. For example, adding the model that was saved at epoch 100:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span> <span class="n">addr</span><span class="o">=</span><span class="s1">&#39;model_directory/epoch_100&#39;</span><span class="p">),</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;clf_100&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Because multiple models can be added to a single network, the added model must be given a name. The name can be anything - the above model is named ‘clf_100’ because it is a classifier and was trained for 100 epochs).</p>
+<p>When the network is set up and a model has been added, hyperspectral data can be passed through it. To use a trained classifier to predict the classification labels of some spectra:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataPred</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">predict_labels</span><span class="p">(</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;clf_100&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">new_hypData</span><span class="o">.</span><span class="n">spectraPrep</span>  <span class="p">)</span>
+</pre></div>
+</div>
+<p>Like-wise, to predict the classification scores for each class of some spectra:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataScores</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">predict_scores</span><span class="p">(</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;clf_100&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">new_hypData</span><span class="o">.</span><span class="n">spectraPrep</span>  <span class="p">)</span>
+</pre></div>
+</div>
+<p>To extract the features in the second last layer of the classifier network:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataFeatures</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">predict_features</span><span class="p">(</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;clf_100&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">new_hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">numLayers</span><span class="o">-</span><span class="mi">1</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use numpy to reshape the predicted labels (<em>dataPred</em>) so that they look like an image again:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">imgPred</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">dataPred</span><span class="p">,</span> <span class="p">(</span> <span class="n">new_hypData</span><span class="o">.</span><span class="n">numRows</span><span class="p">,</span> <span class="n">new_hypData</span><span class="o">.</span><span class="n">numCols</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you should have a basic idea of how to use the <strong>deephyp</strong> toolbox to train a classifier for hyperspectral data!</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="get_started_ae.html" class="btn btn-neutral float-left" title="Getting started with autoencoders" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,11 +1,12 @@
 '''
-    File name: classifier.py
-    Author: Lloyd Windrim
-    Date created: August 2019
-    Python package: deephyp
-
-    Description: high-level deep learning classes for building, training and using supervised neural network
+    Description: high-level deep learning classes for building, training and using supervised neural network \
     classifiers. Uses functions from the low-level network_ops module.
+
+    - File name: classifier.py
+    - Author: Lloyd Windrim
+    - Date created: August 2019
+    - Python package: deephyp
+
 
 '''
 
@@ -14,30 +15,58 @@ from deephyp import network_ops as net_ops
 
 
 class cnn_1D_network():
+    """ Class for setting up a 1-D convolutional neural network (cnn) for classification. Contains several convolutional \
+        layers followed by several fully-connected layers. The network outputs scores for each class, for a given set \
+        of input data samples.
+
+    Args:
+        configFile (str): Optional way of setting up the network. All other inputs can be ignored (will be overwritten). \
+                        Pass the address of the .json config file.
+        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands). Value must be input if not \
+                        using a config file.
+        numClasses (int): Number of labelled classes in the dataset (not including the zero class).
+        convFilterSize (int list): Size of filter at each convolutional layer. List length is number of \
+                        convolutional layers.
+        convNumFilters (int list): Number of filters at each convolutional layer of the network. List length is \
+                        number of convolutional layers.
+        convStride (int list): Stride at each convolutional layer. List length is number of convolutional layers. \
+        fcSize (int list): Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length \
+                        is number of fully-connected layers.
+        activationFunc (str): Activation function for all layers except the last one. Current options: ['sigmoid', \
+                        'relu', 'linear'].
+        weightInitOpt (string): Method of weight initialisation. Current options: ['gaussian', 'truncated_normal', \
+                    'xavier', 'xavier_improved'].
+        weightStd (float): Used by 'gaussian' and 'truncated_normal' weight initialisation methods.
+        padding (str): Type of padding used. Current options: ['VALID', 'SAME'].
+
+    Attributes:
+        inputSize (int): Number of dimensions of input data (i.e. number of spectral bands).
+        activationFunc (str): Activation function for all layers except the last one.
+        weightInitOpt (string): Method of weight initialisation.
+        weightStd (float): Parameter for 'gaussian' and 'truncated_normal' weight initialisation methods.
+        convFilterSize (int list): Size of filter at each convolutional layer. List length is number of \
+                        convolutional layers.
+        convNumFilters (int list): Number of filters at each convolutional layer of the network. List length is \
+                        number of convolutional layers.
+        convStride (int list): Stride at each convolutional layer. List length is number of convolutional layers. \
+        padding (str): Type of padding used. Current options: ['VALID', 'SAME'].
+        fcSize (int list): Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length \
+                        is number of fully-connected layers.
+        numLayers (int): Total number of layers (convolutional and fully-connected).
+        y_pred (tensor): Output of network - class scores with shape [numSamples x numClasses]. Accessible through the \
+            *predict_scores* class functions, requiring a trained model.
+        train_ops (dict): Dictionary of names of train and loss ops (suffixed with _train and _loss) added to the \
+            network using the *add_train_op* class function. The name (without suffix) is passed to the *train* class \
+            function to train the network with the referenced train and loss op.
+        modelsAddrs (dict): Dictionary of model names added to the network using the *add_model* class function. The \
+            names reference models which can be used by the *predict_scores*, *predict_labels* and *predict_features* \
+            class functions.
+
+    """
 
     def __init__( self , configFile=None, inputSize=None, numClasses=None, convFilterSize=[20,10,10],
                   convNumFilters=[10,10,10], convStride = [1,1,1], fcSize=[20,20], activationFunc='relu',
                   weightInitOpt='truncated_normal', weightStd=0.1, padding='VALID'):
-
-
-        """ Class for setting up a 1-D multi-layer perceptron autoencoder network.
-        - input:
-            configFile: (.json) Optional way of setting up the network. All other inputs can be ignored (will be overwritten).
-            inputSize: (int) Number of dimensions of input data (i.e. number of spectral bands). Value must be input if
-                            not done so with a config file.
-            numClasses: (int) Number of labelled classes in the dataset.
-            convFilterSize: (int list) Size of filter at each convolutional layer. List length is number of
-                            convolutional layers.
-            convNumFilters: (int list) Number of filters at each convolutional layer of the network. List length is
-                            number of convolutional layers.
-            convStride: (int list) Stride at each convolutional layer. List length is number of convolutional layers.
-            fcSize: (int list) Number of nodes at each fully-connected (i.e. dense) layer of the encoder. List length
-                            is number of fully-connected layers.
-            activationFunc: (str) [sigmoid, relu, linear] Function for all layers except the last one.
-            weightInitOpt: (string) Method of weight initialisation. [gaussian, truncated_normal, xavier, xavier_improved]
-            weightStd: (float) Used by 'gaussian' and 'truncated_normal' weight initialisation methods
-            padding: (string)
-        """
 
         self.inputSize = inputSize
         self.numClasses = numClasses
@@ -156,19 +185,20 @@ class cnn_1D_network():
 
     def add_train_op(self,name, balance_classes=True, learning_rate=1e-3, decay_steps=None, decay_rate=None,
                      piecewise_bounds=None, piecewise_values=None, method='Adam', wd_lambda=0.0 ):
-        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a
-            name, and the train op and loss opp are stored in a dictionary under that name
-        - input:
-            name: (str) Name of the training op (to refer to it later in-case of multiple training ops).
-            balance_classes: (boolean) Weight the samples during training so that the contribtion to the loss of each
+        """ Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a \
+            name, and the train op and loss opp are stored in a dictionary (train_ops) under that name.
+
+        Args:
+            name (str): Name of the training op (to refer to it later in-case of multiple training ops).
+            balance_classes (boolean): Weight the samples during training so that the contribtion to the loss of each \
                             class is balanced by the number of samples the class has (in a given batch).
-            learning rate: (float) Controls the degree to which the weights are updated during training.
-            decay_steps: (int) Epoch frequency at which to decay the learning rate.
-            decay_rate: (float) Fraction at which to decay the learning rate.
-            piecewise_bounds: (int list) Epoch step intervals for decaying the learning rate. Alternative to decay steps.
-            piecewise_values: (float list) Rate at which to decay the learning rate at the piecewise_bounds.
-            method: (str) Optimisation method.
-            wd_lambda: (float) Scalar to control weighting of weight decay in loss.
+            learning_rate (float): Controls the degree to which the weights are updated during training.
+            decay_steps (int): Epoch frequency at which to decay the learning rate.
+            decay_rate (float): Fraction at which to decay the learning rate.
+            piecewise_bounds (int list): Epoch step intervals for decaying the learning rate. Alternative to decay steps.
+            piecewise_values (float list): Rate at which to decay the learning rate at the piecewise_bounds.
+            method (str): Optimisation method.
+            wd_lambda (float): Scalar to control weighting of weight decay in loss.
 
         """
         # construct loss op
@@ -193,17 +223,18 @@ class cnn_1D_network():
     def train(self, dataTrain, dataVal, train_op_name, n_epochs, save_addr, visualiseRateTrain=0, visualiseRateVal=0,
               save_epochs=[1000]):
         """ Calls network_ops function to train a network.
-        - input:
-            dataTrain: (obj) Iterator object for training data.
-            dataVal: (obj) Iterator object for validation data.
-            train_op_name: (str) Name of training op created.
-            n_epochs: (int) Number of loops through dataset to train for.
-            save_addr: (str) Address of a directory to save checkpoints for desired epochs, or address of saved
-                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the
+
+        Args:
+            dataTrain (obj): Iterator object for training data.
+            dataVal (obj): Iterator object for validation data.
+            train_op_name (str): Name of training op created.
+            n_epochs (int): Number of loops through dataset to train for.
+            save_addr (str): Address of a directory to save checkpoints for desired epochs, or address of saved \
+                        checkpoint. If address is for an epoch and contains a previously saved checkpoint, then the \
                         network will start training from there. Otherwise it will be trained from scratch.
-            visualiseRateTrain: (int) Epoch rate at which to print training loss in console
-            visualiseRateVal: (int) Epoch rate at which to print validation loss in console
-            save_epochs: (int list) Epochs to save checkpoints at.
+            visualiseRateTrain (int): Epoch rate at which to print training loss in console.
+            visualiseRateVal (int): Epoch rate at which to print validation loss in console.
+            save_epochs (int list): Epochs to save checkpoints at.
         """
 
         # make sure a checkpoint is saved at n_epochs
@@ -217,21 +248,24 @@ class cnn_1D_network():
 
     def add_model(self,addr,modelName):
         """ Loads a saved set of model parameters for the network.
-        - input:
-            addr: (str) Address of the directory containing the checkpoint files.
-            modelName: (str) Name of the model (to refer to it later in-case of multiple models for a given network).
+
+        Args:
+            addr (str): Address of the directory containing the checkpoint files.
+            modelName (str): Name of the model (to refer to it later in-case of multiple models for a given network).
         """
 
         self.modelsAddrs[modelName] = addr
 
     def predict_scores( self, modelName, dataSamples, useSoftmax=True  ):
-        """ Extract the predicted classification scores of some dataSamples using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-            useSoftmax: (boolean) Pass scores output by network through softmax function
-        - output:
-            predScores: (array) Shape [numSamples x numClasses]
+        """ Extract the predicted classification scores of some dataSamples using a trained model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() ).
+            dataSamples (np.array): Shape [numSamples x inputSize].
+            useSoftmax (boolean): Pass predicted scores output by network through a softmax function.
+
+        Returns:
+            (np.array): Predicted classification scores of dataSamples. Shape [numSamples x numClasses].
 
         """
 
@@ -251,12 +285,14 @@ class cnn_1D_network():
 
 
     def predict_labels( self, modelName, dataSamples  ):
-        """ Extract the predicted classification labels of some dataSamples using a trained model
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-        - output:
-            pred_labels: (array) Shape [numSamples]
+        """ Extract the predicted classification labels of some dataSamples using a trained model.
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() )
+            dataSamples (array): Shape [numSamples x inputSize]
+
+        Returns:
+            (np.array): Predicted classification labels of dataSamples. Shape [numSamples].
 
         """
 
@@ -269,14 +305,17 @@ class cnn_1D_network():
 
             return pred_labels
 
+
     def predict_features( self, modelName, dataSamples, layer ):
         """ Extract the predicted feature values at a particular layer of the network.
-        - input:
-            modelName: (str) Name of the model to use (previously added with add_model() )
-            dataSample: (array) Shape [numSamples x inputSize]
-            layer: (int) Layer at which to extract features. Must be between 1 and numLayers inclusive.
-        - output:
-            predFeatures: (array) Values of neurons at layer. Shape [numSamples x numNeurons] if fully-connected layer
+
+        Args:
+            modelName (str): Name of the model to use (previously added with add_model() )
+            dataSamples (np.array): Shape [numSamples x inputSize]
+            layer (int): Layer at which to extract features. Must be between 1 and numLayers inclusive.
+
+        Returns:
+            (np.array): Values of neurons at layer. Shape [numSamples x numNeurons] if fully-connected layer and \
                         [numSamples x convDim1 x convDim2] if convolutional layer.
 
         """

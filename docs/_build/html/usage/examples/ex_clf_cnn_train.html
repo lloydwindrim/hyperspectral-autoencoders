@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>train and test a CNN classifier &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="classifier examples" href="ex_clf.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Code Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ex_ae.html">autoencoder examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="ex_clf.html">classifier examples</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">train and test a CNN classifier</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../examples.html">Code Examples</a> &raquo;</li>
+        
+          <li><a href="ex_clf.html">classifier examples</a> &raquo;</li>
+        
+      <li>train and test a CNN classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/usage/examples/ex_clf_cnn_train.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="train-and-test-a-cnn-classifier">
+<h1>train and test a CNN classifier<a class="headerlink" href="#train-and-test-a-cnn-classifier" title="Permalink to this headline">¶</a></h1>
+<p>The code block directly below will train CNN classifier on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘models’. Once trained, look at the next code block to test out the trained classifier. If you have already downloaded the Pavia Uni dataset and ground truth dataset (e.g. from another example) you can comment out that step.</p>
+<p>The CNN classification network has three convolutional layers and three fully-connected layers (including the output layer). The first convolutional layer has 10 filters of size 20, with the second and third both having 10 filters of size 10. All convolutional layers have a stride of 1. The first two fully-connected layers both have 20 neurons and the final fully-connected layer has 9 neurons (because there are 9 classes). A ReLU activation function is used.</p>
+<p>The CNN model is trained on 50 samples per each of the 9 classes (not including the background class, which has a label of zero). 15 samples per class are used for validation, with a batch size of 50. The network is trained for 1000 epochs using the cross-entropy loss function with class balancing (even though the number of samples per class is already balanced). Both the train and validation loss are visualised every 10 epochs and models are saved at epochs 100 and 1000. The models are saved in the models/test_clf_cnn folders.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+
+<span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python2</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python3</span>
+
+
+ <span class="c1"># download dataset and ground truth (if already downloaded, comment this out)</span>
+ <span class="n">urlretrieve</span><span class="p">(</span> <span class="s1">&#39;http://www.ehu.eus/ccwintco/uploads/e/ee/PaviaU.mat&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;PaviaU.mat&#39;</span><span class="p">)</span> <span class="p">)</span>
+ <span class="n">urlretrieve</span><span class="p">(</span><span class="s1">&#39;http://www.ehu.eus/ccwintco/uploads/5/50/PaviaU_gt.mat&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;PaviaU_gt.mat&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+ <span class="c1"># read data into numpy array</span>
+ <span class="n">mat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;PaviaU.mat&#39;</span><span class="p">)</span>
+ <span class="n">img</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;paviaU&#39;</span><span class="p">]</span>
+
+ <span class="c1"># read labels into numpy array</span>
+ <span class="n">mat_gt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;PaviaU_gt.mat&#39;</span><span class="p">)</span>
+ <span class="n">img_gt</span> <span class="o">=</span> <span class="n">mat_gt</span><span class="p">[</span><span class="s1">&#39;paviaU_gt&#39;</span><span class="p">]</span>
+
+ <span class="c1"># create a hyperspectral dataset object from the numpy array</span>
+ <span class="n">hypData</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">img</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">img_gt</span> <span class="p">)</span>
+
+ <span class="c1"># pre-process data to make the model easier to train</span>
+ <span class="n">hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># get indices for training and validation data</span>
+ <span class="n">trainSamples</span> <span class="o">=</span> <span class="mi">50</span> <span class="c1"># per class</span>
+ <span class="n">valSamples</span> <span class="o">=</span> <span class="mi">15</span> <span class="c1"># per class</span>
+ <span class="n">train_indices</span> <span class="o">=</span> <span class="p">[]</span>
+ <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
+     <span class="n">train_indices</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">hypData</span><span class="o">.</span><span class="n">labels</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="n">trainSamples</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+ <span class="n">val_indices</span> <span class="o">=</span> <span class="p">[]</span>
+ <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
+     <span class="n">val_indices</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">hypData</span><span class="o">.</span><span class="n">labels</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">trainSamples</span><span class="p">:</span><span class="n">trainSamples</span><span class="o">+</span><span class="n">valSamples</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+ <span class="c1"># create data iterator objects for training and validation using the pre-processed data</span>
+ <span class="n">dataTrain</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[</span><span class="n">train_indices</span><span class="p">,</span> <span class="p">:],</span>
+                           <span class="n">targets</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">labelsOnehot</span><span class="p">[</span><span class="n">train_indices</span><span class="p">,:],</span> <span class="n">batchSize</span><span class="o">=</span><span class="mi">50</span> <span class="p">)</span>
+ <span class="n">dataVal</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">[</span><span class="n">val_indices</span><span class="p">,</span> <span class="p">:],</span>
+                         <span class="n">targets</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">labelsOnehot</span><span class="p">[</span><span class="n">val_indices</span><span class="p">,:]</span> <span class="p">)</span>
+
+ <span class="c1"># shuffle training data</span>
+ <span class="n">dataTrain</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
+
+ <span class="c1"># setup a cnn classifier with 3 convolutional layers and 2 fully-connected layers</span>
+ <span class="n">net</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">inputSize</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">numBands</span><span class="p">,</span> <span class="n">numClasses</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">convFilterSize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+               <span class="n">convNumFilters</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">convStride</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">fcSize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">],</span> <span class="n">activationFunc</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+               <span class="n">weightInitOpt</span><span class="o">=</span><span class="s1">&#39;truncated_normal&#39;</span><span class="p">,</span> <span class="n">weightStd</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># setup a training operation</span>
+ <span class="n">net</span><span class="o">.</span><span class="n">add_train_op</span><span class="p">(</span><span class="s1">&#39;basic50&#39;</span><span class="p">,</span><span class="n">balance_classes</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+ <span class="c1"># create a directory to save the learnt model</span>
+ <span class="n">model_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">,</span> <span class="s1">&#39;test_clf_cnn&#39;</span><span class="p">)</span>
+ <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_dir</span><span class="p">):</span>
+     <span class="c1"># if directory already exists, delete it</span>
+     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
+ <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
+
+ <span class="c1"># train the network for 1000 epochs, saving the model at epoch 100 and 1000</span>
+ <span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">dataTrain</span><span class="o">=</span><span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="o">=</span><span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="o">=</span><span class="s1">&#39;basic50&#39;</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">save_addr</span><span class="o">=</span><span class="n">model_dir</span><span class="p">,</span>
+           <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save_epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">1000</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The code below will test the CNN classifier model trained in the above code block, on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘results’. Run the testing code block as a separate script to the training code block.</p>
+<p>The network is setup using the config file output during training. The model is added to the network (with the name ‘basic_model’). Pavia Uni data samples from the entire image are passed through the network, which predicts labels and class labels and scores for each sample. Figures are saved showing the predicted class labels for the image with and without the background class masked out, as well as showing the ground truth labels.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+
+<span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+ <span class="c1"># read data into numpy array</span>
+ <span class="n">mat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;PaviaU.mat&#39;</span><span class="p">)</span>
+ <span class="n">img</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;paviaU&#39;</span><span class="p">]</span>
+
+ <span class="c1"># create a hyperspectral dataset object from the numpy array</span>
+ <span class="n">hypData</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">img</span> <span class="p">)</span>
+
+ <span class="c1"># pre-process data to make the model easier to train</span>
+ <span class="n">hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="s1">&#39;minmax&#39;</span><span class="p">)</span>
+
+
+ <span class="c1"># setup a fully-connected autoencoder neural network with 3 encoder layers</span>
+ <span class="n">net</span> <span class="o">=</span> <span class="n">deephyp</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span><span class="n">configFile</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">,</span><span class="s1">&#39;test_clf_cnn&#39;</span><span class="p">,</span><span class="s1">&#39;config.json&#39;</span><span class="p">))</span>
+
+ <span class="c1"># assign previously trained parameters to the network, and name model</span>
+ <span class="n">net</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span> <span class="n">addr</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">,</span><span class="s1">&#39;test_clf_cnn&#39;</span><span class="p">,</span><span class="s1">&#39;epoch_1000&#39;</span><span class="p">),</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;basic_model&#39;</span> <span class="p">)</span>
+
+ <span class="c1"># feed forward hyperspectral dataset through the model to predict class labels and scores for each sample</span>
+ <span class="n">data_pred</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">predict_labels</span><span class="p">(</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;basic_model&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span>  <span class="p">)</span>
+ <span class="n">data_scores</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">predict_scores</span><span class="p">(</span> <span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;basic_model&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span>  <span class="p">)</span>
+
+ <span class="c1"># extract features at second last layer</span>
+ <span class="n">data_features</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">predict_features</span><span class="p">(</span><span class="n">modelName</span><span class="o">=</span><span class="s1">&#39;basic_model&#39;</span><span class="p">,</span> <span class="n">dataSamples</span><span class="o">=</span><span class="n">hypData</span><span class="o">.</span><span class="n">spectraPrep</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">numLayers</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+ <span class="c1">#--------- visualisation ----------------------------------------</span>
+
+ <span class="c1"># reshape predicted labels to an image</span>
+ <span class="n">img_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data_pred</span><span class="p">,</span> <span class="p">(</span><span class="n">hypData</span><span class="o">.</span><span class="n">numRows</span><span class="p">,</span> <span class="n">hypData</span><span class="o">.</span><span class="n">numCols</span><span class="p">))</span>
+
+ <span class="c1"># read labels into numpy array</span>
+ <span class="n">mat_gt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;PaviaU_gt.mat&#39;</span><span class="p">)</span>
+ <span class="n">img_gt</span> <span class="o">=</span> <span class="n">mat_gt</span><span class="p">[</span><span class="s1">&#39;paviaU_gt&#39;</span><span class="p">]</span>
+
+
+ <span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;asphalt&#39;</span><span class="p">,</span> <span class="s1">&#39;meadow&#39;</span><span class="p">,</span> <span class="s1">&#39;gravel&#39;</span><span class="p">,</span><span class="s1">&#39;tree&#39;</span><span class="p">,</span><span class="s1">&#39;painted metal&#39;</span><span class="p">,</span><span class="s1">&#39;bare soil&#39;</span><span class="p">,</span><span class="s1">&#39;bitumen&#39;</span><span class="p">,</span><span class="s1">&#39;brick&#39;</span><span class="p">,</span><span class="s1">&#39;shadow&#39;</span><span class="p">]</span>
+ <span class="n">cmap</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span>
+
+ <span class="c1"># save ground truth figure</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+ <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pl</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">img_gt</span><span class="p">):</span>
+     <span class="n">colour</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">entry</span><span class="o">*</span><span class="mi">255</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">img_gt</span><span class="p">)</span> <span class="o">-</span> <span class="mi">0</span><span class="p">))</span>
+     <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="p">([</span><span class="s1">&#39;background&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">class_names</span><span class="p">)[</span><span class="n">entry</span><span class="p">])</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_gt</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ground truth labels&#39;</span><span class="p">)</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;test_classification_gt.png&#39;</span><span class="p">))</span>
+
+ <span class="c1"># save predicted classes figure</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+ <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pl</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">img_pred</span><span class="p">):</span>
+     <span class="n">colour</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">entry</span><span class="o">*</span><span class="mi">255</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">img_pred</span><span class="p">)</span> <span class="o">-</span> <span class="mi">0</span><span class="p">))</span>
+     <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">class_names</span><span class="p">[</span><span class="n">entry</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_pred</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;classification prediction&#39;</span><span class="p">)</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;test_classification_pred.png&#39;</span><span class="p">))</span>
+
+ <span class="c1"># save predicted classes figure with background masked out</span>
+ <span class="n">img_pred</span><span class="p">[</span><span class="n">img_gt</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+ <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pl</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">img_pred</span><span class="p">):</span>
+     <span class="n">colour</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">entry</span><span class="o">*</span><span class="mi">255</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">img_pred</span><span class="p">)</span> <span class="o">-</span> <span class="mi">0</span><span class="p">))</span>
+     <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="p">([</span><span class="s1">&#39;background&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">class_names</span><span class="p">)[</span><span class="n">entry</span><span class="p">])</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_pred</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;classification prediction with background masked&#39;</span><span class="p">)</span>
+ <span class="n">pl</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;test_classification_pred_bkgrd.png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="ex_clf.html" class="btn btn-neutral float-left" title="classifier examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

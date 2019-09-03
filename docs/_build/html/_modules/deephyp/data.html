@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deephyp.data &mdash; deephyp 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> deephyp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/citing.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/get_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/examples.html">Code Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">deephyp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>deephyp.data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deephyp.data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Description: high-level classes for using hyperspectral data with the deep learning modules.</span>
+
+<span class="sd">    - File name: data.py</span>
+<span class="sd">    - Author: Lloyd Windrim</span>
+<span class="sd">    - Date created: June 2019</span>
+<span class="sd">    - Python package: deephyp</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="HypImg"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.HypImg">[docs]</a><span class="k">class</span> <span class="nc">HypImg</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class for handling data. Stores meta-data and contains attributes for pre-processing the data. If passed labels, \</span>
+<span class="sd">        samples with label zero are considered as a background class. This class is not included in numClasses and data \</span>
+<span class="sd">        samples with this label have a one-hot vector label of all zeros.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spectralInput (np.array float): Spectral dataset. Shape can be [numRows x numCols x numBands] or \</span>
+<span class="sd">            [numSamples x numBands].</span>
+<span class="sd">        wavelengths (np.array float): Vector of wavelengths that spectralInput wavelengths lie within.</span>
+<span class="sd">        bands (np.array int): Wavelength indexes for each band of spectralInput. Shape [numBands].</span>
+<span class="sd">        labels (np.array int): Class labels for each spectral sample in spectralInput. Shape can be [numRows x numCols] \</span>
+<span class="sd">            or [numSamples].</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        spectra (np.array float): Un-pre-processed spectral data with shape [numSamples x numBands].</span>
+<span class="sd">        spectraCube (np.array float): If data passed as image - un-pre-processed spectral datacube with \</span>
+<span class="sd">            shape [numSamples x numBands]. Else None.</span>
+<span class="sd">        spectraPrep (np.array float): Pre-processed spectral data with shape [numSamples x numBands].</span>
+<span class="sd">        numSamples (int): The number of spectra.</span>
+<span class="sd">        numRows (int): If data passed as image - the number of image rows. Else None.</span>
+<span class="sd">        numCols (int): If data passed as image - the number of image columns. Else None.</span>
+<span class="sd">        wavelengths (np.array float): If provided - vector of wavelengths that spectra wavelengths lie within. Else None.</span>
+<span class="sd">        bands (np.array int): If provided - wavelength indexes for each band of spectra with shape [numBands]. Else None.</span>
+<span class="sd">        labels (np.array int): If provided - class labels for each spectral sample with shape [numSamples]. Else None.</span>
+<span class="sd">        labelsOnehot (np.array int): If labels provided - the one-hot label vector for each sample. Samples with label \</span>
+<span class="sd">            zero (background class) have a one-hot vector of all zeros. Else None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">spectralInput</span> <span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wavelengths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="kc">None</span>  <span class="p">):</span>
+
+        <span class="c1"># if input is of shape [numRows x numCols x numBands], convert to [numSamples x numBands]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">spectralInput</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numRows</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numCols</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numBands</span> <span class="o">=</span> <span class="n">spectralInput</span><span class="o">.</span><span class="n">shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numRows</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numCols</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">spectralInput</span> <span class="p">,</span> <span class="p">(</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numBands</span> <span class="p">)</span> <span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectraCube</span> <span class="o">=</span> <span class="n">spectralInput</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numBands</span> <span class="o">=</span> <span class="n">spectralInput</span><span class="o">.</span><span class="n">shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numRows</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numCols</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">=</span> <span class="n">spectralInput</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectraCube</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># if labels provided, determine number of classes and one-hot labels</span>
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="c1"># create one-hot labels for classes &gt; 0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labelsOnehot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labelsOnehot</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labelsOnehot</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numClasses</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="o">=</span> <span class="n">wavelengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">bands</span>
+
+<div class="viewcode-block" id="HypImg.pre_process"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.HypImg.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;minmax&#39;</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pre-process data for input into the network. Stores in the spectraPrep attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method (str): Method of pre-processing. Current options: &#39;minmax&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;minmax&#39;</span><span class="p">:</span>
+            <span class="c1"># scales each spectra to be between [0 1] (lower bound is actually a small non-zero number)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectraPrep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">),(</span><span class="bp">self</span><span class="o">.</span><span class="n">numBands</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectraPrep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectraPrep</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numBands</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span></div></div>
+
+
+
+<div class="viewcode-block" id="Iterator"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator">[docs]</a><span class="k">class</span> <span class="nc">Iterator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Class for iterating through data, to train the network.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataSamples (np.array float): Data to be input into the network. Shape [numSamples x numBands].</span>
+<span class="sd">            targets (np.array int): Network output target of each dataSample. For classification, these are the class \</span>
+<span class="sd">                labels, and it could be the dataSamples for autoencoders. Shape [numSamples x arbitrary]</span>
+<span class="sd">            batchSize (int): Number of dataSamples per batch</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            dataSamples (np.array float): Data to be input into the network. Shape [numSamples x numBands].</span>
+<span class="sd">            targets (np.array int): Network output target of each dataSample. For classification, these are the class \</span>
+<span class="sd">                labels, and it could be the dataSamples for autoencoders. Shape [numSamples x arbitrary]</span>
+<span class="sd">            batchSize (int): Number of dataSamples per batch. If None - set to numSamples (i.e. whole dataset).</span>
+<span class="sd">            numSamples (int): The number of data samples.</span>
+<span class="sd">            currentBatch (int list): A list of indexes specifying the data samples in the current batch. \</span>
+<span class="sd">                Shape [batchSize]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span><span class="n">targets</span><span class="p">,</span><span class="n">batchSize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSamples</span> <span class="o">=</span> <span class="n">dataSamples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">dataSamples</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">batchSize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span> <span class="o">=</span> <span class="n">batchSize</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Iterator.next_batch"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.next_batch">[docs]</a>    <span class="k">def</span> <span class="nf">next_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return next batch of samples and targets (with batchSize number of samples). The currentBatch indexes are \</span>
+<span class="sd">            incremented. If end of dataset reached, the indexes wraps around to the beginning.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): 2-element tuple containing:</span>
+
+<span class="sd">            - (*np.array float*) - Batch of data samples at currentBatch indexes. Shape [batchSize x numBands].</span>
+<span class="sd">            - (*np.array int*) - Batch of targets at currentBatch indexes. Shape [batchSize x arbitrary].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">batchData</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSamples</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">batchTargets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># update current batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">numSamples</span>
+
+        <span class="k">return</span> <span class="n">batchData</span> <span class="p">,</span> <span class="n">batchTargets</span></div>
+
+<div class="viewcode-block" id="Iterator.get_batch"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.get_batch">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a specified set of samples and targets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            idx (int list): Indexes of samples (and targets) to return.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): 2-element tuple containing:</span>
+
+<span class="sd">            - (*np.array float*) - Batch of data samples at [idx] indexes. Shape [length(idx) x numBands].</span>
+<span class="sd">            - (*np.array int*) - Batch of targets at [idx] indexes. Shape [length(idx) x arbitrary].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">batchData</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSamples</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">batchTargets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">batchData</span><span class="p">,</span> <span class="n">batchTargets</span></div>
+
+
+<div class="viewcode-block" id="Iterator.reset_batch"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.reset_batch">[docs]</a>    <span class="k">def</span> <span class="nf">reset_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resets the current batch to the beginning.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iterator.shuffle"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Randomly permutes all dataSamples (and corresponding targets).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataSamples</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSamples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSamples</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span></div></div>
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Lloyd Windrim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
