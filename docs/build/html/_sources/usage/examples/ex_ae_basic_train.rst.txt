@@ -19,7 +19,8 @@ Models are saved at 50 and 100 epochs. The models are saved in the models/test_a
 
 .. code-block:: python
 
-   import deephyp
+   import deephyp.data
+   import deephyp.autoencoder
 
    import scipy.io
    import os
@@ -87,7 +88,8 @@ results folder.
 
 .. code-block:: python
 
-   import deephyp
+   import deephyp.data
+   import deephyp.autoencoder
 
    import scipy.io
    import matplotlib.pyplot as plt

@@ -97,6 +97,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ex_clf.html">classifier examples</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../related_pubs.html">Related Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
 </ul>
 
             
@@ -170,7 +172,8 @@
 <p>The code block directly below will train an MLP (or dense) autoencoder and a CNN autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘models’. Once trained, look at the next code block to test out the trained autoencoders. If you have already downloaded the Pavia Uni dataset (e.g. from another example) you can comment out that step.</p>
 <p>The MLP network has four encoder and four decoder layers, with 50 neurons in the first layer, 30 in the second, 10 in the third and 3 in the fourth layer (the latent layer) of the encocer. The CNN network has an encoder with three convolutional layers and a fully-connected layer joining the output of the third convolutional layer to the latent layer. The decoder has a fully-connected layer joining the latent layer to the deconvolutional layers followed by three deconvolutional layers. The first convolutional layer has 10 filters of size 20, with the second and third both having 10 filters of size 10. All convolutional layers have a stride of 1. The decoder is symmetric. The CNN latent layer has 3 neurons (to have the same dimensionality as the MLP).</p>
 <p>Both the mlp and cnn models are trained with 200,000 spectral samples and 100 validation samples with a batch size of 1000 samples, with a learning rate of 0.001 and the Adam optimiser. The MLP is trained for 100 epochs and the CNN is trained for 10 epochs. Both networks are trained with the cosine spectral angle (CSA) reconstruction loss function. The train loss and validation loss are visualised every 10 epochs, except for the CNN training loss which is visualised every 1 epoch. The MLP is saved at 100 epochs and the CNN is saved at 10 epochs. The models are saved in the models/test_ae_comparison_mlp and models/test_ae_comparison_cnn folders.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.autoencoder</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -246,12 +249,17 @@
 </div>
 <p>The code below will test the MLP (or dense) and CNN autoencoder models trained in the above code block, on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘results’. Run the testing code block as a separate script to the training code block. The code block below downloads the Pavia Uni ground truth labels.</p>
 <p>The networks are setup using the config files output during training. Each of the models are added to their respective networks. The models are each used to encode a latent representation of the Pavia Uni data and a scatter plot figure of the samples in two of the three latent dimensions are shown for each model. The two latent features with the greatest standard deviation of the data samples are used for the scatter plot.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.autoencoder</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python2</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python3</span>
 
 
  <span class="c1"># read data into numpy array</span>

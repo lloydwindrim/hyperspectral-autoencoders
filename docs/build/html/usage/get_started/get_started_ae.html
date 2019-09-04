@@ -101,6 +101,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../related_pubs.html">Related Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
 </ul>
 
             
@@ -287,10 +289,10 @@
 </div>
 <p>There are several loss functions that can be used to train an autoencoder with this toolbox, many of which were designed specifically for hyperspectral data:</p>
 <ul class="simple">
-<li>cosine spectral angle (CSA)</li>
-<li>spectral angle (SA)</li>
-<li>spectral information divergence (SID)</li>
-<li>sum-of-squared errors (SSE)</li>
+<li><a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/7533202">cosine spectral angle (CSA)</a></li>
+<li><a class="reference external" href="https://www.mdpi.com/2072-4292/11/7/864">spectral angle (SA)</a></li>
+<li><a class="reference external" href="https://www.mdpi.com/2072-4292/11/7/864">spectral information divergence (SID)</a></li>
+<li><a class="reference external" href="https://www.mdpi.com/2072-4292/11/7/864">sum-of-squared errors (SSE)</a></li>
 </ul>
 <p>Note that when using the <a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/7533202">CSA</a>, <a class="reference external" href="https://www.mdpi.com/2072-4292/11/7/864">SA</a> and <a class="reference external" href="https://www.mdpi.com/2072-4292/11/7/864">SID</a> loss functions it is expected that the reconstructed spectra have a different magnitude to the target spectra, but a similar shape. The <a class="reference external" href="https://www.mdpi.com/2072-4292/11/7/864">SSE</a> should produce a similar magnitude and shape. Also, since the SID contains <em>log</em> in its expression which is undefined for values <em>&lt;= 0</em>, it is best to use sigmoid as the activation function (including the final activation function) for networks trained with the SID loss. See the code examples for a demonstration.</p>
 <p>The method for decaying the learning rate can also be customised. For example, to decay the learning rate exponentially every 100 steps (starting at 0.001):</p>
@@ -315,14 +317,15 @@
 <div class="section" id="loading-and-testing-a-trained-network">
 <h2>Loading and testing a trained network<a class="headerlink" href="#loading-and-testing-a-trained-network" title="Permalink to this headline">¶</a></h2>
 <p>Once you have a trained network, it can be loaded and tested out on some hyperspectral data.</p>
-<p>To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">data</span>
+<p>Open a new python script. To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deephyp</span> <span class="kn">import</span> <span class="n">data</span>
 <span class="n">new_hypData</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">new_img</span> <span class="p">)</span>
 <span class="n">new_hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>Then set up the network. The network architecture must be the same as the one used to train the model being loaded. However, this is easy as the directory where models are saved should contain an automatically generated config.json file, which can be used to set up the network with the same architecture:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">autoencoder</span><span class="o">.</span><span class="n">mlp_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="s1">&#39;model_directory/config.json&#39;</span> <span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deephyp</span> <span class="kn">import</span> <span class="n">autoencoder</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">autoencoder</span><span class="o">.</span><span class="n">mlp_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="s1">&#39;model_directory/config.json&#39;</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>Once the architecture has been defined, add a model to the network. For example, adding the model that was saved at epoch 100:</p>
@@ -343,7 +346,8 @@
 </pre></div>
 </div>
 <p>You can use numpy to reshape the latent vector <em>dataZ</em> so that it looks like an image again:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">imgZ</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">dataZ</span><span class="p">,</span> <span class="p">(</span><span class="n">new_hypData</span><span class="o">.</span><span class="n">numRows</span><span class="p">,</span> <span class="n">new_hypData</span><span class="o">.</span><span class="n">numCols</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="n">imgZ</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">dataZ</span><span class="p">,</span> <span class="p">(</span><span class="n">new_hypData</span><span class="o">.</span><span class="n">numRows</span><span class="p">,</span> <span class="n">new_hypData</span><span class="o">.</span><span class="n">numCols</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>Now you should have a basic idea of how to use the <strong>deephyp</strong> toolbox to train an autoencoder for hyperspectral data!</p>

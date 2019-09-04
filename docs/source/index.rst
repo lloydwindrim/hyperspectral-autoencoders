@@ -22,6 +22,9 @@ Source code available on `Github
    usage/get_started
    usage/api
    usage/examples
+   usage/related_pubs
+   usage/contact
+
 
 
 

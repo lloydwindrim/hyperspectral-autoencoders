@@ -97,6 +97,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ex_clf.html">classifier examples</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../related_pubs.html">Related Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
 </ul>
 
             
@@ -169,7 +171,8 @@
 <h1>train and test a basic MLP<a class="headerlink" href="#train-and-test-a-basic-mlp" title="Permalink to this headline">¶</a></h1>
 <p>The code block directly below will train an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘models’. Once trained, look at the next code block to test out the trained autoencoder. If you have already downloaded the Pavia Uni dataset (e.g. from another example) you can comment out that step.</p>
 <p>The network has three encoder and three decoder layers, with 50 neurons in the first layer, 30 in the second and 10 in the third (the latent layer). A model is trained with 200,000 spectral samples and 100 validation samples with a batch size of 1000 samples. Training lasts for 100 epochs, with a learning rate of 0.001, the Adam optimiser and cosine spectral angle (CSA) reconstruction loss function. The train loss and validation loss are displayed every 10 epochs. Models are saved at 50 and 100 epochs. The models are saved in the models/test_ae_mlp folder.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.autoencoder</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -226,7 +229,8 @@
 </div>
 <p>The code below will test a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘results’. The network can be trained using the above code block. Run the testing code block as a separate script to the training code block.</p>
 <p>The network is setup using the config file output during training. Then the 100 epoch model is added (named ‘csa_100’). The model is used to encode a latent representation of the Pavia Uni data, and reconstruct it from the latent representation. A figure of the latent vector for a ‘meadow’ spectral sample and the reconstruction is saved in the results folder.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.autoencoder</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>

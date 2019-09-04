@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Related Publications" href="../related_pubs.html" />
     <link rel="prev" title="classifier examples" href="ex_clf.html" /> 
 </head>
 
@@ -93,6 +94,8 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../related_pubs.html">Related Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
 </ul>
 
             
@@ -166,11 +169,13 @@
 <p>The code block directly below will train CNN classifier on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘models’. Once trained, look at the next code block to test out the trained classifier. If you have already downloaded the Pavia Uni dataset and ground truth dataset (e.g. from another example) you can comment out that step.</p>
 <p>The CNN classification network has three convolutional layers and three fully-connected layers (including the output layer). The first convolutional layer has 10 filters of size 20, with the second and third both having 10 filters of size 10. All convolutional layers have a stride of 1. The first two fully-connected layers both have 20 neurons and the final fully-connected layer has 9 neurons (because there are 9 classes). A ReLU activation function is used.</p>
 <p>The CNN model is trained on 50 samples per each of the 9 classes (not including the background class, which has a label of zero). 15 samples per class are used for validation, with a batch size of 50. The network is trained for 1000 epochs using the cross-entropy loss function with class balancing (even though the number of samples per class is already balanced). Both the train and validation loss are visualised every 10 epochs and models are saved at epochs 100 and 1000. The models are saved in the models/test_clf_cnn folders.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.classifier</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python2</span>
 <span class="k">except</span><span class="p">:</span>
@@ -236,7 +241,8 @@
 </div>
 <p>The code below will test the CNN classifier model trained in the above code block, on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘results’. Run the testing code block as a separate script to the training code block.</p>
 <p>The network is setup using the config file output during training. The model is added to the network (with the name ‘basic_model’). Pavia Uni data samples from the entire image are passed through the network, which predicts labels and class labels and scores for each sample. Figures are saved showing the predicted class labels for the image with and without the background class masked out, as well as showing the ground truth labels.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.classifier</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">pl</span>
@@ -322,6 +328,8 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../related_pubs.html" class="btn btn-neutral float-right" title="Related Publications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="ex_clf.html" class="btn btn-neutral float-left" title="classifier examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

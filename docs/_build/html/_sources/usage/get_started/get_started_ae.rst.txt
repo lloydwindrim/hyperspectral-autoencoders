@@ -176,10 +176,14 @@ When adding a train op, details about how the network will be trained with that 
 
 There are several loss functions that can be used to train an autoencoder with this toolbox, many of which were designed specifically for hyperspectral data:
 
-- cosine spectral angle (CSA)
-- spectral angle (SA)
-- spectral information divergence (SID)
-- sum-of-squared errors (SSE)
+*  `cosine spectral angle (CSA)
+   <https://ieeexplore.ieee.org/abstract/document/7533202>`_
+*  `spectral angle (SA)
+   <https://www.mdpi.com/2072-4292/11/7/864>`_
+*  `spectral information divergence (SID)
+   <https://www.mdpi.com/2072-4292/11/7/864>`_
+*  `sum-of-squared errors (SSE)
+   <https://www.mdpi.com/2072-4292/11/7/864>`_
 
 Note that when using the `CSA
 <https://ieeexplore.ieee.org/abstract/document/7533202>`_, `SA
@@ -221,11 +225,11 @@ Loading and testing a trained network
 
 Once you have a trained network, it can be loaded and tested out on some hyperspectral data.
 
-To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:
+Open a new python script. To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:
 
 .. code-block:: python
 
-   import data
+   from deephyp import data
    new_hypData = data.HypImg( new_img )
    new_hypData.pre_process( 'minmax' )
 
@@ -234,6 +238,7 @@ Then set up the network. The network architecture must be the same as the one us
 
 .. code-block:: python
 
+   from deephyp import autoencoder
    net = autoencoder.mlp_1D_network( configFile='model_directory/config.json' )
 
 Once the architecture has been defined, add a model to the network. For example, adding the model that was saved at epoch 100:
@@ -267,6 +272,7 @@ You can use numpy to reshape the latent vector *dataZ* so that it looks like an 
 
 .. code-block:: python
 
+   import numpy
    imgZ = numpy.reshape( dataZ, (new_hypData.numRows, new_hypData.numCols, -1) )
 
 Now you should have a basic idea of how to use the **deephyp** toolbox to train an autoencoder for hyperspectral data!

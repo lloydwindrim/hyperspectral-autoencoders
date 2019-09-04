@@ -26,11 +26,13 @@ The models are saved in the models/test_clf_cnn folders.
 
 .. code-block:: python
 
-   import deephyp
+   import deephyp.data
+   import deephyp.classifier
 
    import scipy.io
    import os
    import shutil
+   import numpy as np
    try:
        from urllib import urlretrieve # python2
    except:
@@ -105,7 +107,8 @@ without the background class masked out, as well as showing the ground truth lab
 
 .. code-block:: python
 
-   import deephyp
+   import deephyp.data
+   import deephyp.classifier
 
    import scipy.io
    import pylab as pl

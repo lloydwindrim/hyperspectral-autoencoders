@@ -97,6 +97,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ex_clf.html">classifier examples</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../related_pubs.html">Related Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
 </ul>
 
             
@@ -170,7 +172,8 @@
 <p>The code block directly below will train an MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘models’. Once trained, look at the next code block to test out the trained autoencoder. If you have already downloaded the Pavia Uni dataset (e.g. from another example) you can comment out that step.</p>
 <p>The network has three encoder and three decoder layers, with 50 neurons in the first layer, 30 in the second and 10 in the third (the latent layer). A model is trained with 200,000 spectral samples and 100 validation samples with a batch size of 1000 samples. Training lasts for 100 epochs, with a learning rate of 0.001, the Adam optimiser and spectral information divergence (SID) reconstruction loss function. The train loss and validation loss are displayed every 10 epochs. Models are saved at 50 and 100 epochs. The models are saved in the models/test_ae_mlp_sid folder.</p>
 <p>Since the SID loss contains log in its expression which is undefined for values &lt;= 0, it is best to use sigmoid as the activation function (including the final activation function) for networks trained with the SID loss.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.autoencoder</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -228,12 +231,17 @@
 </div>
 <p>The code below will test a trained MLP (or dense) autoencoder on the Pavia Uni hyperspectral dataset. Make sure you have a folder in your directory called ‘results’. The network can be trained using the above code block. Run the testing code block as a separate script to the training code block.</p>
 <p>The network is setup using the config file output during training. Then the 100 epoch model is added (named ‘sid_100’). The model is used to encode a latent representation of the Pavia Uni data and a scatter plot figure of the samples in two of the ten latent dimensions are shown for each model. The two latent features with the greatest standard deviation of the data samples are used for the scatter plot.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp.data</span>
+<span class="kn">import</span> <span class="nn">deephyp.autoencoder</span>
 
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python2</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span> <span class="c1"># python3</span>
 
 
  <span class="c1"># read data into numpy array</span>

@@ -22,7 +22,8 @@ activation function (including the final activation function) for networks train
 
 .. code-block:: python
 
-   import deephyp
+   import deephyp.data
+   import deephyp.autoencoder
 
    import scipy.io
    import os
@@ -91,12 +92,17 @@ of the data samples are used for the scatter plot.
 
 .. code-block:: python
 
-   import deephyp
+   import deephyp.data
+   import deephyp.autoencoder
 
    import scipy.io
    import matplotlib.pyplot as plt
    import os
    import numpy as np
+   try:
+       from urllib import urlretrieve # python2
+   except:
+       from urllib.request import urlretrieve # python3
 
 
     # read data into numpy array

@@ -81,6 +81,7 @@ Before setting up an *Iterator* object, establish which data samples from the hy
 
 .. code-block:: python
 
+    import numpy as np
     trainSamples = 50 # per class
     valSamples = 15 # per class
     train_indexes = []
@@ -213,11 +214,11 @@ Loading and testing a trained network
 
 Once you have a trained network, it can be loaded and tested out on some hyperspectral data.
 
-To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:
+Open a new python script. To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:
 
 .. code-block:: python
 
-   import data
+   from deephyp import data
    new_hypData = data.HypImg( new_img )
    new_hypData.pre_process( 'minmax' )
 
@@ -228,6 +229,7 @@ Set up the network. The network architecture must be the same as the one used to
 
 .. code-block:: python
 
+   from deephyp import classifier
    net = classifier.cnn_1D_network( configFile='model_directory/config.json' )
 
 Once the architecture has been defined, add a model to the network. For example, adding the model that was saved at epoch 100:

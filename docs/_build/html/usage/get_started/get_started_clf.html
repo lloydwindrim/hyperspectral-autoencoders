@@ -219,7 +219,8 @@
 <h2>Data iterator<a class="headerlink" href="#data-iterator" title="Permalink to this headline">¶</a></h2>
 <p>The <em>Iterator</em> class within the <em>data</em> module has methods for calling batches from the data that are used to train the network. A separate iterator object is made for the training and validation data.</p>
 <p>Before setting up an <em>Iterator</em> object, establish which data samples from the hyperspectral image you will use to train and validate the network. For example, you can use the following code to get the indexes of 50 training samples and 15 validation samples per class, for each of the nine non-background classes in the Pavia Uni dataset:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainSamples</span> <span class="o">=</span> <span class="mi">50</span> <span class="c1"># per class</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">trainSamples</span> <span class="o">=</span> <span class="mi">50</span> <span class="c1"># per class</span>
 <span class="n">valSamples</span> <span class="o">=</span> <span class="mi">15</span> <span class="c1"># per class</span>
 <span class="n">train_indexes</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
@@ -311,15 +312,16 @@
 <div class="section" id="loading-and-testing-a-trained-network">
 <h2>Loading and testing a trained network<a class="headerlink" href="#loading-and-testing-a-trained-network" title="Permalink to this headline">¶</a></h2>
 <p>Once you have a trained network, it can be loaded and tested out on some hyperspectral data.</p>
-<p>To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">data</span>
+<p>Open a new python script. To load a trained model on a new dataset, ensure the data has been pre-processed similarly using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deephyp</span> <span class="kn">import</span> <span class="n">data</span>
 <span class="n">new_hypData</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">HypImg</span><span class="p">(</span> <span class="n">new_img</span> <span class="p">)</span>
 <span class="n">new_hypData</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span> <span class="s1">&#39;minmax&#39;</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>When doing inference, labels do not need to be input into <em>HypImg</em> (unless you want to use them for evaluation).</p>
 <p>Set up the network. The network architecture must be the same as the one used to train the model being loaded. However, this is easy as the directory where models are saved should contain an automatically generated config.json file, which can be used to set up the network with the same architecture:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="s1">&#39;model_directory/config.json&#39;</span> <span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deephyp</span> <span class="kn">import</span> <span class="n">classifier</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">cnn_1D_network</span><span class="p">(</span> <span class="n">configFile</span><span class="o">=</span><span class="s1">&#39;model_directory/config.json&#39;</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>Once the architecture has been defined, add a model to the network. For example, adding the model that was saved at epoch 100:</p>

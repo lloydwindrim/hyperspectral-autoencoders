@@ -13,6 +13,12 @@ The `latest release
 
    pip install deephyp
 
+or to update:
+
+.. code-block:: bash
+
+   pip install deephyp --upgrade
+
 The software dependencies needed to run the toolbox are python 2 or python 3 (tested with version 2.7.15 and 3.5.2) \
 with packages:
 

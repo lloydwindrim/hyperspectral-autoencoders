@@ -85,6 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../usage/get_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage/api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/related_pubs.html">Related Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/contact.html">Contact</a></li>
 </ul>
 
             
@@ -164,7 +166,7 @@
 <span class="kn">from</span> <span class="nn">deephyp</span> <span class="k">import</span> <span class="n">network_ops</span> <span class="k">as</span> <span class="n">net_ops</span>
 
 
-<div class="viewcode-block" id="cnn_1D_network"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network">[docs]</a><span class="k">class</span> <span class="nc">cnn_1D_network</span><span class="p">():</span>
+<div class="viewcode-block" id="cnn_1D_network"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network">[docs]</a><span class="k">class</span> <span class="nc">cnn_1D_network</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Class for setting up a 1-D convolutional neural network (cnn) for classification. Contains several convolutional \</span>
 <span class="sd">        layers followed by several fully-connected layers. The network outputs scores for each class, for a given set \</span>
 <span class="sd">        of input data samples.</span>
@@ -333,7 +335,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">numLayers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="cnn_1D_network.add_train_op"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network.add_train_op">[docs]</a>    <span class="k">def</span> <span class="nf">add_train_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span> <span class="n">balance_classes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decay_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="cnn_1D_network.add_train_op"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.add_train_op">[docs]</a>    <span class="k">def</span> <span class="nf">add_train_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span> <span class="n">balance_classes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decay_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">piecewise_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">piecewise_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="n">wd_lambda</span><span class="o">=</span><span class="mf">0.0</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Constructs a loss op and training op from a specific loss function and optimiser. User gives the ops a \</span>
 <span class="sd">            name, and the train op and loss opp are stored in a dictionary (train_ops) under that name.</span>
@@ -370,7 +372,7 @@
 
 
 
-<div class="viewcode-block" id="cnn_1D_network.train"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">save_addr</span><span class="p">,</span> <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<div class="viewcode-block" id="cnn_1D_network.train"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataTrain</span><span class="p">,</span> <span class="n">dataVal</span><span class="p">,</span> <span class="n">train_op_name</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">save_addr</span><span class="p">,</span> <span class="n">visualiseRateTrain</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">visualiseRateVal</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
               <span class="n">save_epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot; Calls network_ops function to train a network.</span>
 
@@ -396,7 +398,7 @@
                        <span class="n">visualiseRateVal</span><span class="p">,</span> <span class="n">save_epochs</span> <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cnn_1D_network.add_model"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">addr</span><span class="p">,</span><span class="n">modelName</span><span class="p">):</span>
+<div class="viewcode-block" id="cnn_1D_network.add_model"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">addr</span><span class="p">,</span><span class="n">modelName</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Loads a saved set of model parameters for the network.</span>
 
 <span class="sd">        Args:</span>
@@ -406,7 +408,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">modelsAddrs</span><span class="p">[</span><span class="n">modelName</span><span class="p">]</span> <span class="o">=</span> <span class="n">addr</span></div>
 
-<div class="viewcode-block" id="cnn_1D_network.predict_scores"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network.predict_scores">[docs]</a>    <span class="k">def</span> <span class="nf">predict_scores</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span> <span class="n">useSoftmax</span><span class="o">=</span><span class="kc">True</span>  <span class="p">):</span>
+<div class="viewcode-block" id="cnn_1D_network.predict_scores"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.predict_scores">[docs]</a>    <span class="k">def</span> <span class="nf">predict_scores</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span> <span class="n">useSoftmax</span><span class="o">=</span><span class="kc">True</span>  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract the predicted classification scores of some dataSamples using a trained model.</span>
 
 <span class="sd">        Args:</span>
@@ -434,7 +436,7 @@
             <span class="k">return</span> <span class="n">predScores</span></div>
 
 
-<div class="viewcode-block" id="cnn_1D_network.predict_labels"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network.predict_labels">[docs]</a>    <span class="k">def</span> <span class="nf">predict_labels</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span>  <span class="p">):</span>
+<div class="viewcode-block" id="cnn_1D_network.predict_labels"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.predict_labels">[docs]</a>    <span class="k">def</span> <span class="nf">predict_labels</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span>  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract the predicted classification labels of some dataSamples using a trained model.</span>
 
 <span class="sd">        Args:</span>
@@ -456,7 +458,7 @@
             <span class="k">return</span> <span class="n">pred_labels</span></div>
 
 
-<div class="viewcode-block" id="cnn_1D_network.predict_features"><a class="viewcode-back" href="../../usage/mods/mod_clf_cnn.html#deephyp.classifier.cnn_1D_network.predict_features">[docs]</a>    <span class="k">def</span> <span class="nf">predict_features</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span> <span class="n">layer</span> <span class="p">):</span>
+<div class="viewcode-block" id="cnn_1D_network.predict_features"><a class="viewcode-back" href="../../deephyp.html#deephyp.classifier.cnn_1D_network.predict_features">[docs]</a>    <span class="k">def</span> <span class="nf">predict_features</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">dataSamples</span><span class="p">,</span> <span class="n">layer</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract the predicted feature values at a particular layer of the network.</span>
 
 <span class="sd">        Args:</span>
