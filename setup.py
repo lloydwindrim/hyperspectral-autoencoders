@@ -13,7 +13,7 @@ with open(os.path.join(HERE, "README.md")) as fid:
 # This call to setup() does all the work
 setup(
     name="deephyp",
-    version="0.1.3",
+    version="0.1.4",
     description="Tools for training and using unsupervised autoencoders and supervised deep learning classifiers for hyperspectral data.",
     long_description=README,
     long_description_content_type="text/markdown",
