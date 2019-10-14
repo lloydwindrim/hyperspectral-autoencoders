@@ -38,10 +38,12 @@ import deephyp
 ## Prerequisites
 
 The software dependencies needed to run the toolbox are python 2 or python 3 (tested with version 2.7.15 and 3.5.2) with packages:
-* tensorflow (tested with v1.14.0) 
+* tensorflow (tested with v1.14.0) - not yet compatible with tensorflow v2.0
 * numpy (tested with v1.15.4)
 
 Each of these packages can be installed using [pip](https://pypi.org/project/pip/). The example scripts use some additional packages such as scipy (tested with v1.3.1) and matplotlib (tested with v3.0.3).
+
+Note: if you want to use deephyp but you have tensorflow v2, you can install deephyp in a virtual environment with tensorflow v1.14. [See instructions here](https://www.tensorflow.org/install/pip).
 
 ## Quickstart
 To start training an autoencoder right away, move to the /examples directory in the [github repo](https://github.com/lloydwindrim/hyperspectral-autoencoders) and run the example script:

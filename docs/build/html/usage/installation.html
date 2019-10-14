@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; deephyp 0.1.4 documentation</title>
+  <title>Installation &mdash; deephyp 0.1.5 documentation</title>
   
 
   
@@ -166,11 +166,20 @@
 <p>The software dependencies needed to run the toolbox are python 2 or python 3 (tested with version 2.7.15 and 3.5.2) with packages:</p>
 <blockquote>
 <div><ul class="simple">
-<li>tensorflow (tested with v1.14.0)</li>
+<li>tensorflow (tested with v1.14.0) - not yet compatible with tensorflow v2.0</li>
 <li>numpy (tested with v1.15.4)</li>
 </ul>
 </div></blockquote>
-<p>To import, in python write:</p>
+<p>Because deephyp is note yet compatible with tensorflow v2.0, you will have to install an older version of tensorflow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install <span class="nv">tensorflow</span><span class="o">==</span><span class="m">1</span>.14
+</pre></div>
+</div>
+<p>Or if you are using a gpu:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install tensorflow-gpu<span class="o">==</span><span class="m">1</span>.14
+</pre></div>
+</div>
+<p>If you want to use deephyp but you have tensorflow v2.0 installed, you can install deephyp in a virtual environment with tensorflow v1.14. <a class="reference external" href="https://www.tensorflow.org/install/pip">See instructions on setting up a virtual environment here</a>.</p>
+<p>To import deephyp, in python write:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">deephyp</span>
 </pre></div>
 </div>

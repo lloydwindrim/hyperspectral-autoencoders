@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deephyp.data &mdash; deephyp 0.1.4 documentation</title>
+  <title>deephyp.data &mdash; deephyp 0.1.5 documentation</title>
   
 
   
@@ -165,7 +165,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="HypImg"><a class="viewcode-back" href="../../usage/mods/mod_data_hypimg.html#deephyp.data.HypImg">[docs]</a><span class="k">class</span> <span class="nc">HypImg</span><span class="p">:</span>
+<div class="viewcode-block" id="HypImg"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.HypImg">[docs]</a><span class="k">class</span> <span class="nc">HypImg</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for handling data. Stores meta-data and contains attributes for pre-processing the data. If passed labels, \</span>
 <span class="sd">        samples with label zero are considered as a background class. This class is not included in numClasses and data \</span>
 <span class="sd">        samples with this label have a one-hot vector label of all zeros.</span>
@@ -231,7 +231,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="o">=</span> <span class="n">wavelengths</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">bands</span>
 
-<div class="viewcode-block" id="HypImg.pre_process"><a class="viewcode-back" href="../../usage/mods/mod_data_hypimg.html#deephyp.data.HypImg.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;minmax&#39;</span> <span class="p">):</span>
+<div class="viewcode-block" id="HypImg.pre_process"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.HypImg.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;minmax&#39;</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Pre-process data for input into the network. Stores in the spectraPrep attribute.</span>
 
 <span class="sd">        Args:</span>
@@ -244,7 +244,7 @@
 
 
 
-<div class="viewcode-block" id="Iterator"><a class="viewcode-back" href="../../usage/mods/mod_data_iter.html#deephyp.data.Iterator">[docs]</a><span class="k">class</span> <span class="nc">Iterator</span><span class="p">:</span>
+<div class="viewcode-block" id="Iterator"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator">[docs]</a><span class="k">class</span> <span class="nc">Iterator</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Class for iterating through data, to train the network.</span>
 
 <span class="sd">        Args:</span>
@@ -276,7 +276,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Iterator.next_batch"><a class="viewcode-back" href="../../usage/mods/mod_data_iter.html#deephyp.data.Iterator.next_batch">[docs]</a>    <span class="k">def</span> <span class="nf">next_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Iterator.next_batch"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.next_batch">[docs]</a>    <span class="k">def</span> <span class="nf">next_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return next batch of samples and targets (with batchSize number of samples). The currentBatch indexes are \</span>
 <span class="sd">            incremented. If end of dataset reached, the indexes wraps around to the beginning.</span>
 
@@ -297,7 +297,7 @@
 
         <span class="k">return</span> <span class="n">batchData</span> <span class="p">,</span> <span class="n">batchTargets</span></div>
 
-<div class="viewcode-block" id="Iterator.get_batch"><a class="viewcode-back" href="../../usage/mods/mod_data_iter.html#deephyp.data.Iterator.get_batch">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<div class="viewcode-block" id="Iterator.get_batch"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.get_batch">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a specified set of samples and targets.</span>
 
 <span class="sd">        Args:</span>
@@ -315,14 +315,14 @@
         <span class="k">return</span> <span class="n">batchData</span><span class="p">,</span> <span class="n">batchTargets</span></div>
 
 
-<div class="viewcode-block" id="Iterator.reset_batch"><a class="viewcode-back" href="../../usage/mods/mod_data_iter.html#deephyp.data.Iterator.reset_batch">[docs]</a>    <span class="k">def</span> <span class="nf">reset_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Iterator.reset_batch"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.reset_batch">[docs]</a>    <span class="k">def</span> <span class="nf">reset_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Resets the current batch to the beginning.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">currentBatch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Iterator.shuffle"><a class="viewcode-back" href="../../usage/mods/mod_data_iter.html#deephyp.data.Iterator.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Iterator.shuffle"><a class="viewcode-back" href="../../deephyp.html#deephyp.data.Iterator.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Randomly permutes all dataSamples (and corresponding targets).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
